@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Layers } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -40,6 +41,7 @@ export default function BrandManagement() {
   const [newBrandName, setNewBrandName] = useState("");
   const [feedType, setFeedType] = useState("Pellet");
   const [bagWeight, setBagWeight] = useState("");
+  const [availableWeights, setAvailableWeights] = useState("");
   const [price, setPrice] = useState("");
   const [nutrition, setNutrition] = useState({
     protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
@@ -73,6 +75,7 @@ export default function BrandManagement() {
       name: newBrandName,
       feedType,
       bagWeight,
+      availableWeights,
       price,
       nutrition,
       ingredients
@@ -94,6 +97,7 @@ export default function BrandManagement() {
     setNewBrandName("");
     setFeedType("Pellet");
     setBagWeight("");
+    setAvailableWeights("");
     setPrice("");
     setNutrition({ protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" });
     setIngredients([{ ingredient: "", percentage: "" }]);
@@ -145,13 +149,23 @@ export default function BrandManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1"><Package className="h-3 w-3" /> वजन (किग्रॅ)</Label>
+                    <Label className="flex items-center gap-1"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
                     <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1"><IndianRupee className="h-3 w-3" /> किंमत (₹)</Label>
+                    <Label className="flex items-center gap-1"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
                     <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1"><Layers className="h-3 w-3" /> उपलब्ध पॅकिंग (बॅग वजन किग्रॅ)</Label>
+                  <Input 
+                    value={availableWeights} 
+                    onChange={(e) => setAvailableWeights(e.target.value)} 
+                    placeholder="उदा. 50, 25, 10" 
+                  />
+                  <p className="text-[10px] text-muted-foreground">स्वल्पविराम (,) वापरून अनेक वजन लिहा.</p>
                 </div>
 
                 <div className="pt-4 border-t">
@@ -238,9 +252,23 @@ export default function BrandManagement() {
                           </div>
                           <div className="text-right text-xs">
                             <p className="font-bold text-accent text-sm">₹{brand.price}</p>
-                            <p className="text-muted-foreground">{brand.bagWeight} किग्रॅ</p>
+                            <p className="text-muted-foreground">{brand.bagWeight} किग्रॅ (बेस)</p>
                           </div>
                         </div>
+                        
+                        {brand.availableWeights && (
+                          <div className="mb-3">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase mb-1">उपलब्ध पॅकिंग (किग्रॅ):</p>
+                            <div className="flex flex-wrap gap-1">
+                              {brand.availableWeights.split(',').map((w, i) => (
+                                <span key={i} className="bg-primary/5 text-primary border border-primary/20 px-2 py-0.5 rounded text-[10px] font-bold">
+                                  {w.trim()} kg
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-xs">
                           <div><span className="font-semibold">प्रोटीन:</span> {brand.nutrition.protein}%</div>
                           <div><span className="font-semibold">फॅट:</span> {brand.nutrition.fat}%</div>

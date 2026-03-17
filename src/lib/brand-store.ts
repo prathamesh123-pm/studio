@@ -4,6 +4,7 @@ export interface MasterBrand {
   name: string;
   feedType: string;
   bagWeight: string;
+  availableWeights: string; // New field for multiple packing sizes
   price: string;
   nutrition: {
     protein: string;
