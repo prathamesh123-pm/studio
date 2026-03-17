@@ -70,13 +70,15 @@ export default function BrandManagement() {
 
   const handleEditBrand = (brand: MasterBrand) => {
     setEditingId(brand.id);
-    setNewBrandName(brand.name);
-    setFeedType(brand.feedType);
-    setBagWeight(brand.bagWeight);
-    setAvailableWeights(brand.availableWeights);
-    setPrice(brand.price);
-    setNutrition(brand.nutrition);
-    setIngredients(brand.ingredients);
+    setNewBrandName(brand.name ?? "");
+    setFeedType(brand.feedType ?? "Pellet");
+    setBagWeight(brand.bagWeight ?? "");
+    setAvailableWeights(brand.availableWeights ?? "");
+    setPrice(brand.price ?? "");
+    setNutrition(brand.nutrition ?? {
+      protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
+    });
+    setIngredients(brand.ingredients ?? [{ ingredient: "", percentage: "" }]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -163,13 +165,13 @@ export default function BrandManagement() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>ब्रँड / कंपनीचे नाव</Label>
-                  <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="उदा. गोदरेज गोल्ड" />
+                  <Input value={newBrandName ?? ""} onChange={(e) => setNewBrandName(e.target.value)} placeholder="उदा. गोदरेज गोल्ड" />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <Label>खाद्य प्रकार</Label>
-                    <Select value={feedType} onValueChange={setFeedType}>
+                    <Select value={feedType ?? "Pellet"} onValueChange={setFeedType}>
                       <SelectTrigger>
                         <SelectValue placeholder="प्रकार निवडा" />
                       </SelectTrigger>
@@ -186,18 +188,18 @@ export default function BrandManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-1"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
-                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
+                    <Input type="number" value={bagWeight ?? ""} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
                   </div>
                   <div className="space-y-2">
                     <Label className="flex items-center gap-1"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
-                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
+                    <Input type="number" value={price ?? ""} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-1"><Layers className="h-3 w-3" /> उपलब्ध पॅकिंग (बॅग वजन किग्रॅ)</Label>
                   <Input 
-                    value={availableWeights} 
+                    value={availableWeights ?? ""} 
                     onChange={(e) => setAvailableWeights(e.target.value)} 
                     placeholder="उदा. 50, 25, 10" 
                   />
@@ -212,7 +214,7 @@ export default function BrandManagement() {
                         <Label className="text-xs capitalize">{key === 'mineralMix' ? 'Mineral Mix' : key}</Label>
                         <Input 
                           type="number" 
-                          value={(nutrition as any)[key]} 
+                          value={(nutrition as any)[key] ?? ""} 
                           onChange={(e) => setNutrition({...nutrition, [key]: e.target.value})}
                           placeholder="%"
                           className="h-8"
@@ -234,13 +236,13 @@ export default function BrandManagement() {
                       <div key={idx} className="flex gap-2 items-center">
                         <Input 
                           placeholder="घटक" 
-                          value={ing.ingredient} 
+                          value={ing.ingredient ?? ""} 
                           onChange={(e) => handleIngredientChange(idx, "ingredient", e.target.value)}
                           className="h-8 flex-1"
                         />
                         <Input 
                           placeholder="%" 
-                          value={ing.percentage} 
+                          value={ing.percentage ?? ""} 
                           onChange={(e) => handleIngredientChange(idx, "percentage", e.target.value)}
                           className="h-8 w-16"
                           type="number"
