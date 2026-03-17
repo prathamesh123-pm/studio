@@ -116,6 +116,7 @@ export default function SurveysList() {
               <DataRow label="गाव (Village)" value={d.village} />
               <DataRow label="तालुका (Taluka)" value={d.taluka} />
               <DataRow label="जिल्हा (District)" value={d.district} />
+              <DataRow label="लोकेशन (GPS)" value={d.location} />
               {isDairy && <DataRow label="संपूर्ण पत्ता" value={d.address} />}
               {isDairy && <DataRow label="सध्या दूध संकलन (लिटर/दिवस)" value={d.milkCollection} />}
               {isDairy && <DataRow label="एकूण संलग्न शेतकरी संख्या" value={d.farmerCount} />}
