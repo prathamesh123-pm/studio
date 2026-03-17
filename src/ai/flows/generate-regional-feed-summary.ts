@@ -50,10 +50,10 @@ Based on hypothetical aggregated survey data for this district and taluka, ident
 
 Synthesize this information into a concise, insightful summary. Structure your response clearly, addressing each of the three points above.
 
-IMPORTANT: If the District or Taluka names are in Marathi, provide the ENTIRE summary in Marathi language. Use professional and helpful tone.
+IMPORTANT: Provide the ENTIRE summary in Marathi language. Use professional and helpful tone. Avoid grammatical errors. Ensure terms like "सुका चारा" and "ॲड पॉइंट्स" are used correctly if applicable.
 
 Example of expected output structure (in Marathi):
-"{{district}} जिल्ह्यातील {{taluka}} तालुक्यात, सर्वेक्षणानुसार प्रामुख्याने [ब्रँड A], [ब्रँड B], आणि [ब्रँड C] हे ब्रँड्स मोठ्या प्रमाणात वापरले जातात. [ब्रँड A] त्याच्या उच्च प्रोटीन गुणवत्तेमुळे (सुमारे २२% प्रोटीन) लोकप्रिय आहे, ज्यामुळे दूध उत्पादनात चांगली वाढ दिसून येते. [ब्रँड B] हा स्वस्त दरामुळे अधिक वापरला जातो, ज्यात मका आणि पेंड यांचे योग्य मिश्रण असते. एकंदरीत या भागात शेतकरी समाधान पातळी [उच्च/मध्यम] असून, पशुखाद्याच्या [किंमत/गुणवत्ता] बाबत सकारात्मक मते आहेत, तर [उपलब्धता] ही एक मुख्य समस्या म्हणून समोर आली आहे."
+"{{district}} जिल्ह्यातील {{taluka}} तालुक्यात, सर्वेक्षणानुसार प्रामुख्याने [ब्रँड A], [ब्रँड B], आणि [ब्रँड C] हे ब्रँड्स मोठ्या प्रमाणात वापरले जातात. [ब्रँड A] त्याच्या उच्च प्रोटीन गुणवत्तेमुळे लोकप्रिय आहे, ज्यामुळे दूध उत्पादनात चांगली वाढ दिसून येते. [ब्रँड B] हा वाजवी दरामुळे अधिक वापरला जातो, ज्यात मका आणि पेंड यांचे योग्य मिश्रण असते. एकंदरीत या भागात शेतकरी समाधान पातळी उच्च असून, पशुखाद्याच्या गुणवत्तेबाबत सकारात्मक मते आहेत."
 
 Provide the summary now.`,
 });
@@ -65,10 +65,9 @@ const regionalFeedInsightsFlow = ai.defineFlow(
     outputSchema: RegionalFeedInsightsOutputSchema,
   },
   async (input) => {
-    // The prompt is designed to generate a plausible summary based on the region.
     const { output } = await regionalFeedInsightsPrompt(input);
     if (!output) {
-      throw new Error('क्षेत्रीय पशुखाद्य विश्लेषण अहवाल तयार करण्यास अडचण आली.');
+      throw new Error('क्षेत्रीय पशुखाद्य विश्लेषण अहवाल तयार करण्यास अडचण आली. कृपया पुन्हा प्रयत्न करा.');
     }
     return output;
   }

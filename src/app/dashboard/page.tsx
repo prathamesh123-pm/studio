@@ -36,10 +36,8 @@ export default function Dashboard() {
     
     setRecentSurveys(surveys.slice(0, 6));
 
-    // Calculate stats
     const uniqueDistricts = new Set(surveys.map(s => s.data.district).filter(Boolean));
     
-    // Simple brand frequency calculation
     const brandCounts: Record<string, number> = {};
     surveys.forEach(s => {
       const brand = s.data.currentBrand || s.data.bestBrand;
@@ -198,7 +196,7 @@ export default function Dashboard() {
                           </p>
                           <div className="mt-1">
                             <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full ${survey.type === 'dairy' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                              {survey.type === 'dairy' ? 'चिलिंग सेंटर' : 'शेतकरी'}
+                              {survey.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
                             </span>
                           </div>
                         </div>
