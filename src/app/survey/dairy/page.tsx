@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -37,10 +36,10 @@ import { toast } from "@/hooks/use-toast";
 const dairySchema = z.object({
   dairyName: z.string().min(1, "नाव आवश्यक आहे"),
   ownerName: z.string().min(1, "मालकाचे नाव आवश्यक आहे"),
-  contact: z.string().min(10, "संपर्क क्रमांक चुकीचा आहे"),
+  contact: z.string().min(10, "संपर्क क्रमांक किमान १० अंकी असावा"),
   district: z.string(),
   taluka: z.string(),
-  village: z.string().min(1, "गाव आवश्यक आहे"),
+  village: z.string().min(1, "गावाचे नाव आवश्यक आहे"),
   address: z.string(),
   milkCollection: z.string(),
   farmerCount: z.string(),
@@ -93,7 +92,7 @@ const dairySchema = z.object({
     question: z.string(),
     answer: z.string(),
   })).default([]),
-  surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
+  surveyorName: z.string().min(1, "सर्वेक्षकाचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
   surveyDate: z.string().optional(),
 });
@@ -148,7 +147,7 @@ export default function DairySurvey() {
         const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
         form.setValue("location", coords);
         setLocating(false);
-        toast({ title: "यशस्वी", description: "लोकेशन प्राप्त झाले आहे." });
+        toast({ title: "यशस्वी", description: "लोकेशन यशस्वीरित्या प्राप्त झाले!" });
       },
       (error) => {
         console.error(error);
@@ -179,8 +178,8 @@ export default function DairySurvey() {
     });
 
     toast({ 
-      title: "माहिती जोडली गेली", 
-      description: `${selected.name} ची माहिती तक्त्यामध्ये जोडली गेली आहे.` 
+      title: "माहिती जोडली", 
+      description: `${selected.name} ची माहिती तक्त्यात जोडली गेली आहे.` 
     });
   };
 
@@ -195,7 +194,7 @@ export default function DairySurvey() {
       toast({ title: "यशस्वी", description: "डेअरी सर्वेक्षण यशस्वीरित्या जतन झाले!" });
       router.push("/surveys");
     } catch (e) {
-      toast({ variant: "destructive", title: "त्रुटी", description: "काहीतरी चूक झाली." });
+      toast({ variant: "destructive", title: "त्रुटी", description: "माहिती जतन करताना काहीतरी चूक झाली." });
     }
   };
 
@@ -221,7 +220,7 @@ export default function DairySurvey() {
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center gap-2">
-              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (Location Tagging)
+              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (GPS Location)
             </h3>
             <div className="flex flex-col md:flex-row items-center gap-4">
               <Button 
@@ -247,15 +246,15 @@ export default function DairySurvey() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">मिल्किंग सेंटर / डेअरीचे नाव</Label>
-                <Input {...form.register("dairyName")} placeholder="नाव प्रविष्ट करा" />
+                <Input {...form.register("dairyName")} placeholder="केंद्राचे नाव" />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">मालकाचे नाव</Label>
-                <Input {...form.register("ownerName")} placeholder="नाव प्रविष्ट करा" />
+                <Input {...form.register("ownerName")} placeholder="पूर्ण नाव" />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">संपर्क क्रमांक</Label>
-                <Input {...form.register("contact")} placeholder="१० अंकी क्रमांक" />
+                <Input {...form.register("contact")} placeholder="१० अंकी मोबाईल नंबर" maxLength={10} />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">गाव (Village)</Label>
@@ -273,12 +272,12 @@ export default function DairySurvey() {
             <div className="grid grid-cols-1 gap-4 mt-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">संपूर्ण पत्ता</Label>
-                <Textarea {...form.register("address")} placeholder="पत्ता प्रविष्ट करा" />
+                <Textarea {...form.register("address")} placeholder="रस्ता, गल्ली, खुणा इ." />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="space-y-2">
-                <Label className="form-label-mr">सध्या दूध संकलन (लिटर / दिवस)</Label>
+                <Label className="form-label-mr">सध्याचे दूध संकलन (लिटर / दिवस)</Label>
                 <Input {...form.register("milkCollection")} type="number" />
               </div>
               <div className="space-y-2">
@@ -314,7 +313,7 @@ export default function DairySurvey() {
                 <Input {...form.register("livestock.milkingAnimals")} type="number" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">प्रति जनावर सरासरी दूध उत्पादन (लिटर/दिवस)</Label>
+                <Label className="form-label-mr">सरासरी दूध उत्पादन (प्रति जनावर लिटर/दिवस)</Label>
                 <Input {...form.register("livestock.avgMilkPerAnimal")} type="number" step="0.1" />
               </div>
             </div>
@@ -324,7 +323,7 @@ export default function DairySurvey() {
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">३. पशुखाद्य वापर माहिती</h3>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="form-label-mr">कोणत्या प्रकारचे खाद्य वापरता?</Label>
+                <Label className="form-label-mr">कोणत्या प्रकारचे पशुखाद्य वापरता?</Label>
                 <RadioGroup 
                   onValueChange={(val) => form.setValue("feedType", val as any)} 
                   className="flex flex-wrap gap-4"
@@ -340,7 +339,7 @@ export default function DairySurvey() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Both" id="rd3" />
-                    <Label htmlFor="rd3">दोनों</Label>
+                    <Label htmlFor="rd3">दोन्ही</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -356,20 +355,20 @@ export default function DairySurvey() {
                       <SelectValue placeholder="निवडा" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="1">1 वेळ</SelectItem>
-                      <SelectItem value="2">2 वेळा</SelectItem>
-                      <SelectItem value="3">3 वेळा</SelectItem>
+                      <SelectItem value="1">१ वेळ</SelectItem>
+                      <SelectItem value="2">२ वेळा</SelectItem>
+                      <SelectItem value="3">३ वेळा</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="form-label-mr">प्रति जनावर दररोज कॅटल फीड (किलो)</Label>
+                  <Label className="form-label-mr">प्रति जनावर दररोज कॅटल फीड (किग्रॅ)</Label>
                   <Input {...form.register("dailyFeedPerAnimal")} type="number" />
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label className="form-label-mr">खालील पूरक खाद्य वापरता का?</Label>
+                <Label className="form-label-mr">खालीलपैकी कोणते पूरक खाद्य वापरता?</Label>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                   {supplementOptions.map((opt) => (
                     <div key={opt.value} className="flex items-center space-x-2">
@@ -387,7 +386,7 @@ export default function DairySurvey() {
                   ))}
                 </div>
                 <div className="mt-2">
-                  <Input {...form.register("otherSupplement")} placeholder="इतर पूरक खाद्य" />
+                  <Input {...form.register("otherSupplement")} placeholder="इतर काही असल्यास लिहा" />
                 </div>
               </div>
             </div>
@@ -395,18 +394,18 @@ export default function DairySurvey() {
 
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (Quick Fill)</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (मास्टर ब्रँड ऑटो-फिल)</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
                   <span className="text-[10px] font-bold text-primary uppercase">मास्टर ब्रँड निवडा</span>
                   <Select onValueChange={handleMasterBrandSelect}>
                     <SelectTrigger className="h-8 bg-white w-[200px] text-xs">
-                      <SelectValue placeholder="ब्रँड निवडा" />
+                      <SelectValue placeholder="येथून ब्रँड निवडा" />
                     </SelectTrigger>
                     <SelectContent>
                       {masterBrands.length === 0 ? (
-                        <div className="p-2 text-xs text-muted-foreground">प्रथम ब्रँड जतन करा</div>
+                        <div className="p-2 text-xs text-muted-foreground">प्रथम ब्रँड मास्टर लिस्टमध्ये जतन करा</div>
                       ) : (
                         masterBrands.map(b => (
                           <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
@@ -439,7 +438,7 @@ export default function DairySurvey() {
                 {brandFields.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={12} className="text-center py-6 text-muted-foreground text-sm">
-                      मास्टर ब्रँड निवडा जेणेकरून सर्व माहिती एकत्रितपणे येथे दिसेल.
+                      मास्टर ब्रँड निवडल्यास सर्व माहिती येथे आपोआप भरली जाईल.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -476,11 +475,11 @@ export default function DairySurvey() {
                 className="space-y-2"
                 value={form.watch("purchaseMethod")}
               >
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने (Cash)</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने (Credit)</Label></div>
                 <div className="flex items-center space-x-2 ml-6">
                   <Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-20" />
-                  <span className="text-xs">दिवस</span>
+                  <span className="text-xs">दिवसांची उधारी</span>
                 </div>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Weekly" id="p3" /><Label htmlFor="p3">साप्ताहिक</Label></div>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Fortnightly" id="p4" /><Label htmlFor="p4">पंधरवड्याने</Label></div>
@@ -492,7 +491,7 @@ export default function DairySurvey() {
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">६. पुरवठा माहिती</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm">कुठून खरेदी करता?</Label>
+                  <Label className="text-sm">पशुखाद्य कुठून खरेदी करता?</Label>
                   <Select 
                     onValueChange={(v) => form.setValue("supplySource", v)}
                     value={form.watch("supplySource")}
@@ -501,15 +500,15 @@ export default function DairySurvey() {
                     <SelectContent>
                       <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
                       <SelectItem value="Dealer">कंपनी डीलर</SelectItem>
-                      <SelectItem value="Dairy">डेअरी</SelectItem>
+                      <SelectItem value="Dairy">डेअरी / संकलन केंद्र</SelectItem>
                       <SelectItem value="Other">इतर</SelectItem>
                     </SelectContent>
                   </Select>
-                  {form.watch("supplySource") === "Other" && <Input {...form.register("otherSupplySource")} placeholder="इतर स्त्रोत" />}
+                  {form.watch("supplySource") === "Other" && <Input {...form.register("otherSupplySource")} placeholder="इतर स्त्रोताचे नाव" />}
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm">पुरवठादाराचे नाव</Label>
-                  <Input {...form.register("supplierName")} />
+                  <Input {...form.register("supplierName")} placeholder="एजन्सी किंवा दुकानदाराचे नाव" />
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm">पुरवठा वेळेवर मिळतो का?</Label>
@@ -535,7 +534,7 @@ export default function DairySurvey() {
                   <Input {...form.register("monthlyExp")} type="number" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">महिन्याला लागणारी पोती</Label>
+                  <Label className="text-sm">महिन्याला लागणाऱ्या पोत्यांची संख्या</Label>
                   <Input {...form.register("monthlyBags")} type="number" />
                 </div>
               </div>
@@ -545,7 +544,7 @@ export default function DairySurvey() {
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">८. गुणवत्ता व समाधान</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-sm">सध्याच्या खाद्याबद्दल समाधान?</Label>
+                  <Label className="text-sm">सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का?</Label>
                   <Select 
                     onValueChange={(v) => form.setValue("satisfaction", v)}
                     value={form.watch("satisfaction")}
@@ -553,13 +552,13 @@ export default function DairySurvey() {
                     <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="VeryGood">खूप चांगले</SelectItem>
-                      <SelectItem value="Okay">ठीक</SelectItem>
-                      <SelectItem value="NotSatisfied">समाधान नाही</SelectItem>
+                      <SelectItem value="Okay">ठीक आहे</SelectItem>
+                      <SelectItem value="NotSatisfied">समाधानी नाही</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">दूध उत्पादन वाढले का?</Label>
+                  <Label className="text-sm">पशुखाद्य बदलल्याने दूध उत्पादनात वाढ झाली का?</Label>
                   <RadioGroup 
                     onValueChange={(v) => form.setValue("milkIncrease", v)} 
                     className="flex gap-4"
@@ -570,22 +569,22 @@ export default function DairySurvey() {
                   </RadioGroup>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">सर्वात चांगला ब्रँड कोणता वाटतो?</Label>
-                  <Input {...form.register("bestBrand")} />
+                  <Label className="text-sm">तुमच्या मते सर्वात चांगला ब्रँड कोणता?</Label>
+                  <Input {...form.register("bestBrand")} placeholder="ब्रँडचे नाव लिहा" />
                 </div>
               </div>
             </section>
           </div>
 
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. साठवण सुविधा</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. साठवणूक सुविधा (Storage)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm">गोदाम क्षमता (MT)</Label>
-                <Input {...form.register("warehouseCapacity")} />
+                <Input {...form.register("warehouseCapacity")} placeholder="उदा. १० MT" />
               </div>
               <div className="space-y-2">
-                <Label className="text-sm">साठवण सुविधा उपलब्ध आहे का?</Label>
+                <Label className="text-sm">साठवणुकीसाठी पुरेशी जागा उपलब्ध आहे का?</Label>
                 <RadioGroup 
                   onValueChange={(v) => form.setValue("hasStorage", v)} 
                   className="flex gap-4"
@@ -602,9 +601,9 @@ export default function DairySurvey() {
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१०. समस्या व सूचना</h3>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-sm">मुख्य समस्या काय आहे?</Label>
+                <Label className="text-sm">पशुखाद्याबाबत मुख्य समस्या काय आहे?</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {["जास्त किंमत", "गुणवत्ता कमी", "उपलब्धता कमी", "उधारी मिळत नाही"].map((p) => (
+                  {["जास्त किंमत", "कमी गुणवत्ता", "उपलब्धतेची अडचण", "उधारी मिळत नाही"].map((p) => (
                     <div key={p} className="flex items-center space-x-2">
                       <Checkbox 
                         id={p} 
@@ -619,11 +618,11 @@ export default function DairySurvey() {
                     </div>
                   ))}
                 </div>
-                <Input {...form.register("otherProblem")} placeholder="इतर समस्या" className="mt-2" />
+                <Input {...form.register("otherProblem")} placeholder="इतर काही समस्या असल्यास येथे लिहा" className="mt-2" />
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm">नवीन सॅम्पल मिळाले तर वापरून पाहाल का?</Label>
+                <Label className="text-sm">नवीन ब्रँडचे सॅम्पल मिळाले तर वापरून पाहाल का?</Label>
                 <RadioGroup 
                   onValueChange={(v) => form.setValue("sampleTrial", v)} 
                   className="flex gap-4"
@@ -635,8 +634,8 @@ export default function DairySurvey() {
               </div>
 
               <div className="space-y-2">
-                <Label className="form-label-mr">तुमच्या मते चांगल्या कॅटल फीडमध्ये काय असावे?</Label>
-                <Textarea {...form.register("goodFeedOpinion")} />
+                <Label className="form-label-mr">तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?</Label>
+                <Textarea {...form.register("goodFeedOpinion")} placeholder="तुमची मते / सूचना" />
               </div>
             </div>
           </section>
@@ -656,7 +655,7 @@ export default function DairySurvey() {
             </h3>
             <div className="space-y-4">
               {customFields.length === 0 ? (
-                <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या आवडीचे अतिरिक्त प्रश्न जोडू शकता.</p>
+                <p className="text-center py-4 text-muted-foreground text-sm">तुम्ही तुमच्या गरजेनुसार येथे अतिरिक्त प्रश्न जोडू शकता.</p>
               ) : (
                 customFields.map((field, index) => (
                   <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
@@ -671,11 +670,11 @@ export default function DairySurvey() {
                     </Button>
                     <div className="space-y-2 pr-8">
                       <Label className="text-xs">प्रश्न {index + 1}</Label>
-                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="तुमचा प्रश्न लिहा..." />
+                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="तुमचा प्रश्न येथे लिहा..." />
                     </div>
                     <div className="space-y-2">
                       <Label className="text-xs">उत्तर</Label>
-                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="उत्तर लिहा..." className="h-20" />
+                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="या प्रश्नाचे उत्तर येथे नोंदवा..." className="h-20" />
                     </div>
                   </div>
                 ))
@@ -684,15 +683,15 @@ export default function DairySurvey() {
           </section>
 
           <section className="form-section bg-primary/5">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील (Surveyor Details)</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">सर्वे करणाऱ्याचे नाव</Label>
-                <Input {...form.register("surveyorName")} placeholder="तुमचे नाव" />
+                <Input {...form.register("surveyorName")} placeholder="तुमचे पूर्ण नाव" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">ID नंबर</Label>
-                <Input {...form.register("surveyorId")} placeholder="तुमचा ID" />
+                <Label className="form-label-mr">ID नंबर / कर्मचारी क्रमांक</Label>
+                <Input {...form.register("surveyorId")} placeholder="तुमचा अधिकृत ID" />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">दिनांक</Label>

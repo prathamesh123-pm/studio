@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -56,7 +55,7 @@ export default function SupplierManagement() {
 
   const handleSaveSupplier = () => {
     if (!name || !contact || !shopName) {
-      toast({ variant: "destructive", title: "त्रुटी", description: "नाव, दुकानाचे नाव आणि संपर्क आवश्यक आहे." });
+      toast({ variant: "destructive", title: "त्रुटी", description: "नाव, दुकानाचे नाव आणि संपर्क क्रमांक आवश्यक आहे." });
       return;
     }
 
@@ -102,7 +101,7 @@ export default function SupplierManagement() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("हा पुरवठादार हटवायचा आहे का?")) {
+    if (confirm("हा पुरवठादार कायमचा हटवायचा आहे का?")) {
       deleteSupplier(id);
       loadSuppliers();
       toast({ title: "यशस्वी", description: "पुरवठादार हटवण्यात आला आहे." });
@@ -130,7 +129,7 @@ export default function SupplierManagement() {
         <header className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पुरवठादार व्यवस्थापन (Suppliers)</h1>
-            <p className="text-muted-foreground text-sm md:text-base">तुमच्या संपर्कातील पशुखाद्य पुरवठादारांची यादी येथे जतन करा.</p>
+            <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही पशुखाद्य पुरवठादारांची माहिती जतन करू शकता.</p>
           </div>
           <div className="bg-primary/5 p-3 rounded-full hidden md:block border border-primary/10">
             <Store className="h-8 w-8 text-primary opacity-60" />
@@ -144,7 +143,7 @@ export default function SupplierManagement() {
               <CardHeader className="pb-4 flex flex-row items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <UserPlus className="h-5 w-5 text-primary" /> 
-                  {editingId ? "पुरवठादार संपादित करा" : "नवीन पुरवठादार जोडा"}
+                  {editingId ? "पुरवठादार संपादन करा" : "नवीन पुरवठादार जोडा"}
                 </CardTitle>
                 {editingId && (
                   <Button variant="ghost" size="icon" onClick={resetForm}>
@@ -243,6 +242,7 @@ export default function SupplierManagement() {
                             size="icon" 
                             className="h-8 w-8 text-primary"
                             onClick={() => setViewingSupplier(s)}
+                            title="पहा"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -251,6 +251,7 @@ export default function SupplierManagement() {
                             size="icon" 
                             className="h-8 w-8 text-primary"
                             onClick={() => handleEdit(s)}
+                            title="संपादन करा"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
@@ -259,6 +260,7 @@ export default function SupplierManagement() {
                             size="icon" 
                             className="h-8 w-8 text-destructive"
                             onClick={() => handleDelete(s.id)}
+                            title="हटवा"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

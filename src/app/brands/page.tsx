@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -124,7 +123,7 @@ export default function BrandManagement() {
   };
 
   const handleDeleteBrand = (id: string) => {
-    if (confirm("हा ब्रँड हटवायचा आहे का?")) {
+    if (confirm("हा ब्रँड कायमचा हटवायचा आहे का?")) {
       deleteBrand(id);
       setBrands(getBrands());
       toast({ title: "यशस्वी", description: "ब्रँड हटवण्यात आला आहे." });
@@ -149,7 +148,7 @@ export default function BrandManagement() {
         <header className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पशुखाद्य ब्रँड व्यवस्थापन</h1>
-            <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक जतन करू शकता.</p>
+            <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक व्यवस्थापित करू शकता.</p>
           </div>
           <div className="bg-primary/5 p-3 rounded-full hidden md:block border border-primary/10">
             <CowIcon className="h-10 w-10 text-primary opacity-60" />
@@ -162,7 +161,7 @@ export default function BrandManagement() {
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg">
-                  {editingId ? "ब्रँड संपादित करा" : "नवीन ब्रँड जोडा"}
+                  {editingId ? "ब्रँड संपादन करा" : "नवीन ब्रँड जोडा"}
                 </CardTitle>
                 {editingId && (
                   <Button type="button" variant="ghost" size="icon" onClick={handleCancelEdit}>
@@ -211,7 +210,7 @@ export default function BrandManagement() {
                     onChange={(e) => setAvailableWeights(e.target.value)} 
                     placeholder="उदा. 50, 25, 10" 
                   />
-                  <p className="text-[10px] text-muted-foreground">स्वल्पविराम (,) वापरून अनेक वजन लिहा.</p>
+                  <p className="text-[10px] text-muted-foreground">स्वल्पविराम (,) वापरून अनेक वजने लिहा.</p>
                 </div>
 
                 <div className="pt-4 border-t">
@@ -236,14 +235,14 @@ export default function BrandManagement() {
                   <div className="flex justify-between items-center mb-2">
                     <Label className="text-primary font-bold">घटक (Ingredients)</Label>
                     <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient}>
-                      <Plus className="h-3 w-3 mr-1" /> घटक
+                      <Plus className="h-3 w-3 mr-1" /> घटक जोडा
                     </Button>
                   </div>
                   <div className="space-y-2">
                     {ingredients.map((ing, idx) => (
                       <div key={idx} className="flex gap-2 items-center">
                         <Input 
-                          placeholder="घटक" 
+                          placeholder="घटकाचे नाव" 
                           value={ing.ingredient} 
                           onChange={(e) => handleIngredientChange(idx, "ingredient", e.target.value)}
                           className="h-8 flex-1"
@@ -281,7 +280,7 @@ export default function BrandManagement() {
           <div className="lg:col-span-2">
             <Card className="border-primary/20 shadow-md">
               <CardHeader>
-                <CardTitle className="text-lg">मास्टर ब्रँड लिस्ट</CardTitle>
+                <CardTitle className="text-lg">मास्टर ब्रँड यादी</CardTitle>
               </CardHeader>
               <CardContent>
                 {brands.length === 0 ? (
@@ -297,6 +296,7 @@ export default function BrandManagement() {
                             size="icon" 
                             className="h-8 w-8 text-primary"
                             onClick={() => setViewingBrand(brand)}
+                            title="पहा"
                           >
                             <Eye className="h-4 w-4" />
                           </Button>
@@ -306,6 +306,7 @@ export default function BrandManagement() {
                             size="icon" 
                             className="h-8 w-8 text-primary"
                             onClick={() => handleEditBrand(brand)}
+                            title="संपादन करा"
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
@@ -315,6 +316,7 @@ export default function BrandManagement() {
                             size="icon" 
                             className="h-8 w-8 text-destructive"
                             onClick={() => handleDeleteBrand(brand.id)}
+                            title="हटवा"
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
