@@ -61,12 +61,12 @@ export default function Home() {
                 <div className="p-3 bg-accent/10 rounded-full w-fit mb-2">
                   <Truck className="h-8 w-8 text-accent" />
                 </div>
-                <CardTitle className="font-headline text-xl">गवळी/चिलिंग सेंटर सर्वेक्षण</CardTitle>
+                <CardTitle className="font-headline text-xl">शेतकरी ब्रँड सर्वेक्षण</CardTitle>
                 <CardDescription>पशुखाद्य वितरण व वापर सर्वे प्रश्नावली</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  गवळी आणि चिलिंग सेंटर्सकडून पशुखाद्य पुरवठा व गुणवत्तेबद्दल माहिती घ्या.
+                  शेतकऱ्यांकडून पशुखाद्य पुरवठा, ब्रँड निवड आणि गुणवत्तेबद्दल माहिती घ्या.
                 </p>
                 <Link href="/survey/farmer">
                   <Button className="w-full bg-accent hover:bg-accent/90 shadow-sm">सर्वेक्षण सुरू करा</Button>
