@@ -3,7 +3,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Navbar } from "@/components/layout/Navbar";
@@ -15,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSurveyStore } from "@/lib/survey-store";
-import { Save, Printer, ArrowLeft, Star, MapPin, Loader2 } from "lucide-react";
+import { Save, Printer, ArrowLeft, Star, MapPin, Loader2, PlusCircle, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -88,6 +88,12 @@ const farmerSchema = z.object({
   switchIfCheaper: z.string().optional(),
   idealFeedQualities: z.string(),
 
+  // 11. अतिरिक्त प्रश्न
+  customQuestions: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })).default([]),
+
   // Surveyor Details
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -110,10 +116,16 @@ export default function FarmerSurvey() {
       selectionReason: [],
       switchReason: [],
       problems: [],
+      customQuestions: [],
       packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "" },
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
     }
+  });
+
+  const { fields: customFields, append: appendCustom, remove: removeCustom } = useFieldArray({
+    control: form.control,
+    name: "customQuestions",
   });
 
   const handleGetLocation = () => {
@@ -167,7 +179,6 @@ export default function FarmerSurvey() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Location Section */}
           <section className="form-section bg-accent/5">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center gap-2">
               <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (Location Tagging)
@@ -191,7 +202,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 1: Farmer Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">१. शेतकरी माहिती</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -232,7 +242,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 2: Feed Usage */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">२. कॅटल फीड वापर माहिती</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -282,7 +291,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 3: Brand Choice Reason */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">३. ब्रँड निवड कारण</h3>
             <div className="space-y-4">
@@ -316,7 +324,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 4: Quality & Results */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">४. गुणवत्ता व परिणाम</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -359,7 +366,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 5: Price & Purchase */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">५. किंमत व खरेदी</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -394,7 +400,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 6: Brand Comparison */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">६. ब्रँड तुलना</h3>
             <div className="space-y-4">
@@ -427,7 +432,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 7: Availability & Service */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">७. उपलब्धता व सेवा</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -455,7 +459,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 8: Nutrition Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">८. घटक माहिती</h3>
             <div className="space-y-4">
@@ -492,7 +495,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 9: Rating */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">९. समाधान रेटिंग</h3>
             <div className="flex items-center gap-4">
@@ -513,7 +515,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 10: Problems & Feedback */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">१०. समस्या व सूचना</h3>
             <div className="space-y-6">
@@ -553,7 +554,48 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Final Section: Surveyor Details */}
+          {/* Section 11: Custom Questions */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center justify-between">
+              ११. अतिरिक्त प्रश्न (Custom Questions)
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                onClick={() => appendCustom({ question: "", answer: "" })}
+                className="gap-2 text-accent border-accent hover:bg-accent/10"
+              >
+                <PlusCircle className="h-4 w-4" /> नवीन प्रश्न जोडा
+              </Button>
+            </h3>
+            <div className="space-y-4">
+              {customFields.length === 0 ? (
+                <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या आवडीचे अतिरिक्त प्रश्न जोडू शकता.</p>
+              ) : (
+                customFields.map((field, index) => (
+                  <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-2 right-2 text-destructive"
+                      onClick={() => removeCustom(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                    <div className="space-y-2 pr-8">
+                      <Label className="text-xs">प्रश्न {index + 1}</Label>
+                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="तुमचा प्रश्न लिहा..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">उत्तर</Label>
+                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="उत्तर लिहा..." className="h-20" />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
           <section className="form-section bg-accent/5">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">सर्वेक्षक तपशील</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

@@ -55,7 +55,7 @@ export default function SurveysList() {
   }, []);
 
   const handleDelete = (id: string) => {
-    if (confirm("तुम्हाला खात्री आहे की तुम्ही हा रिपोर्ट हटवू इच्छिता?")) {
+    if (confirm("तुमच्या खात्रीने तुम्ही हा रिपोर्ट हटवू इच्छिता?")) {
       deleteSurvey(id);
       loadSurveys();
       toast({ title: "यशस्वी", description: "रिपोर्ट हटवण्यात आला आहे." });
@@ -105,7 +105,6 @@ export default function SurveysList() {
 
     return (
       <div className="space-y-3 py-2 print:space-y-1">
-        {/* १. सामान्य माहिती */}
         <section>
           <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>१. सामान्य माहिती</h4>
           <Table className="border rounded-sm">
@@ -124,7 +123,6 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* २. पशुधन माहिती */}
         <section>
           <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>२. पशुधन माहिती</h4>
           <Table className="border rounded-sm">
@@ -144,7 +142,6 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* ३. पशुखाद्य वापर */}
         <section>
           <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>३. पशुखाद्य वापर माहिती</h4>
           <Table className="border rounded-sm">
@@ -158,7 +155,6 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* ४. ब्रँड व पोषण माहिती */}
         {isDairy && d.brandsInfo && d.brandsInfo.length > 0 ? (
           <section>
             <h4 className="text-[11px] font-bold text-primary mb-1 border-b pb-0.5">४. ब्रँड व पोषण माहिती</h4>
@@ -201,7 +197,6 @@ export default function SurveysList() {
           </section>
         ) : null}
 
-        {/* ५-६. खरेदी, पुरवठा & खर्च */}
         <section>
           <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>५-७. खरेदी, पुरवठा व खर्च</h4>
           <Table className="border rounded-sm">
@@ -225,32 +220,19 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* ८-१०. गुणवत्ता, साठवण & समस्या */}
-        <section>
-          <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>८-१०. विश्लेषण, साठवण व समस्या</h4>
-          <Table className="border rounded-sm">
-            <TableBody>
-              {isDairy ? (
-                <>
-                  <DataRow label="समाधान / सर्वात चांगला ब्रँड" value={`${d.satisfaction || '-'} / ${d.bestBrand || '-'}`} />
-                  <DataRow label="साठवण क्षमता / सुविधा" value={`${d.warehouseCapacity || '-'} / ${d.hasStorage === 'Yes' ? 'आहे' : 'नाही'}`} />
-                  <DataRow label="मुख्य समस्या" value={d.mainProblem} />
-                  {d.otherProblem && <DataRow label="इतर समस्या" value={d.otherProblem} />}
-                  <DataRow label="सॅम्पल ट्रायल / मत" value={`${d.sampleTrial === 'Yes' ? 'होय' : 'नाही'} / ${d.goodFeedOpinion || '-'}`} />
-                </>
-              ) : (
-                <>
-                  <DataRow label="उपलब्धता / प्रतिनिधी भेट" value={`${d.easyAvailability === 'Yes' ? 'होय' : 'नाही'} / ${d.repVisit === 'Yes' ? 'होय' : 'नाही'}`} />
-                  <DataRow label="समाधान रेटिंग" value={`${d.rating} / 5`} />
-                  <DataRow label="समस्या" value={d.problems} />
-                  <DataRow label="सुधारणा / मत" value={`${d.improvements || '-'} / ${d.idealFeedQualities || '-'}`} />
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </section>
+        {d.customQuestions && d.customQuestions.length > 0 && (
+          <section>
+            <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>११. अतिरिक्त प्रश्नोत्तरे</h4>
+            <Table className="border rounded-sm">
+              <TableBody>
+                {d.customQuestions.map((cq: any, idx: number) => (
+                  <DataRow key={idx} label={cq.question} value={cq.answer} />
+                ))}
+              </TableBody>
+            </Table>
+          </section>
+        )}
 
-        {/* सर्वेक्षक तपशील */}
         <section className="bg-muted/30 p-1.5 rounded-sm border border-dashed print:mt-2">
           <div className="grid grid-cols-3 text-[9px] gap-2">
             <div><span className="font-bold">सर्वेक्षक:</span> {survey.surveyorName}</div>
@@ -295,7 +277,6 @@ export default function SurveysList() {
             >
               <Eye className="h-3.5 w-3.5" /> View
             </Button>
-
             <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(survey.id)}>
               <Trash2 className="h-3.5 w-3.5" /> Delete
             </Button>
@@ -363,7 +344,6 @@ export default function SurveysList() {
           </TabsContent>
         </Tabs>
 
-        {/* Detailed Report Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-[95vw] md:max-w-2xl max-h-[95vh] overflow-y-auto p-4">
             <DialogHeader className="mb-2">
@@ -381,7 +361,6 @@ export default function SurveysList() {
           </DialogContent>
         </Dialog>
 
-        {/* Print view only - A4 Optimized */}
         <div className="hidden print:block text-black bg-white">
           <style dangerouslySetInnerHTML={{ __html: `
             @page { size: A4; margin: 10mm; }

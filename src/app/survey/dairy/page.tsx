@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2 } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
@@ -64,7 +64,7 @@ const dairySchema = z.object({
   supplements: z.array(z.string()).default([]),
   otherSupplement: z.string().optional(),
 
-  // 4. ब्रँड व पोषण माहिती (Consolidated Table)
+  // 4. ब्रँड व पोषण माहिती
   brandsInfo: z.array(z.object({
     name: z.string(),
     feedType: z.string(),
@@ -109,6 +109,12 @@ const dairySchema = z.object({
   sampleTrial: z.string().optional(),
   goodFeedOpinion: z.string().optional(),
 
+  // 11. अतिरिक्त प्रश्न
+  customQuestions: z.array(z.object({
+    question: z.string(),
+    answer: z.string(),
+  })).default([]),
+
   // Surveyor Details
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -132,6 +138,7 @@ export default function DairySurvey() {
       district: "",
       taluka: "",
       brandsInfo: [],
+      customQuestions: [],
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
     }
@@ -140,6 +147,11 @@ export default function DairySurvey() {
   const { fields: brandFields, append: appendBrand, remove: removeBrand } = useFieldArray({
     control: form.control,
     name: "brandsInfo",
+  });
+
+  const { fields: customFields, append: appendCustom, remove: removeCustom } = useFieldArray({
+    control: form.control,
+    name: "customQuestions",
   });
 
   useEffect(() => {
@@ -174,7 +186,6 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // Append to Brands Table
     appendBrand({
       name: selected.name,
       feedType: selected.feedType,
@@ -231,7 +242,6 @@ export default function DairySurvey() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Location Section */}
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center gap-2">
               <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (Location Tagging)
@@ -255,7 +265,6 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Section 1: General Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य माहिती</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -302,7 +311,6 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Section 2: Livestock */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती</h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
@@ -335,7 +343,6 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Section 3: Feed Usage */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">३. पशुखाद्य वापर माहिती</h3>
             <div className="space-y-6">
@@ -409,7 +416,6 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Section 4: Consolidated Brand & Nutrition Table */}
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
               <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (Quick Fill)</h3>
@@ -485,7 +491,6 @@ export default function DairySurvey() {
             </Table>
           </section>
 
-          {/* Sections 5 & 6: Purchase & Supply */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. खरेदी पद्धत</h3>
@@ -544,7 +549,6 @@ export default function DairySurvey() {
             </section>
           </div>
 
-          {/* Sections 7 & 8: Cost & Quality */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७. खर्च माहिती</h3>
@@ -596,7 +600,6 @@ export default function DairySurvey() {
             </section>
           </div>
 
-          {/* Sections 9 & 10: Storage & Problems */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. साठवण सुविधा</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -661,7 +664,48 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Final Section: Surveyor Details */}
+          {/* Section 11: Custom Questions */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center justify-between">
+              ११. अतिरिक्त प्रश्न (Custom Questions)
+              <Button 
+                type="button" 
+                variant="outline" 
+                size="sm" 
+                onClick={() => appendCustom({ question: "", answer: "" })}
+                className="gap-2"
+              >
+                <PlusCircle className="h-4 w-4" /> नवीन प्रश्न जोडा
+              </Button>
+            </h3>
+            <div className="space-y-4">
+              {customFields.length === 0 ? (
+                <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या आवडीचे अतिरिक्त प्रश्न जोडू शकता.</p>
+              ) : (
+                customFields.map((field, index) => (
+                  <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-2 right-2 text-destructive"
+                      onClick={() => removeCustom(index)}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                    <div className="space-y-2 pr-8">
+                      <Label className="text-xs">प्रश्न {index + 1}</Label>
+                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="तुमचा प्रश्न लिहा..." />
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-xs">उत्तर</Label>
+                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="उत्तर लिहा..." className="h-20" />
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </section>
+
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
