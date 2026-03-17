@@ -389,7 +389,7 @@ export default function FarmerSurvey() {
                 <Input {...form.register("betterBrand")} />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">ब्रँड बदलण्याचे कारण काय असते?</Label>
+                <Label className="form-label-mr">हा ब्रँड वापरण्याचे कारण काय</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {["किंमत", "गुणवत्ता", "उपलब्धता", "दूध उत्पादन"].map((reason) => (
                     <div key={reason} className="flex items-center space-x-2">
