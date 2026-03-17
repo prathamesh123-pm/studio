@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Beaker, Printer } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Beaker, Printer, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -24,6 +24,14 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const CowIcon = ({ className }: { className?: string }) => (
   <svg 
@@ -47,6 +55,7 @@ export default function BrandManagement() {
   const [brands, setBrands] = useState<MasterBrand[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewingBrand, setViewingBrand] = useState<MasterBrand | null>(null);
+  const [showFullReport, setShowFullReport] = useState(false);
   
   const [newBrandName, setNewBrandName] = useState("");
   const [feedType, setFeedType] = useState("Pellet");
@@ -145,18 +154,18 @@ export default function BrandManagement() {
     <div className="min-h-screen bg-background pb-12">
       <Navbar />
       <div className="container mx-auto px-4 py-8 no-print">
-        <header className="mb-8 flex justify-between items-center">
+        <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पशुखाद्य ब्रँड व्यवस्थापन</h1>
             <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक व्यवस्थापित करू शकता.</p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" onClick={() => window.print()} className="gap-2 border-primary text-primary">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" onClick={() => setShowFullReport(true)} className="gap-2 border-primary text-primary">
+              <FileText className="h-4 w-4" /> मास्टर रिपोर्ट पहा
+            </Button>
+            <Button onClick={() => window.print()} className="gap-2 bg-primary">
               <Printer className="h-4 w-4" /> प्रिंट रिपोर्ट
             </Button>
-            <div className="bg-primary/5 p-3 rounded-full hidden md:block border border-primary/10">
-              <CowIcon className="h-10 w-10 text-primary opacity-60" />
-            </div>
           </div>
         </header>
 
@@ -177,7 +186,7 @@ export default function BrandManagement() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>ब्रँड / कंपनीचे नाव</Label>
-                  <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="उदा. गोदरेज गोल्ड" />
+                  <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value || "")} placeholder="उदा. गोदरेज गोल्ड" />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
@@ -200,11 +209,11 @@ export default function BrandManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-1"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
-                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
+                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value || "")} placeholder="उदा. 50" />
                   </div>
                   <div className="space-y-2">
                     <Label className="flex items-center gap-1"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
-                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
+                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value || "")} placeholder="उदा. 1500" />
                   </div>
                 </div>
 
@@ -212,7 +221,7 @@ export default function BrandManagement() {
                   <Label className="flex items-center gap-1"><Layers className="h-3 w-3" /> उपलब्ध पॅकिंग (बॅग वजन किग्रॅ)</Label>
                   <Input 
                     value={availableWeights} 
-                    onChange={(e) => setAvailableWeights(e.target.value)} 
+                    onChange={(e) => setAvailableWeights(e.target.value || "")} 
                     placeholder="उदा. 50, 25, 10" 
                   />
                   <p className="text-[10px] text-muted-foreground">स्वल्पविराम (,) वापरून अनेक वजने लिहा.</p>
@@ -291,7 +300,7 @@ export default function BrandManagement() {
                 {brands.length === 0 ? (
                   <div className="text-center py-10 text-muted-foreground">कोणतेही ब्रँड उपलब्ध नाहीत.</div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {brands.map((brand) => (
                       <div key={brand.id} className="p-4 border rounded-lg bg-muted/20 relative group hover:border-primary/30 transition-colors">
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -350,10 +359,9 @@ export default function BrandManagement() {
                           </div>
                         )}
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-xs">
+                        <div className="grid grid-cols-2 gap-2 mt-4 text-[10px]">
                           <div><span className="font-semibold">प्रोटीन:</span> {brand.nutrition.protein}%</div>
                           <div><span className="font-semibold">फॅट:</span> {brand.nutrition.fat}%</div>
-                          <div><span className="font-semibold">फायबर:</span> {brand.nutrition.fiber}%</div>
                           <div><span className="font-semibold">कॅल्शियम:</span> {brand.nutrition.calcium}%</div>
                         </div>
                       </div>
@@ -367,28 +375,27 @@ export default function BrandManagement() {
       </div>
 
       {/* Printable Master Brand Report */}
-      <div className="hidden print:block p-4 space-y-6 text-black">
-        <div className="text-center border-b pb-4 mb-6">
-          <h1 className="text-2xl font-bold uppercase">मास्टर ब्रँड लिस्ट रिपोर्ट (Cattle Feed Brands)</h1>
-          <p className="text-sm">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+      <div className="hidden print:block p-4 space-y-4 text-black bg-white">
+        <div className="text-center border-b-2 border-black pb-2 mb-4">
+          <h1 className="text-xl font-bold uppercase">मास्टर ब्रँड लिस्ट रिपोर्ट (Cattle Feed Brands)</h1>
+          <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
         </div>
         
-        <div className="grid grid-cols-1 gap-6">
+        <div className="grid grid-cols-1 gap-4">
           {brands.map((brand, index) => (
-            <div key={brand.id} className="border-2 border-black p-4 rounded-md break-inside-avoid">
-              <div className="flex justify-between items-center border-b pb-2 mb-3">
-                <h2 className="text-xl font-bold">{index + 1}. {brand.name}</h2>
-                <div className="text-right">
-                  <p className="font-bold">किंमत: ₹{brand.price} ({brand.bagWeight}kg)</p>
-                  <p className="text-xs uppercase font-bold">प्रकार: {brand.feedType}</p>
+            <div key={brand.id} className="border border-black p-2 rounded-sm break-inside-avoid">
+              <div className="flex justify-between items-center border-b border-black pb-1 mb-2">
+                <h2 className="text-sm font-bold">{index + 1}. {brand.name} ({brand.feedType})</h2>
+                <div className="text-right text-[10px]">
+                  <p className="font-bold">₹{brand.price} ({brand.bagWeight}kg)</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 {/* Nutrition Table */}
                 <div>
-                  <h3 className="text-[10px] font-bold uppercase mb-1 border-b">पोषण मूल्ये (%)</h3>
-                  <table className="w-full text-[10px]">
+                  <h3 className="text-[8px] font-bold uppercase mb-1 border-b border-dashed">पोषण मूल्ये (%)</h3>
+                  <table className="w-full text-[8px] leading-tight">
                     <tbody>
                       <tr><td className="font-bold">प्रोटीन:</td><td>{brand.nutrition.protein}%</td><td className="font-bold">फॅट:</td><td>{brand.nutrition.fat}%</td></tr>
                       <tr><td className="font-bold">फायबर:</td><td>{brand.nutrition.fiber}%</td><td className="font-bold">कॅल्शियम:</td><td>{brand.nutrition.calcium}%</td></tr>
@@ -400,17 +407,17 @@ export default function BrandManagement() {
 
                 {/* Ingredients Table */}
                 <div>
-                  <h3 className="text-[10px] font-bold uppercase mb-1 border-b">घटक (Ingredients)</h3>
-                  <table className="w-full text-[10px]">
+                  <h3 className="text-[8px] font-bold uppercase mb-1 border-b border-dashed">घटक (Ingredients)</h3>
+                  <table className="w-full text-[8px] leading-tight">
                     <thead>
-                      <tr className="border-b">
+                      <tr className="border-b border-dotted">
                         <th className="text-left">घटक</th>
-                        <th className="text-right">टक्केवारी</th>
+                        <th className="text-right">%</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {brand.ingredients?.map((ing, i) => (
-                        <tr key={i} className="border-b border-dashed">
+                      {brand.ingredients?.slice(0, 6).map((ing, i) => (
+                        <tr key={i}>
                           <td>{ing.ingredient}</td>
                           <td className="text-right">{ing.percentage}%</td>
                         </tr>
@@ -420,7 +427,7 @@ export default function BrandManagement() {
                 </div>
               </div>
               
-              <div className="mt-3 pt-2 border-t text-[10px]">
+              <div className="mt-1 pt-1 border-t border-dotted text-[8px]">
                 <span className="font-bold">उपलब्ध पॅकिंग:</span> {brand.availableWeights || brand.bagWeight} kg
               </div>
             </div>
@@ -493,6 +500,52 @@ export default function BrandManagement() {
               )}
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Full Table Master Report Dialog */}
+      <Dialog open={showFullReport} onOpenChange={setShowFullReport}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="flex flex-row items-center justify-between border-b pb-4">
+            <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
+              <FileText className="h-6 w-6" /> संपूर्ण मास्टर ब्रँड रिपोर्ट (Table Format)
+            </DialogTitle>
+            <Button size="sm" onClick={() => window.print()} className="gap-2 mr-6">
+              <Printer className="h-4 w-4" /> प्रिंट
+            </Button>
+          </DialogHeader>
+          <div className="py-4">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-primary/5">
+                  <TableHead className="font-bold">ब्रँड नाव</TableHead>
+                  <TableHead className="font-bold">प्रकार</TableHead>
+                  <TableHead className="font-bold">वजन (किग्रॅ)</TableHead>
+                  <TableHead className="font-bold">किंमत (₹)</TableHead>
+                  <TableHead className="font-bold">प्रोटीन (%)</TableHead>
+                  <TableHead className="font-bold">फॅट (%)</TableHead>
+                  <TableHead className="font-bold">फायबर (%)</TableHead>
+                  <TableHead className="font-bold">कॅल्शियम (%)</TableHead>
+                  <TableHead className="font-bold">मिनरल (%)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {brands.map((b) => (
+                  <TableRow key={b.id}>
+                    <TableCell className="font-bold text-primary">{b.name}</TableCell>
+                    <TableCell><Badge variant="outline">{b.feedType}</Badge></TableCell>
+                    <TableCell>{b.bagWeight}</TableCell>
+                    <TableCell className="font-bold">₹{b.price}</TableCell>
+                    <TableCell>{b.nutrition.protein}%</TableCell>
+                    <TableCell>{b.nutrition.fat}%</TableCell>
+                    <TableCell>{b.nutrition.fiber}%</TableCell>
+                    <TableCell>{b.nutrition.calcium}%</TableCell>
+                    <TableCell>{b.nutrition.mineralMix}%</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
