@@ -15,9 +15,7 @@ import {
   ClipboardList, 
   LayoutDashboard,
   Eye,
-  Pencil,
   Trash2,
-  CheckCircle2
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -127,6 +125,7 @@ export default function SurveysList() {
                   <DataRow label="म्हशी" value={d.livestock?.buffaloes} />
                   <DataRow label="वासरे" value={d.livestock?.calves} />
                   <DataRow label="दूध देणारी" value={d.livestock?.milkingAnimals} />
+                  <DataRow label="सरासरी दूध उत्पादन" value={d.livestock?.avgMilkPerAnimal} />
                 </>
               ) : (
                 <>
@@ -144,11 +143,12 @@ export default function SurveysList() {
           <h4 className={`font-bold mb-2 border-b pb-1 ${isDairy ? 'text-primary' : 'text-accent'}`}>३. पशुखाद्य वापर</h4>
           <Table>
             <TableBody>
-              <DataRow label="खाद्य प्रकार" value={d.feedType || d.currentBrand} />
+              <DataRow label="खाद्य प्रकार" value={d.feedType === 'ReadyMade' ? 'रेडीमेड' : d.feedType === 'HomeMade' ? 'घरगुती' : d.feedType === 'Both' ? 'दोनों' : d.currentBrand} />
               <DataRow label="वापर कालावधी" value={d.usageDuration} />
               <DataRow label="वारंवारता" value={d.feedFrequency || d.frequency} />
               <DataRow label="प्रति जनावर प्रमाण (किलो)" value={d.dailyFeedPerAnimal || d.dailyQtyPerAnimal} />
               <DataRow label="पूरक खाद्य" value={d.supplements || d.otherFeeds} />
+              {d.otherSupplement && <DataRow label="इतर पूरक खाद्य" value={d.otherSupplement} />}
             </TableBody>
           </Table>
         </section>
@@ -165,6 +165,7 @@ export default function SurveysList() {
                     <TableHead className="text-[10px] font-bold">किंमत</TableHead>
                     <TableHead className="text-[10px] font-bold">प्रोटीन</TableHead>
                     <TableHead className="text-[10px] font-bold">फॅट</TableHead>
+                    <TableHead className="text-[10px] font-bold">कॅल्शियम</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -174,11 +175,60 @@ export default function SurveysList() {
                       <TableCell className="text-[10px]">₹{b.price}</TableCell>
                       <TableCell className="text-[10px]">{b.protein}%</TableCell>
                       <TableCell className="text-[10px]">{b.fat}%</TableCell>
+                      <TableCell className="text-[10px]">{b.calcium}%</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
+          </section>
+        )}
+
+        {/* ५ & ६: खरेदी व पुरवठा (फक्त डेअरीसाठी) */}
+        {isDairy && (
+          <section>
+            <h4 className="font-bold text-primary mb-2 border-b pb-1">५ & ६. खरेदी व पुरवठा</h4>
+            <Table>
+              <TableBody>
+                <DataRow label="खरेदी पद्धत" value={d.purchaseMethod === 'Cash' ? 'रोखीने' : d.purchaseMethod === 'Credit' ? `उधारीने (${d.creditDays} दिवस)` : d.purchaseMethod} />
+                <DataRow label="पुरवठा स्त्रोत" value={d.supplySource === 'Other' ? d.otherSupplySource : d.supplySource} />
+                <DataRow label="पुरवठादाराचे नाव" value={d.supplierName} />
+                <DataRow label="पुरवठा वेळेवर मिळतो का" value={d.timelySupply === 'Yes' ? 'होय' : 'नाही'} />
+              </TableBody>
+            </Table>
+          </section>
+        )}
+
+        {/* ७ & ८: खर्च व गुणवत्ता (डेअरी) */}
+        {isDairy && (
+          <section>
+            <h4 className="font-bold text-primary mb-2 border-b pb-1">७ & ८. खर्च व गुणवत्ता</h4>
+            <Table>
+              <TableBody>
+                <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
+                <DataRow label="महिन्याला लागणारी पोती" value={d.monthlyBags} />
+                <DataRow label="खाद्याबद्दल समाधान" value={d.satisfaction} />
+                <DataRow label="दूध उत्पादन वाढले का" value={d.milkIncrease === 'Yes' ? 'होय' : 'नाही'} />
+                <DataRow label="सर्वात चांगला ब्रँड" value={d.bestBrand} />
+              </TableBody>
+            </Table>
+          </section>
+        )}
+
+        {/* ९ & १०: साठवण व समस्या (डेअरी) */}
+        {isDairy && (
+          <section>
+            <h4 className="font-bold text-primary mb-2 border-b pb-1">९ & १०. साठवण व समस्या</h4>
+            <Table>
+              <TableBody>
+                <DataRow label="गोदाम क्षमता (MT)" value={d.warehouseCapacity} />
+                <DataRow label="साठवण सुविधा आहे का" value={d.hasStorage === 'Yes' ? 'होय' : 'नाही'} />
+                <DataRow label="मुख्य समस्या" value={d.mainProblem} />
+                {d.otherProblem && <DataRow label="इतर समस्या" value={d.otherProblem} />}
+                <DataRow label="नवीन सॅम्पल ट्राय करणार का" value={d.sampleTrial === 'Yes' ? 'होय' : 'नाही'} />
+                <DataRow label="चांगल्या खाद्याबद्दल मत" value={d.goodFeedOpinion} />
+              </TableBody>
+            </Table>
           </section>
         )}
 
@@ -212,27 +262,16 @@ export default function SurveysList() {
           </>
         )}
 
-        {/* ९. रेटिंग व समस्या */}
-        <section>
-          <h4 className={`font-bold mb-2 border-b pb-1 ${isDairy ? 'text-primary' : 'text-accent'}`}>समस्या व सूचना</h4>
-          <Table>
-            <TableBody>
-              {!isDairy && <DataRow label="रेटिंग" value={`${d.rating}/5`} />}
-              <DataRow label="मुख्य समस्या" value={isDairy ? d.mainProblem : d.problems} />
-              <DataRow label="सुधारणा" value={d.improvements || d.goodFeedOpinion} />
-              <DataRow label="आदर्श खाद्य गुण" value={d.idealFeedQualities} />
-            </TableBody>
-          </Table>
-        </section>
-
         {/* १०. सर्वेक्षक तपशील */}
         <section className="bg-muted/30 p-3 rounded-lg border border-dashed">
           <h4 className="font-bold mb-2 text-xs uppercase tracking-wider text-muted-foreground">सर्वेक्षक तपशील</h4>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <p><span className="font-semibold">नाव:</span> {survey.surveyorName}</p>
-            <p><span className="font-semibold">ID:</span> {survey.surveyorId}</p>
-            <p><span className="font-semibold">तारीख:</span> {new Date(survey.timestamp).toLocaleDateString('mr-IN')}</p>
-          </div>
+          <Table>
+            <TableBody>
+              <DataRow label="सर्वे करणाऱ्याचे नाव" value={survey.surveyorName} />
+              <DataRow label="ID नंबर" value={survey.surveyorId} />
+              <DataRow label="दिनांक" value={d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')} />
+            </TableBody>
+          </Table>
         </section>
       </div>
     );
@@ -277,9 +316,6 @@ export default function SurveysList() {
                 <div className="flex justify-end gap-2 mt-4 no-print">
                   <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1">
                     <Printer className="h-4 w-4" /> प्रिंट
-                  </Button>
-                  <Button variant="default" size="sm" className="bg-primary" onClick={() => toast({title: "लवकरच येत आहे", description: "Edit सुविधा पुढील अपडेट मध्ये उपलब्ध होईल."})}>
-                    <Pencil className="h-4 w-4" /> Edit
                   </Button>
                 </div>
               </DialogContent>
