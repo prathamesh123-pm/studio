@@ -141,8 +141,8 @@ export default function DairySurvey() {
       supplements: [],
       district: "",
       taluka: "",
-      brandDetails: [{ type: "", company: "", weight: "", price: "", monthlyBags: "" }],
-      ingredientsInfo: [{ brand: "", ingredient: "", percentage: "" }],
+      brandDetails: [{ type: "ReadyMade", company: "", weight: "", price: "", monthlyBags: "" }],
+      ingredientsInfo: [],
       nutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" },
       surveyDate: new Date().toISOString().split('T')[0],
     }
@@ -153,7 +153,7 @@ export default function DairySurvey() {
     name: "brandDetails",
   });
 
-  const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient, replace: replaceIngredients } = useFieldArray({
+  const { fields: ingredientFields, replace: replaceIngredients, append: appendIngredient, remove: removeIngredient } = useFieldArray({
     control: form.control,
     name: "ingredientsInfo",
   });
@@ -166,16 +166,21 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // Set Company Name in the first brand detail row if it's empty
-    const currentBrands = form.getValues("brandDetails");
-    if (currentBrands[0]) {
-      form.setValue(`brandDetails.0.company`, selected.name);
-    }
+    // 1. Set Company Name in the first brand detail row
+    form.setValue(`brandDetails.0.company`, selected.name);
+    form.setValue(`brandDetails.0.type`, "ReadyMade");
 
-    // Set Nutrition
-    form.setValue("nutrition", selected.nutrition);
+    // 2. Set Nutrition values explicitly
+    form.setValue("nutrition.protein", selected.nutrition.protein);
+    form.setValue("nutrition.fat", selected.nutrition.fat);
+    form.setValue("nutrition.fiber", selected.nutrition.fiber);
+    form.setValue("nutrition.calcium", selected.nutrition.calcium);
+    form.setValue("nutrition.phosphorus", selected.nutrition.phosphorus);
+    form.setValue("nutrition.salt", selected.nutrition.salt);
+    form.setValue("nutrition.mineralMix", selected.nutrition.mineralMix);
+    form.setValue("nutrition.others", selected.nutrition.others);
 
-    // Set Ingredients
+    // 3. Replace all ingredients in the table
     const newIngredients = selected.ingredients.map(ing => ({
       brand: selected.name,
       ingredient: ing.ingredient,
@@ -183,7 +188,10 @@ export default function DairySurvey() {
     }));
     replaceIngredients(newIngredients);
 
-    toast({ title: "माहिती भरली गेली", description: `${selected.name} ची पोषण मूल्ये आणि घटक फॉर्ममध्ये आपोआप भरले आहेत.` });
+    toast({ 
+      title: "माहिती यशस्वीरित्या भरली गेली", 
+      description: `${selected.name} ची पोषण मूल्ये आणि सर्व घटक फॉर्ममध्ये आपोआप भरले आहेत.` 
+    });
   };
 
   const onSubmit = async (data: DairyFormValues) => {
@@ -221,6 +229,30 @@ export default function DairySurvey() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Master Brand Quick Select */}
+          <section className="form-section bg-primary/5 border-primary/30">
+            <h3 className="text-lg font-bold mb-4 text-primary flex items-center gap-2">
+              <Search className="h-5 w-5" /> मास्टर ब्रँड मधून निवडा (Quick Fill)
+            </h3>
+            <div className="space-y-2 max-w-sm">
+              <Label className="text-sm">ब्रँड निवडा जेणेकरून घटक आणि पोषण माहिती आपोआप भरली जाईल</Label>
+              <Select onValueChange={handleMasterBrandSelect}>
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="ब्रँड निवडा" />
+                </SelectTrigger>
+                <SelectContent>
+                  {masterBrands.length === 0 ? (
+                    <div className="p-2 text-xs text-muted-foreground">कृपया आधी 'Master Brands' पेजवर ब्रँड ऍड करा.</div>
+                  ) : (
+                    masterBrands.map(b => (
+                      <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </div>
+          </section>
+
           {/* Section 1: General Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य माहिती</h3>
@@ -268,26 +300,6 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Master Brand Quick Select */}
-          <section className="form-section bg-primary/5 border-primary/30">
-            <h3 className="text-lg font-bold mb-4 text-primary flex items-center gap-2">
-              <Search className="h-5 w-5" /> मास्टर ब्रँड मधून निवडा (Quick Fill)
-            </h3>
-            <div className="space-y-2 max-w-sm">
-              <Label className="text-sm">ब्रँड निवडा जेणेकरून घटक आणि पोषण माहिती आपोआप भरली जाईल</Label>
-              <Select onValueChange={handleMasterBrandSelect}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="ब्रँड निवडा" />
-                </SelectTrigger>
-                <SelectContent>
-                  {masterBrands.map(b => (
-                    <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
-
           {/* Section 2: Livestock */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती</h3>
@@ -327,7 +339,11 @@ export default function DairySurvey() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label className="form-label-mr">कोणत्या प्रकारचे खाद्य वापरता?</Label>
-                <RadioGroup onValueChange={(val) => form.setValue("feedType", val as any)} className="flex flex-wrap gap-4">
+                <RadioGroup 
+                  onValueChange={(val) => form.setValue("feedType", val as any)} 
+                  className="flex flex-wrap gap-4"
+                  value={form.watch("feedType")}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="ReadyMade" id="rd1" />
                     <Label htmlFor="rd1">रेडीमेड कॅटल फीड</Label>
@@ -346,7 +362,10 @@ export default function DairySurvey() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="form-label-mr">कॅटल फीड दिवसातून किती वेळा देता?</Label>
-                  <Select onValueChange={(val) => form.setValue("feedFrequency", val)}>
+                  <Select 
+                    onValueChange={(val) => form.setValue("feedFrequency", val)}
+                    value={form.watch("feedFrequency")}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="निवडा" />
                     </SelectTrigger>
@@ -370,6 +389,7 @@ export default function DairySurvey() {
                     <div key={opt.value} className="flex items-center space-x-2">
                       <Checkbox 
                         id={opt.value} 
+                        checked={form.watch("supplements").includes(opt.value)}
                         onCheckedChange={(checked) => {
                           const current = form.getValues("supplements");
                           if (checked) form.setValue("supplements", [...current, opt.value]);
@@ -436,18 +456,26 @@ export default function DairySurvey() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {ingredientFields.map((field, index) => (
-                  <TableRow key={field.id}>
-                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.brand` as const)} /></TableCell>
-                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.ingredient` as const)} /></TableCell>
-                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.percentage` as const)} type="number" /></TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => removeIngredient(index)} disabled={ingredientFields.length <= 1}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
+                {ingredientFields.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center py-4 text-muted-foreground text-xs">
+                      घटक माहिती उपलब्ध नाही. कृपया 'घटक जोडा' बटण दाबा किंवा मास्टर ब्रँड निवडा.
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : (
+                  ingredientFields.map((field, index) => (
+                    <TableRow key={field.id}>
+                      <TableCell><Input {...form.register(`ingredientsInfo.${index}.brand` as const)} /></TableCell>
+                      <TableCell><Input {...form.register(`ingredientsInfo.${index}.ingredient` as const)} /></TableCell>
+                      <TableCell><Input {...form.register(`ingredientsInfo.${index}.percentage` as const)} type="number" /></TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon" onClick={() => removeIngredient(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
             <Button type="button" variant="outline" size="sm" onClick={() => appendIngredient({ brand: "", ingredient: "", percentage: "" })} className="mt-2 gap-2">
@@ -498,7 +526,11 @@ export default function DairySurvey() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७. खरेदी पद्धत</h3>
-              <RadioGroup onValueChange={(v) => form.setValue("purchaseMethod", v)} className="space-y-2">
+              <RadioGroup 
+                onValueChange={(v) => form.setValue("purchaseMethod", v)} 
+                className="space-y-2"
+                value={form.watch("purchaseMethod")}
+              >
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने</Label></div>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने</Label></div>
                 <div className="flex items-center space-x-2 ml-6">
@@ -516,7 +548,10 @@ export default function DairySurvey() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm">कुठून खरेदी करता?</Label>
-                  <Select onValueChange={(v) => form.setValue("supplySource", v)}>
+                  <Select 
+                    onValueChange={(v) => form.setValue("supplySource", v)}
+                    value={form.watch("supplySource")}
+                  >
                     <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
@@ -533,7 +568,11 @@ export default function DairySurvey() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm">पुरवठा वेळेवर मिळतो का?</Label>
-                  <RadioGroup onValueChange={(v) => form.setValue("timelySupply", v as any)} className="flex gap-4">
+                  <RadioGroup 
+                    onValueChange={(v) => form.setValue("timelySupply", v as any)} 
+                    className="flex gap-4"
+                    value={form.watch("timelySupply")}
+                  >
                     <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="ts1" /><Label htmlFor="ts1">होय</Label></div>
                     <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ts2" /><Label htmlFor="ts2">नाही</Label></div>
                   </RadioGroup>
@@ -563,7 +602,10 @@ export default function DairySurvey() {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm">सध्याच्या खाद्याबद्दल समाधान?</Label>
-                  <Select onValueChange={(v) => form.setValue("satisfaction", v)}>
+                  <Select 
+                    onValueChange={(v) => form.setValue("satisfaction", v)}
+                    value={form.watch("satisfaction")}
+                  >
                     <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="VeryGood">खूप चांगले</SelectItem>
@@ -574,7 +616,11 @@ export default function DairySurvey() {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-sm">दूध उत्पादन वाढले का?</Label>
-                  <RadioGroup onValueChange={(v) => form.setValue("milkIncrease", v)} className="flex gap-4">
+                  <RadioGroup 
+                    onValueChange={(v) => form.setValue("milkIncrease", v)} 
+                    className="flex gap-4"
+                    value={form.watch("milkIncrease")}
+                  >
                     <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="mi1" /><Label htmlFor="mi1">होय</Label></div>
                     <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="mi2" /><Label htmlFor="mi2">नाही</Label></div>
                   </RadioGroup>
@@ -597,7 +643,11 @@ export default function DairySurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="text-sm">साठवण सुविधा उपलब्ध आहे का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("hasStorage", v)} className="flex gap-4">
+                <RadioGroup 
+                  onValueChange={(v) => form.setValue("hasStorage", v)} 
+                  className="flex gap-4"
+                  value={form.watch("hasStorage")}
+                >
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="hs1" /><Label htmlFor="hs1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="hs2" /><Label htmlFor="hs2">नाही</Label></div>
                 </RadioGroup>
@@ -615,9 +665,11 @@ export default function DairySurvey() {
                     <div key={p} className="flex items-center space-x-2">
                       <Checkbox 
                         id={p} 
+                        checked={(form.watch("mainProblem") || "").includes(p)}
                         onCheckedChange={(checked) => {
                           const current = form.getValues("mainProblem") || "";
                           if (checked) form.setValue("mainProblem", current ? `${current}, ${p}` : p);
+                          else form.setValue("mainProblem", current.split(", ").filter(v => v !== p).join(", "));
                         }}
                       />
                       <Label htmlFor={p}>{p}</Label>
@@ -629,7 +681,11 @@ export default function DairySurvey() {
 
               <div className="space-y-2">
                 <Label className="text-sm">नवीन सॅम्पल मिळाले तर वापरून पाहाल का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("sampleTrial", v)} className="flex gap-4">
+                <RadioGroup 
+                  onValueChange={(v) => form.setValue("sampleTrial", v)} 
+                  className="flex gap-4"
+                  value={form.watch("sampleTrial")}
+                >
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="st1" /><Label htmlFor="st1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="st2" /><Label htmlFor="st2">नाही</Label></div>
                 </RadioGroup>
