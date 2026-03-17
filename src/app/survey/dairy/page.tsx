@@ -234,30 +234,6 @@ export default function DairySurvey() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Master Brand Quick Select */}
-          <section className="form-section bg-primary/5 border-primary/30">
-            <h3 className="text-lg font-bold mb-4 text-primary flex items-center gap-2">
-              <Search className="h-5 w-5" /> मास्टर ब्रँड मधून निवडा (Quick Fill)
-            </h3>
-            <div className="space-y-2 max-w-sm">
-              <Label className="text-sm">ब्रँड निवडा जेणेकरून घटक आणि पोषण माहिती आपोआप भरली जाईल</Label>
-              <Select onValueChange={handleMasterBrandSelect}>
-                <SelectTrigger className="bg-white">
-                  <SelectValue placeholder="ब्रँड निवडा" />
-                </SelectTrigger>
-                <SelectContent>
-                  {masterBrands.length === 0 ? (
-                    <div className="p-2 text-xs text-muted-foreground">कृपया आधी 'Master Brands' पेजवर ब्रँड ऍड करा.</div>
-                  ) : (
-                    masterBrands.map(b => (
-                      <SelectItem key={b.id} value={b.id}>{b.name} ({b.bagWeight}kg)</SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-            </div>
-          </section>
-
           {/* Section 1: General Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य माहिती</h3>
@@ -450,7 +426,30 @@ export default function DairySurvey() {
 
           {/* Section 5: Ingredients Table */}
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. ब्रँडमधील घटक (Ingredients) माहिती</h3>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
+              <h3 className="text-lg font-bold text-primary">५. ब्रँडमधील घटक (Ingredients) माहिती</h3>
+              <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
+                <Search className="h-4 w-4 text-primary" />
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-primary uppercase">मास्टर ब्रँड निवडा (Quick Fill)</span>
+                  <Select onValueChange={handleMasterBrandSelect}>
+                    <SelectTrigger className="h-8 bg-white w-[200px] text-xs">
+                      <SelectValue placeholder="ब्रँड निवडा" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {masterBrands.length === 0 ? (
+                        <div className="p-2 text-xs text-muted-foreground">प्रथम ब्रँड जतन करा</div>
+                      ) : (
+                        masterBrands.map(b => (
+                          <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            
             <Table>
               <TableHeader>
                 <TableRow>
@@ -464,7 +463,7 @@ export default function DairySurvey() {
                 {ingredientFields.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center py-4 text-muted-foreground text-xs">
-                      घटक माहिती उपलब्ध नाही. कृपया 'घटक जोडा' बटण दाबा किंवा मास्टर ब्रँड निवडा.
+                      घटक माहिती उपलब्ध नाही. वरून मास्टर ब्रँड निवडा.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -483,9 +482,6 @@ export default function DairySurvey() {
                 )}
               </TableBody>
             </Table>
-            <Button type="button" variant="outline" size="sm" onClick={() => appendIngredient({ brand: "", ingredient: "", percentage: "" })} className="mt-2 gap-2">
-              <Plus className="h-4 w-4" /> घटक जोडा
-            </Button>
           </section>
 
           {/* Section 6: Nutrition */}
