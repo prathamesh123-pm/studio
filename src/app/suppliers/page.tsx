@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,7 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Printer, FileText, PlusCircle } from "lucide-react";
+import { useBrandStore, MasterBrand } from "@/lib/brand-store";
+import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Printer, FileText, PlusCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -36,7 +38,9 @@ import {
 
 export default function SupplierManagement() {
   const { getSuppliers, addSupplier, updateSupplier, deleteSupplier } = useSupplierStore();
+  const { getBrands } = useBrandStore();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewingSupplier, setViewingSupplier] = useState<Supplier | null>(null);
   const [showFullReport, setShowFullReport] = useState(false);
@@ -50,16 +54,26 @@ export default function SupplierManagement() {
   const [address, setAddress] = useState("");
   const [supplierType, setSupplierType] = useState<'Retailer' | 'Wholesaler' | 'Distributor'>('Retailer');
   const [mainBrands, setMainBrands] = useState("");
+  const [suppliedBrands, setSuppliedBrands] = useState<string[]>([]);
   const [providesDelivery, setProvidesDelivery] = useState(false);
   const [providesCredit, setProvidesCredit] = useState(false);
   const [customPoints, setCustomPoints] = useState<Array<{ point: string, value: string }>>([]);
 
   useEffect(() => {
-    loadSuppliers();
+    loadData();
   }, []);
 
-  const loadSuppliers = () => {
+  const loadData = () => {
     setSuppliers(getSuppliers());
+    setMasterBrands(getBrands());
+  };
+
+  const handleBrandToggle = (brandName: string) => {
+    setSuppliedBrands(prev => 
+      prev.includes(brandName) 
+        ? prev.filter(b => b !== brandName) 
+        : [...prev, brandName]
+    );
   };
 
   const handleAddPoint = () => {
@@ -91,6 +105,7 @@ export default function SupplierManagement() {
       address,
       supplierType,
       mainBrands,
+      suppliedBrands,
       providesDelivery,
       providesCredit,
       customPoints
@@ -104,7 +119,7 @@ export default function SupplierManagement() {
       toast({ title: "यशस्वी", description: "पुरवठादाराची माहिती जतन झाली!" });
     }
 
-    loadSuppliers();
+    loadData();
     resetForm();
     setEditingId(null);
   };
@@ -119,6 +134,7 @@ export default function SupplierManagement() {
     setAddress(s.address || "");
     setSupplierType(s.supplierType || 'Retailer');
     setMainBrands(s.mainBrands || "");
+    setSuppliedBrands(s.suppliedBrands || []);
     setProvidesDelivery(s.providesDelivery || false);
     setProvidesCredit(s.providesCredit || false);
     setCustomPoints(s.customPoints || []);
@@ -128,7 +144,7 @@ export default function SupplierManagement() {
   const handleDelete = (id: string) => {
     if (confirm("हा पुरवठादार कायमचा हटवायचा आहे का?")) {
       deleteSupplier(id);
-      loadSuppliers();
+      loadData();
       toast({ title: "यशस्वी", description: "पुरवठादार हटवण्यात आला आहे." });
     }
   };
@@ -142,6 +158,7 @@ export default function SupplierManagement() {
     setAddress("");
     setSupplierType('Retailer');
     setMainBrands("");
+    setSuppliedBrands([]);
     setProvidesDelivery(false);
     setProvidesCredit(false);
     setCustomPoints([]);
@@ -152,7 +169,7 @@ export default function SupplierManagement() {
     <TableRow className="hover:bg-transparent border-b">
       <TableHead className="w-[45%] font-bold bg-muted/5 py-1 px-2 text-[10px] md:text-xs h-auto border-r leading-tight">{label}</TableHead>
       <TableCell className="py-1 px-2 text-[10px] md:text-xs h-auto leading-tight">
-        {typeof value === 'boolean' ? (value ? 'होय' : 'नाही') : (value || '-')}
+        {typeof value === 'boolean' ? (value ? 'होय' : 'नाही') : (Array.isArray(value) ? value.join(", ") : (value || '-'))}
       </TableCell>
     </TableRow>
   );
@@ -186,7 +203,8 @@ export default function SupplierManagement() {
         <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">३. व्यवसाय तपशील</h4>
         <Table className="border rounded-sm">
           <TableBody>
-            <SupplierDataRow label="मुख्य ब्रँड्स" value={supplier.mainBrands} />
+            <SupplierDataRow label="उपलब्ध ब्रँड्स" value={supplier.suppliedBrands} />
+            <SupplierDataRow label="इतर ब्रँड्स" value={supplier.mainBrands} />
             <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery} />
             <SupplierDataRow label="उधारी सुविधा" value={supplier.providesCredit} />
           </TableBody>
@@ -269,9 +287,29 @@ export default function SupplierManagement() {
                   </div>
                 </div>
 
+                <div className="pt-2 border-t">
+                  <Label className="text-xs font-bold text-primary mb-2 block">पुरवठा करत असलेले ब्रँड्स (मास्टर लिस्ट मधून निवडा)</Label>
+                  <div className="grid grid-cols-2 gap-2 max-h-[150px] overflow-y-auto p-2 border rounded-md bg-muted/5">
+                    {masterBrands.length === 0 ? (
+                      <p className="text-[10px] text-muted-foreground col-span-2">मास्टर ब्रँड लिस्टमध्ये ब्रँड्स जोडा.</p>
+                    ) : (
+                      masterBrands.map(b => (
+                        <div key={b.id} className="flex items-center space-x-2">
+                          <Checkbox 
+                            id={`brand-${b.id}`} 
+                            checked={suppliedBrands.includes(b.name)}
+                            onCheckedChange={() => handleBrandToggle(b.name)}
+                          />
+                          <Label htmlFor={`brand-${b.id}`} className="text-[10px] truncate">{b.name}</Label>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+
                 <div className="space-y-2">
-                  <Label className="text-xs">मुख्य ब्रँड्स</Label>
-                  <Input value={mainBrands} onChange={(e) => setMainBrands(e.target.value)} placeholder="उदा. गोदरेज, कपिला" />
+                  <Label className="text-xs">इतर ब्रँड्स (असल्यास)</Label>
+                  <Input value={mainBrands} onChange={(e) => setMainBrands(e.target.value)} placeholder="स्वल्पविराम देऊन लिहा" />
                 </div>
                 
                 <LocationSelector 
@@ -360,6 +398,12 @@ export default function SupplierManagement() {
                         </div>
                         <h3 className="font-bold text-base text-primary leading-tight pr-12">{s.shopName}</h3>
                         <p className="text-xs font-medium text-muted-foreground mt-1">{s.name} ({s.supplierType})</p>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {s.suppliedBrands?.slice(0, 3).map((b, i) => (
+                            <Badge key={i} variant="secondary" className="text-[8px] h-4 px-1">{b}</Badge>
+                          ))}
+                          {s.suppliedBrands?.length > 3 && <span className="text-[8px] text-muted-foreground">+{s.suppliedBrands.length - 3} अधिक</span>}
+                        </div>
                         <div className="mt-4 pt-3 border-t flex flex-col gap-1.5">
                           <div className="flex items-center gap-2 text-xs font-bold"><Phone className="h-3.5 w-3.5 text-primary" /> {s.contact}</div>
                           <div className="flex items-center gap-2 text-[10px] text-muted-foreground"><MapPin className="h-3.5 w-3.5 text-primary" /> {s.taluka}, {s.district}</div>

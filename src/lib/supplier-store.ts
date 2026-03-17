@@ -9,6 +9,7 @@ export interface Supplier {
   address: string;
   supplierType: 'Retailer' | 'Wholesaler' | 'Distributor';
   mainBrands: string;
+  suppliedBrands: string[]; // Added to store IDs or names of brands from master list
   providesDelivery: boolean;
   providesCredit: boolean;
   timestamp: string;
