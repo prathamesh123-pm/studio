@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Beaker } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -17,6 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 const CowIcon = ({ className }: { className?: string }) => (
   <svg 
@@ -39,6 +47,7 @@ export default function BrandManagement() {
   const { getBrands, addBrand, updateBrand, deleteBrand } = useBrandStore();
   const [brands, setBrands] = useState<MasterBrand[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [viewingBrand, setViewingBrand] = useState<MasterBrand | null>(null);
   
   const [newBrandName, setNewBrandName] = useState("");
   const [feedType, setFeedType] = useState("Pellet");
@@ -286,7 +295,15 @@ export default function BrandManagement() {
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="text-primary"
+                            className="h-8 w-8 text-primary"
+                            onClick={() => setViewingBrand(brand)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 text-primary"
                             onClick={() => handleEditBrand(brand)}
                           >
                             <Edit2 className="h-4 w-4" />
@@ -294,7 +311,7 @@ export default function BrandManagement() {
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="text-destructive"
+                            className="h-8 w-8 text-destructive"
                             onClick={() => handleDeleteBrand(brand.id)}
                           >
                             <Trash2 className="h-4 w-4" />
@@ -330,16 +347,6 @@ export default function BrandManagement() {
                           <div><span className="font-semibold">फायबर:</span> {brand.nutrition.fiber}%</div>
                           <div><span className="font-semibold">कॅल्शियम:</span> {brand.nutrition.calcium}%</div>
                         </div>
-                        <div className="mt-3">
-                          <p className="text-xs font-semibold mb-1">घटक:</p>
-                          <div className="flex flex-wrap gap-2">
-                            {brand.ingredients.map((ing, i) => (
-                              <span key={i} className="bg-white px-2 py-0.5 rounded border text-[10px] shadow-sm">
-                                {ing.ingredient} ({ing.percentage}%)
-                              </span>
-                            ))}
-                          </div>
-                        </div>
                       </div>
                     ))}
                   </div>
@@ -349,6 +356,74 @@ export default function BrandManagement() {
           </div>
         </div>
       </div>
+
+      {/* View Brand Details Dialog */}
+      <Dialog open={!!viewingBrand} onOpenChange={(open) => !open && setViewingBrand(null)}>
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-primary font-headline">
+              <Package className="h-5 w-5" /> ब्रँडची सविस्तर माहिती
+            </DialogTitle>
+          </DialogHeader>
+          {viewingBrand && (
+            <div className="space-y-6 py-4">
+              <div className="flex justify-between items-start">
+                <div>
+                  <h2 className="text-2xl font-bold text-primary">{viewingBrand.name}</h2>
+                  <Badge variant="secondary" className="mt-1">{viewingBrand.feedType}</Badge>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-accent">₹{viewingBrand.price}</p>
+                  <p className="text-xs text-muted-foreground">बेस किंमत ({viewingBrand.bagWeight}kg)</p>
+                </div>
+              </div>
+
+              {viewingBrand.availableWeights && (
+                <div>
+                  <Label className="text-muted-foreground text-[10px] uppercase font-bold tracking-wider">उपलब्ध पॅकिंग साइजेस</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {viewingBrand.availableWeights.split(',').map((w, i) => (
+                      <Badge key={i} variant="outline" className="bg-primary/5 border-primary/20">{w.trim()} kg</Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <Separator />
+
+              <div>
+                <Label className="text-primary font-bold flex items-center gap-2 mb-3">
+                  <Beaker className="h-4 w-4" /> पोषण मूल्ये (Nutrition Values)
+                </Label>
+                <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                  {Object.entries(viewingBrand.nutrition).map(([key, value]) => (
+                    <div key={key} className="flex justify-between border-b border-dashed pb-1">
+                      <span className="capitalize text-muted-foreground">{key === 'mineralMix' ? 'Mineral Mix' : key}:</span>
+                      <span className="font-bold">{value || '0'}%</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {viewingBrand.ingredients && viewingBrand.ingredients.length > 0 && (
+                <div>
+                  <Label className="text-primary font-bold flex items-center gap-2 mb-3">
+                    <Layers className="h-4 w-4" /> मुख्य घटक (Ingredients)
+                  </Label>
+                  <div className="space-y-2">
+                    {viewingBrand.ingredients.map((ing, i) => (
+                      <div key={i} className="flex justify-between items-center bg-muted/30 p-2 rounded-md text-sm">
+                        <span className="font-medium">{ing.ingredient}</span>
+                        <Badge variant="secondary" className="bg-white">{ing.percentage}%</Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
