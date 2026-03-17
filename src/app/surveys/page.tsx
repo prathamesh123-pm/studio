@@ -78,9 +78,11 @@ export default function SurveysList() {
     
     if (value === 'Yes') displayValue = 'होय';
     if (value === 'No') displayValue = 'नाही';
-    if (value === 'ReadyMade') displayValue = 'रेडीमेड कॅटल फीड';
+    if (value === 'ReadyMade') displayValue = 'रेडीमेड पशुखाद्य';
     if (value === 'HomeMade') displayValue = 'घरगुती मिश्रण';
     if (value === 'Both') displayValue = 'दोन्ही (रेडीमेड व घरगुती)';
+    if (value === 'DryFodder') displayValue = 'सुका चारा';
+    if (value === 'GreenFodder') displayValue = 'हिरवा चारा';
 
     return (
       <TableRow className="hover:bg-transparent border-b">
@@ -108,7 +110,7 @@ export default function SurveysList() {
           <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>१. सामान्य माहिती</h4>
           <Table className="border rounded-sm">
             <TableBody>
-              <DataRow label={isDairy ? "मिल्किंग सेंटर / डेअरीचे नाव" : "शेतकऱ्याचे नाव"} value={isDairy ? d.dairyName : d.farmerName} />
+              <DataRow label={isDairy ? "दूध संकलन केंद्र / डेअरीचे नाव" : "शेतकऱ्याचे नाव"} value={isDairy ? d.dairyName : d.farmerName} />
               <DataRow label={isDairy ? "मालकाचे नाव" : "मोबाईल नंबर"} value={isDairy ? d.ownerName : d.mobile} />
               {isDairy && <DataRow label="संपर्क क्रमांक" value={d.contact} />}
               <DataRow label="गाव / तालुका / जिल्हा" value={`${d.village || '-'}, ${d.taluka || '-'}, ${d.district || '-'}`} />
@@ -260,7 +262,7 @@ export default function SurveysList() {
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {survey.data.village}, {survey.data.taluka}</span>
                 <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
                 <Badge variant={survey.type === 'dairy' ? 'default' : 'secondary'} className={`${survey.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
-                  {survey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'}
+                  {survey.type === 'dairy' ? 'दूध संकलन केंद्र' : 'शेतकरी ब्रँड'}
                 </Badge>
               </div>
             </div>
@@ -312,7 +314,7 @@ export default function SurveysList() {
               <LayoutDashboard className="h-3.5 w-3.5 hidden sm:inline" /> सर्व
             </TabsTrigger>
             <TabsTrigger value="dairy" className="text-xs gap-1.5">
-              <FileText className="h-3.5 w-3.5 hidden sm:inline" /> चिलिंग सेंटर
+              <FileText className="h-3.5 w-3.5 hidden sm:inline" /> संकलन केंद्र
             </TabsTrigger>
             <TabsTrigger value="farmer" className="text-xs gap-1.5">
               <ClipboardList className="h-3.5 w-3.5 hidden sm:inline" /> शेतकरी ब्रँड
@@ -329,7 +331,7 @@ export default function SurveysList() {
 
           <TabsContent value="dairy">
             {filterSurveys('dairy').length === 0 ? (
-              <EmptyState message="गवळी/चिलिंग सेंटर रिपोर्ट उपलब्ध नाहीत." />
+              <EmptyState message="दूध संकलन केंद्र रिपोर्ट उपलब्ध नाहीत." />
             ) : (
               filterSurveys('dairy').map(survey => <SurveyItem key={survey.id} survey={survey} />)
             )}
@@ -371,7 +373,7 @@ export default function SurveysList() {
               <div className="border p-3 rounded-sm mb-4 break-inside-avoid">
                 <div className="text-center border-b pb-1 mb-2">
                   <h2 className="text-lg font-bold">पशुखाद्य सर्वेक्षण रिपोर्ट</h2>
-                  <p className="text-[10px]">{selectedSurvey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'} सर्वेक्षण</p>
+                  <p className="text-[10px]">{selectedSurvey.type === 'dairy' ? 'दूध संकलन केंद्र' : 'शेतकरी ब्रँड'} सर्वेक्षण</p>
                 </div>
                 {renderDetailedReport(selectedSurvey)}
               </div>
@@ -380,7 +382,7 @@ export default function SurveysList() {
                 <div key={survey.id} className="border p-3 rounded-sm mb-4 break-inside-avoid">
                   <div className="text-center border-b pb-1 mb-2 bg-muted/5">
                     <h2 className="text-md font-bold">पशुखाद्य सर्वेक्षण रिपोर्ट</h2>
-                    <p className="text-[9px]">{survey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'}</p>
+                    <p className="text-[9px]">{survey.type === 'dairy' ? 'दूध संकलन केंद्र' : 'शेतकरी ब्रँड'}</p>
                   </div>
                   {renderDetailedReport(survey)}
                 </div>

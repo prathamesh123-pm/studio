@@ -154,7 +154,7 @@ export default function FarmerSurvey() {
       },
       (error) => {
         console.error(error);
-        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली. कृपया परमिशन तपासा." });
+        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली. कृपया परवानगी तपासा." });
         setLocating(false);
       },
       { enableHighAccuracy: true }
@@ -253,7 +253,7 @@ export default function FarmerSurvey() {
 
           <section className="form-section">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-accent">२. कॅटल फीड वापर माहिती</h3>
+              <h3 className="text-lg font-bold text-accent">२. पशुखाद्य वापर माहिती</h3>
               <div className="flex items-center gap-2 bg-accent/5 p-2 rounded-lg border border-accent/20 no-print">
                 <Search className="h-4 w-4 text-accent" />
                 <div className="flex flex-col">
@@ -277,7 +277,7 @@ export default function FarmerSurvey() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="form-label-mr">सध्या कोणत्या कॅटल फीड ब्रँडचा वापर करता?</Label>
+                <Label className="form-label-mr">सध्या कोणत्या पशुखाद्य ब्रँडचा वापर करता?</Label>
                 <Input {...form.register("currentBrand")} placeholder="उदा. गोदरेज, कपिला" />
               </div>
               <div className="space-y-2">
@@ -289,7 +289,7 @@ export default function FarmerSurvey() {
                 </RadioGroup>
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">तुम्ही दिवसाला प्रति जनावर किती कॅटल फीड देता? (किलो)</Label>
+                <Label className="form-label-mr">तुम्ही दिवसाला प्रति जनावर किती पशुखाद्य देता? (किलो)</Label>
                 <Input {...form.register("dailyQtyPerAnimal")} type="number" step="0.1" />
               </div>
               <div className="space-y-2">
@@ -302,9 +302,9 @@ export default function FarmerSurvey() {
               </div>
             </div>
             <div className="space-y-2 mt-6">
-              <Label className="form-label-mr">कॅटल फीड सोबत इतर खाद्य देता का?</Label>
+              <Label className="form-label-mr">पशुखाद्य सोबत इतर खाद्य देता का?</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {["हिरवा चारा", "सुक्या चारा", "खळ", "मका", "मिनरल मिक्सचर"].map((feed) => (
+                {["हिरवा चारा", "सुका चारा", "खळ", "मका", "खनिज मिश्रण (Mineral Mix)"].map((feed) => (
                   <div key={feed} className="flex items-center space-x-2">
                     <Checkbox 
                       id={feed} 
@@ -359,7 +359,7 @@ export default function FarmerSurvey() {
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">४. गुणवत्ता व परिणाम</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label className="form-label-mr">या कॅटल फीडची गुणवत्ता कशी वाटते?</Label>
+                <Label className="form-label-mr">या पशुखाद्याची गुणवत्ता कशी वाटते?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("quality", v)} className="flex gap-4 mt-2">
                   <div className="flex items-center space-x-2"><RadioGroupItem value="VeryGood" id="q1" /><Label htmlFor="q1">खूप चांगली</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Okay" id="q2" /><Label htmlFor="q2">ठीक</Label></div>
@@ -494,7 +494,7 @@ export default function FarmerSurvey() {
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">८. घटक माहिती</h3>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="form-label-mr">तुम्हाला कॅटल फीडमधील घटक माहिती आहेत का?</Label>
+                <Label className="form-label-mr">तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("knowsIngredients", v)} className="flex gap-4 mt-2">
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="ki1" /><Label htmlFor="ki1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ki2" /><Label htmlFor="ki2">नाही</Label></div>
@@ -550,7 +550,7 @@ export default function FarmerSurvey() {
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">१०. समस्या व सूचना</h3>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="form-label-mr">कॅटल फीड वापरताना कोणत्या समस्या येतात?</Label>
+                <Label className="form-label-mr">पशुखाद्य वापरताना कोणत्या समस्या येतात?</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {["जास्त किंमत", "गुणवत्ता कमी", "उपलब्धता कमी", "जनावरांना आवडत नाही"].map((p) => (
                     <div key={p} className="flex items-center space-x-2">
@@ -579,7 +579,7 @@ export default function FarmerSurvey() {
                 </RadioGroup>
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">तुमच्या मते सर्वात चांगल्या कॅटल फीडमध्ये कोणते गुण असावेत?</Label>
+                <Label className="form-label-mr">तुमच्या मते सर्वात चांगल्या पशुखाद्यामध्ये कोणते गुण असावेत?</Label>
                 <Textarea {...form.register("idealFeedQualities")} placeholder="उदा. जास्त दूध वाढ, वाजवी किंमत" />
               </div>
             </div>

@@ -154,7 +154,7 @@ export default function DairySurvey() {
       },
       (error) => {
         console.error(error);
-        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली. कृपया परमिशन तपासा." });
+        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली. कृपया परवानगी तपासा." });
         setLocating(false);
       },
       { enableHighAccuracy: true }
@@ -213,8 +213,8 @@ export default function DairySurvey() {
     { label: "खळ", value: "Khala" },
     { label: "मका", value: "Maize" },
     { label: "हिरवा चारा", value: "GreenFodder" },
-    { label: "सुक्या चारा", value: "DryFodder" },
-    { label: "मिनरल मिक्सचर", value: "MineralMix" },
+    { label: "सुका चारा", value: "DryFodder" },
+    { label: "खनिज मिश्रण (Mineral Mix)", value: "MineralMix" },
   ];
 
   return (
@@ -256,7 +256,7 @@ export default function DairySurvey() {
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य माहिती</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
-                <Label className="form-label-mr">मिल्किंग सेंटर / डेअरीचे नाव</Label>
+                <Label className="form-label-mr">दूध संकलन केंद्र / डेअरीचे नाव</Label>
                 <Input {...form.register("dairyName")} placeholder="केंद्राचे नाव" />
               </div>
               <div className="space-y-2">
@@ -342,7 +342,7 @@ export default function DairySurvey() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="ReadyMade" id="rd1" />
-                    <Label htmlFor="rd1">रेडीमेड कॅटल फीड</Label>
+                    <Label htmlFor="rd1">रेडीमेड पशुखाद्य (Ready Made)</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="HomeMade" id="rd2" />
@@ -357,7 +357,7 @@ export default function DairySurvey() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="form-label-mr">कॅटल फीड दिवसातून किती वेळा देता?</Label>
+                  <Label className="form-label-mr">पशुखाद्य दिवसातून किती वेळा देता?</Label>
                   <Select 
                     onValueChange={(val) => form.setValue("feedFrequency", val)}
                     value={form.watch("feedFrequency")}
@@ -373,7 +373,7 @@ export default function DairySurvey() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="form-label-mr">प्रति जनावर दररोज कॅटल फीड (किग्रॅ)</Label>
+                  <Label className="form-label-mr">प्रति जनावर दररोज पशुखाद्य (किग्रॅ)</Label>
                   <Input {...form.register("dailyFeedPerAnimal")} type="number" />
                 </div>
               </div>
@@ -405,7 +405,7 @@ export default function DairySurvey() {
 
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (मास्टर ब्रँड मल्टिपल सिलेक्शन)</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
