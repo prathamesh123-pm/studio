@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { Button } from "@/components/ui/button";
 import { generateRegionalFeedSummary } from "@/ai/flows/generate-regional-feed-summary";
-import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store } from "lucide-react";
+import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock } from "lucide-react";
 import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { useBrandStore } from "@/lib/brand-store";
 import { useSupplierStore } from "@/lib/supplier-store";
@@ -187,7 +187,7 @@ export default function Dashboard() {
                       <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-transparent hover:border-primary/20 transition-colors">
                         <div>
                           <p className="font-bold text-sm text-primary">
-                            {survey.data.dairyName || survey.data.farmerName}
+                            {survey.type === 'dairy' ? survey.data.dairyName : survey.data.farmerName}
                           </p>
                           <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
                             <MapPin className="h-3 w-3" /> {survey.data.village}, {survey.data.taluka}
