@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Navbar } from "@/components/layout/Navbar";
@@ -12,7 +12,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import {
   Select,
@@ -21,12 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
-import { Separator } from "@/components/ui/separator";
-import { Save, Printer, ArrowLeft } from "lucide-react";
+import { Save, Printer, ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
+  // 1. सामान्य माहिती
   dairyName: z.string().min(1, "नाव आवश्यक आहे"),
   ownerName: z.string().min(1, "मालकाचे नाव आवश्यक आहे"),
   contact: z.string().min(10, "संपर्क क्रमांक चुकीचा आहे"),
@@ -36,45 +43,118 @@ const dairySchema = z.object({
   address: z.string(),
   milkCollection: z.string(),
   farmerCount: z.string(),
+
+  // 2. पशुधन माहिती
   livestock: z.object({
+    totalAnimals: z.string().default("0"),
     cows: z.string().default("0"),
     buffaloes: z.string().default("0"),
     calves: z.string().default("0"),
     milkingAnimals: z.string().default("0"),
     avgMilkPerAnimal: z.string().default("0"),
   }),
+
+  // 3. पशुखाद्य वापर माहिती
   feedType: z.enum(["ReadyMade", "HomeMade", "Both"]).optional(),
-  feedFrequency: z.enum(["1", "2", "3"]).optional(),
+  feedFrequency: z.string().optional(),
   dailyFeedPerAnimal: z.string(),
-  supplements: z.array(z.string()).optional(),
+  supplements: z.array(z.string()).default([]),
+  otherSupplement: z.string().optional(),
+
+  // 4. पशुखाद्य ब्रँड व खरेदी तपशील
+  brandDetails: z.array(z.object({
+    type: z.string(),
+    company: z.string(),
+    weight: z.string(),
+    price: z.string(),
+    monthlyBags: z.string(),
+  })).default([{ type: "", company: "", weight: "", price: "", monthlyBags: "" }]),
+
+  // 5. त्या ब्रँडमधील घटक (Ingredients) माहिती
+  ingredientsInfo: z.array(z.object({
+    brand: z.string(),
+    ingredient: z.string(),
+    percentage: z.string(),
+  })).default([{ brand: "", ingredient: "", percentage: "" }]),
+
+  // 6. कॅटल फीडमधील पोषण घटक
+  nutrition: z.object({
+    protein: z.string(),
+    fat: z.string(),
+    fiber: z.string(),
+    calcium: z.string(),
+    phosphorus: z.string(),
+    salt: z.string(),
+    mineralMix: z.string(),
+    others: z.string(),
+  }),
+
+  // 7. खरेदी पद्धत
   purchaseMethod: z.string().optional(),
+  creditDays: z.string().optional(),
+
+  // 8. पुरवठा माहिती
   supplySource: z.string().optional(),
+  otherSupplySource: z.string().optional(),
   supplierName: z.string(),
+  timelySupply: z.enum(["Yes", "No"]).optional(),
+
+  // 9. खर्च माहिती
   monthlyExp: z.string(),
   monthlyBags: z.string(),
+
+  // 10. गुणवत्ता व समाधान
   satisfaction: z.string().optional(),
   milkIncrease: z.string().optional(),
   bestBrand: z.string(),
-  storageCapacity: z.string(),
+
+  // 11. साठवण सुविधा
+  warehouseCapacity: z.string(),
   hasStorage: z.string().optional(),
+
+  // 12. समस्या व सूचना
+  mainProblem: z.string().optional(),
+  otherProblem: z.string().optional(),
+  sampleTrial: z.string().optional(),
+  goodFeedOpinion: z.string().optional(),
+
+  // Surveyor Details
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
+  surveyDate: z.string().optional(),
 });
+
+type DairyFormValues = z.infer<typeof dairySchema>;
 
 export default function DairySurvey() {
   const router = useRouter();
   const { addSurvey } = useSurveyStore();
-  const form = useForm<z.infer<typeof dairySchema>>({
+  
+  const form = useForm<DairyFormValues>({
     resolver: zodResolver(dairySchema),
     defaultValues: {
-      livestock: { cows: "0", buffaloes: "0", calves: "0", milkingAnimals: "0", avgMilkPerAnimal: "0" },
+      livestock: { totalAnimals: "0", cows: "0", buffaloes: "0", calves: "0", milkingAnimals: "0", avgMilkPerAnimal: "0" },
       supplements: [],
       district: "",
       taluka: "",
+      brandDetails: [{ type: "", company: "", weight: "", price: "", monthlyBags: "" }],
+      ingredientsInfo: [{ brand: "", ingredient: "", percentage: "" }],
+      nutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" },
+      surveyDate: new Date().toISOString().split('T')[0],
     }
   });
 
-  const onSubmit = async (data: z.infer<typeof dairySchema>) => {
+  const { fields: brandFields, append: appendBrand, remove: removeBrand } = useFieldArray({
+    control: form.control,
+    name: "brandDetails",
+  });
+
+  const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient } = useFieldArray({
+    control: form.control,
+    name: "ingredientsInfo",
+  });
+
+  const onSubmit = async (data: DairyFormValues) => {
     try {
       addSurvey({
         type: "dairy",
@@ -89,8 +169,16 @@ export default function DairySurvey() {
     }
   };
 
+  const supplementOptions = [
+    { label: "खळ", value: "Khala" },
+    { label: "मका", value: "Maize" },
+    { label: "हिरवा चारा", value: "GreenFodder" },
+    { label: "सुक्या चारा", value: "DryFodder" },
+    { label: "मिनरल मिक्सचर", value: "MineralMix" },
+  ];
+
   return (
-    <div className="min-h-screen pb-12">
+    <div className="min-h-screen pb-12 bg-background">
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="flex items-center gap-4 mb-6 no-print">
@@ -130,6 +218,12 @@ export default function DairySurvey() {
                 }}
               />
             </div>
+            <div className="grid grid-cols-1 gap-4 mt-4">
+              <div className="space-y-2">
+                <Label className="form-label-mr">संपूर्ण पत्ता</Label>
+                <Textarea {...form.register("address")} placeholder="पत्ता प्रविष्ट करा" />
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">सध्या दूध संकलन (लिटर / दिवस)</Label>
@@ -145,7 +239,11 @@ export default function DairySurvey() {
           {/* Section 2: Livestock */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती</h3>
-            <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+              <div className="space-y-2">
+                <Label className="form-label-mr">एकूण जनावरे</Label>
+                <Input {...form.register("livestock.totalAnimals")} type="number" />
+              </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">गायी</Label>
                 <Input {...form.register("livestock.cows")} type="number" />
@@ -174,10 +272,10 @@ export default function DairySurvey() {
           {/* Section 3: Feed Usage */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">३. पशुखाद्य वापर माहिती</h3>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="space-y-2">
                 <Label className="form-label-mr">कोणत्या प्रकारचे खाद्य वापरता?</Label>
-                <RadioGroup onValueChange={(val) => form.setValue("feedType", val as any)} className="flex gap-4">
+                <RadioGroup onValueChange={(val) => form.setValue("feedType", val as any)} className="flex flex-wrap gap-4">
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="ReadyMade" id="rd1" />
                     <Label htmlFor="rd1">रेडीमेड कॅटल फीड</Label>
@@ -196,7 +294,7 @@ export default function DairySurvey() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label className="form-label-mr">कॅटल फीड दिवसातून किती वेळा देता?</Label>
-                  <Select onValueChange={(val) => form.setValue("feedFrequency", val as any)}>
+                  <Select onValueChange={(val) => form.setValue("feedFrequency", val)}>
                     <SelectTrigger>
                       <SelectValue placeholder="निवडा" />
                     </SelectTrigger>
@@ -212,13 +310,290 @@ export default function DairySurvey() {
                   <Input {...form.register("dailyFeedPerAnimal")} type="number" />
                 </div>
               </div>
+
+              <div className="space-y-2">
+                <Label className="form-label-mr">खालील पूरक खाद्य वापरता का?</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {supplementOptions.map((opt) => (
+                    <div key={opt.value} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={opt.value} 
+                        onCheckedChange={(checked) => {
+                          const current = form.getValues("supplements");
+                          if (checked) form.setValue("supplements", [...current, opt.value]);
+                          else form.setValue("supplements", current.filter(v => v !== opt.value));
+                        }}
+                      />
+                      <Label htmlFor={opt.value}>{opt.label}</Label>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2">
+                  <Input {...form.register("otherSupplement")} placeholder="इतर पूरक खाद्य" />
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Section 4: Brand Details Table */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">४. पशुखाद्य ब्रँड व खरेदी तपशील</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>खाद्य प्रकार</TableHead>
+                  <TableHead>ब्रँड / कंपनी</TableHead>
+                  <TableHead>वजन (किग्रॅ)</TableHead>
+                  <TableHead>किंमत (₹)</TableHead>
+                  <TableHead>मासिक पोती</TableHead>
+                  <TableHead className="w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {brandFields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell><Input {...form.register(`brandDetails.${index}.type` as const)} /></TableCell>
+                    <TableCell><Input {...form.register(`brandDetails.${index}.company` as const)} /></TableCell>
+                    <TableCell><Input {...form.register(`brandDetails.${index}.weight` as const)} type="number" /></TableCell>
+                    <TableCell><Input {...form.register(`brandDetails.${index}.price` as const)} type="number" /></TableCell>
+                    <TableCell><Input {...form.register(`brandDetails.${index}.monthlyBags` as const)} type="number" /></TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" onClick={() => removeBrand(index)} disabled={brandFields.length <= 1}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Button type="button" variant="outline" size="sm" onClick={() => appendBrand({ type: "", company: "", weight: "", price: "", monthlyBags: "" })} className="mt-2 gap-2">
+              <Plus className="h-4 w-4" /> ब्रँड जोडा
+            </Button>
+          </section>
+
+          {/* Section 5: Ingredients Table */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. ब्रँडमधील घटक (Ingredients) माहिती</h3>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>ब्रँड नाव</TableHead>
+                  <TableHead>घटक (Ingredient)</TableHead>
+                  <TableHead>टक्केवारी (%)</TableHead>
+                  <TableHead className="w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {ingredientFields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.brand` as const)} /></TableCell>
+                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.ingredient` as const)} /></TableCell>
+                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.percentage` as const)} type="number" /></TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" onClick={() => removeIngredient(index)} disabled={ingredientFields.length <= 1}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+            <Button type="button" variant="outline" size="sm" onClick={() => appendIngredient({ brand: "", ingredient: "", percentage: "" })} className="mt-2 gap-2">
+              <Plus className="h-4 w-4" /> घटक जोडा
+            </Button>
+          </section>
+
+          {/* Section 6: Nutrition */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">६. पोषण घटक (पॅकवर दिलेली माहिती %)</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="space-y-1">
+                <Label className="text-xs">क्रूड प्रोटीन</Label>
+                <Input {...form.register("nutrition.protein")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">क्रूड फॅट</Label>
+                <Input {...form.register("nutrition.fat")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">क्रूड फायबर</Label>
+                <Input {...form.register("nutrition.fiber")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">कॅल्शियम</Label>
+                <Input {...form.register("nutrition.calcium")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">फॉस्फरस</Label>
+                <Input {...form.register("nutrition.phosphorus")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">मीठ</Label>
+                <Input {...form.register("nutrition.salt")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">मिनरल मिक्सचर</Label>
+                <Input {...form.register("nutrition.mineralMix")} placeholder="%" />
+              </div>
+              <div className="space-y-1">
+                <Label className="text-xs">इतर</Label>
+                <Input {...form.register("nutrition.others")} placeholder="%" />
+              </div>
+            </div>
+          </section>
+
+          {/* Sections 7 & 8: Purchase & Supply */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section className="form-section">
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७. खरेदी पद्धत</h3>
+              <RadioGroup onValueChange={(v) => form.setValue("purchaseMethod", v)} className="space-y-2">
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने</Label></div>
+                <div className="flex items-center space-x-2 ml-6">
+                  <Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-20" />
+                  <span className="text-xs">दिवस</span>
+                </div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Weekly" id="p3" /><Label htmlFor="p3">साप्ताहिक</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Fortnightly" id="p4" /><Label htmlFor="p4">पंधरवड्याने</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Monthly" id="p5" /><Label htmlFor="p5">मासिक</Label></div>
+              </RadioGroup>
+            </section>
+
+            <section className="form-section">
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">८. पुरवठा माहिती</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm">कुठून खरेदी करता?</Label>
+                  <Select onValueChange={(v) => form.setValue("supplySource", v)}>
+                    <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
+                      <SelectItem value="Dealer">कंपनी डीलर</SelectItem>
+                      <SelectItem value="Dairy">डेअरी</SelectItem>
+                      <SelectItem value="Other">इतर</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {form.watch("supplySource") === "Other" && <Input {...form.register("otherSupplySource")} placeholder="इतर स्त्रोत" />}
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">पुरवठादाराचे नाव</Label>
+                  <Input {...form.register("supplierName")} />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">पुरवठा वेळेवर मिळतो का?</Label>
+                  <RadioGroup onValueChange={(v) => form.setValue("timelySupply", v as any)} className="flex gap-4">
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="ts1" /><Label htmlFor="ts1">होय</Label></div>
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ts2" /><Label htmlFor="ts2">नाही</Label></div>
+                  </RadioGroup>
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Sections 9 & 10: Cost & Quality */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <section className="form-section">
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. खर्च माहिती</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm">महिन्याला एकूण खर्च (₹)</Label>
+                  <Input {...form.register("monthlyExp")} type="number" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">महिन्याला लागणारी पोती</Label>
+                  <Input {...form.register("monthlyBags")} type="number" />
+                </div>
+              </div>
+            </section>
+
+            <section className="form-section">
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१०. गुणवत्ता व समाधान</h3>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-sm">सध्याच्या खाद्याबद्दल समाधान?</Label>
+                  <Select onValueChange={(v) => form.setValue("satisfaction", v)}>
+                    <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="VeryGood">खूप चांगले</SelectItem>
+                      <SelectItem value="Okay">ठीक</SelectItem>
+                      <SelectItem value="NotSatisfied">समाधान नाही</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">दूध उत्पादन वाढले का?</Label>
+                  <RadioGroup onValueChange={(v) => form.setValue("milkIncrease", v)} className="flex gap-4">
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="mi1" /><Label htmlFor="mi1">होय</Label></div>
+                    <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="mi2" /><Label htmlFor="mi2">नाही</Label></div>
+                  </RadioGroup>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">सर्वात चांगला ब्रँड कोणता वाटतो?</Label>
+                  <Input {...form.register("bestBrand")} />
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Sections 11 & 12: Storage & Problems */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">११. साठवण सुविधा</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm">गोदाम क्षमता (MT)</Label>
+                <Input {...form.register("warehouseCapacity")} />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm">साठवण सुविधा उपलब्ध आहे का?</Label>
+                <RadioGroup onValueChange={(v) => form.setValue("hasStorage", v)} className="flex gap-4">
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="hs1" /><Label htmlFor="hs1">होय</Label></div>
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="hs2" /><Label htmlFor="hs2">नाही</Label></div>
+                </RadioGroup>
+              </div>
+            </div>
+          </section>
+
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१२. समस्या व सूचना</h3>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label className="text-sm">मुख्य समस्या काय आहे?</Label>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  {["जास्त किंमत", "गुणवत्ता कमी", "उपलब्धता कमी", "उधारी मिळत नाही"].map((p) => (
+                    <div key={p} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={p} 
+                        onCheckedChange={(checked) => {
+                          const current = form.getValues("mainProblem") || "";
+                          if (checked) form.setValue("mainProblem", current ? `${current}, ${p}` : p);
+                        }}
+                      />
+                      <Label htmlFor={p}>{p}</Label>
+                    </div>
+                  ))}
+                </div>
+                <Input {...form.register("otherProblem")} placeholder="इतर समस्या" className="mt-2" />
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm">नवीन सॅम्पल मिळाले तर वापरून पाहाल का?</Label>
+                <RadioGroup onValueChange={(v) => form.setValue("sampleTrial", v)} className="flex gap-4">
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="st1" /><Label htmlFor="st1">होय</Label></div>
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="st2" /><Label htmlFor="st2">नाही</Label></div>
+                </RadioGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm">तुमच्या मते चांगल्या कॅटल फीडमध्ये काय असावे?</Label>
+                <Textarea {...form.register("goodFeedOpinion")} />
+              </div>
             </div>
           </section>
 
           {/* Final Section: Surveyor Details */}
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">सर्वे करणाऱ्याचे नाव</Label>
                 <Input {...form.register("surveyorName")} placeholder="तुमचे नाव" />
@@ -227,6 +602,14 @@ export default function DairySurvey() {
                 <Label className="form-label-mr">ID नंबर</Label>
                 <Input {...form.register("surveyorId")} placeholder="तुमचा ID" />
               </div>
+              <div className="space-y-2">
+                <Label className="form-label-mr">दिनांक</Label>
+                <Input {...form.register("surveyDate")} type="date" />
+              </div>
+            </div>
+            <div className="mt-6 pt-6 border-t border-dashed flex justify-between items-end opacity-50">
+              <div className="text-sm italic">स्वाक्षरी: ___________________</div>
+              <div className="text-sm italic">शिक्का: ___________________</div>
             </div>
           </section>
 
