@@ -63,23 +63,14 @@ const dairySchema = z.object({
   supplements: z.array(z.string()).default([]),
   otherSupplement: z.string().optional(),
 
-  // 4. पशुखाद्य ब्रँड व खरेदी तपशील
-  brandDetails: z.array(z.object({
-    type: z.string(),
-    company: z.string(),
-    weight: z.string(),
-    price: z.string(),
-    monthlyBags: z.string(),
-  })).default([{ type: "", company: "", weight: "", price: "", monthlyBags: "" }]),
-
-  // 5. त्या ब्रँडमधील घटक (Ingredients) माहिती
+  // 4. ब्रँडमधील घटक (Ingredients) माहिती
   ingredientsInfo: z.array(z.object({
     brand: z.string(),
     ingredient: z.string(),
     percentage: z.string(),
   })).default([{ brand: "", ingredient: "", percentage: "" }]),
 
-  // 6. कॅटल फीडमधील पोषण घटक
+  // 5. कॅटल फीडमधील पोषण घटक
   nutrition: z.object({
     protein: z.string(),
     fat: z.string(),
@@ -91,30 +82,30 @@ const dairySchema = z.object({
     others: z.string(),
   }),
 
-  // 7. खरेदी पद्धत
+  // 6. खरेदी पद्धत
   purchaseMethod: z.string().optional(),
   creditDays: z.string().optional(),
 
-  // 8. पुरवठा माहिती
+  // 7. पुरवठा माहिती
   supplySource: z.string().optional(),
   otherSupplySource: z.string().optional(),
   supplierName: z.string(),
   timelySupply: z.enum(["Yes", "No"]).optional(),
 
-  // 9. खर्च माहिती
+  // 8. खर्च माहिती
   monthlyExp: z.string(),
   monthlyBags: z.string(),
 
-  // 10. गुणवत्ता व समाधान
+  // 9. गुणवत्ता व समाधान
   satisfaction: z.string().optional(),
   milkIncrease: z.string().optional(),
   bestBrand: z.string(),
 
-  // 11. साठवण सुविधा
+  // 10. साठवण सुविधा
   warehouseCapacity: z.string(),
   hasStorage: z.string().optional(),
 
-  // 12. समस्या व सूचना
+  // 11. समस्या व सूचना
   mainProblem: z.string().optional(),
   otherProblem: z.string().optional(),
   sampleTrial: z.string().optional(),
@@ -141,19 +132,13 @@ export default function DairySurvey() {
       supplements: [],
       district: "",
       taluka: "",
-      brandDetails: [{ type: "ReadyMade", company: "", weight: "", price: "", monthlyBags: "" }],
       ingredientsInfo: [],
       nutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" },
       surveyDate: new Date().toISOString().split('T')[0],
     }
   });
 
-  const { fields: brandFields, append: appendBrand, remove: removeBrand, replace: replaceBrands } = useFieldArray({
-    control: form.control,
-    name: "brandDetails",
-  });
-
-  const { fields: ingredientFields, replace: replaceIngredients, append: appendIngredient, remove: removeIngredient } = useFieldArray({
+  const { fields: ingredientFields, replace: replaceIngredients, remove: removeIngredient } = useFieldArray({
     control: form.control,
     name: "ingredientsInfo",
   });
@@ -166,16 +151,7 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // 1. Update brandDetails table with weight and price
-    replaceBrands([{
-      type: selected.feedType || "ReadyMade",
-      company: selected.name,
-      weight: selected.bagWeight || "",
-      price: selected.price || "",
-      monthlyBags: ""
-    }]);
-
-    // 2. Set Nutrition values
+    // Set Nutrition values
     form.setValue("nutrition.protein", selected.nutrition.protein);
     form.setValue("nutrition.fat", selected.nutrition.fat);
     form.setValue("nutrition.fiber", selected.nutrition.fiber);
@@ -185,7 +161,7 @@ export default function DairySurvey() {
     form.setValue("nutrition.mineralMix", selected.nutrition.mineralMix);
     form.setValue("nutrition.others", selected.nutrition.others);
 
-    // 3. Update ingredients table
+    // Update ingredients table
     const newIngredients = selected.ingredients.map(ing => ({
       brand: selected.name,
       ingredient: ing.ingredient,
@@ -195,7 +171,7 @@ export default function DairySurvey() {
 
     toast({ 
       title: "माहिती यशस्वीरित्या भरली गेली", 
-      description: `${selected.name} ची पोषण मूल्ये, वजन, किंमत आणि सर्व घटक फॉर्ममध्ये भरले आहेत.` 
+      description: `${selected.name} ची पोषण मूल्ये आणि सर्व घटक फॉर्ममध्ये भरले आहेत.` 
     });
   };
 
@@ -388,46 +364,10 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Section 4: Brand Details Table */}
-          <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">४. पशुखाद्य ब्रँड व खरेदी तपशील</h3>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>खाद्य प्रकार</TableHead>
-                  <TableHead>ब्रँड / कंपनी</TableHead>
-                  <TableHead>वजन (किग्रॅ)</TableHead>
-                  <TableHead>किंमत (₹)</TableHead>
-                  <TableHead>मासिक पोती</TableHead>
-                  <TableHead className="w-10"></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {brandFields.map((field, index) => (
-                  <TableRow key={field.id}>
-                    <TableCell><Input {...form.register(`brandDetails.${index}.type` as const)} /></TableCell>
-                    <TableCell><Input {...form.register(`brandDetails.${index}.company` as const)} /></TableCell>
-                    <TableCell><Input {...form.register(`brandDetails.${index}.weight` as const)} type="number" /></TableCell>
-                    <TableCell><Input {...form.register(`brandDetails.${index}.price` as const)} type="number" /></TableCell>
-                    <TableCell><Input {...form.register(`brandDetails.${index}.monthlyBags` as const)} type="number" /></TableCell>
-                    <TableCell>
-                      <Button variant="ghost" size="icon" onClick={() => removeBrand(index)} disabled={brandFields.length <= 1}>
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-            <Button type="button" variant="outline" size="sm" onClick={() => appendBrand({ type: "", company: "", weight: "", price: "", monthlyBags: "" })} className="mt-2 gap-2">
-              <Plus className="h-4 w-4" /> ब्रँड जोडा
-            </Button>
-          </section>
-
-          {/* Section 5: Ingredients Table */}
+          {/* Section 4: Ingredients Table */}
           <section className="form-section">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">५. ब्रँडमधील घटक (Ingredients) माहिती</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँडमधील घटक (Ingredients) माहिती</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
@@ -484,9 +424,9 @@ export default function DairySurvey() {
             </Table>
           </section>
 
-          {/* Section 6: Nutrition */}
+          {/* Section 5: Nutrition */}
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">६. पोषण घटक (पॅकवर दिलेली माहिती %)</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. पोषण घटक (पॅकवर दिलेली माहिती %)</h3>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="space-y-1">
                 <Label className="text-xs">क्रूड प्रोटीन</Label>
@@ -523,10 +463,10 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Sections 7 & 8: Purchase & Supply */}
+          {/* Sections 6 & 7: Purchase & Supply */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
-              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७. खरेदी पद्धत</h3>
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">६. खरेदी पद्धत</h3>
               <RadioGroup 
                 onValueChange={(v) => form.setValue("purchaseMethod", v)} 
                 className="space-y-2"
@@ -545,7 +485,7 @@ export default function DairySurvey() {
             </section>
 
             <section className="form-section">
-              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">८. पुरवठा माहिती</h3>
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७. पुरवठा माहिती</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm">कुठून खरेदी करता?</Label>
@@ -582,10 +522,10 @@ export default function DairySurvey() {
             </section>
           </div>
 
-          {/* Sections 9 & 10: Cost & Quality */}
+          {/* Sections 8 & 9: Cost & Quality */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
-              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. खर्च माहिती</h3>
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">८. खर्च माहिती</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm">महिन्याला एकूण खर्च (₹)</Label>
@@ -599,7 +539,7 @@ export default function DairySurvey() {
             </section>
 
             <section className="form-section">
-              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१०. गुणवत्ता व समाधान</h3>
+              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. गुणवत्ता व समाधान</h3>
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label className="text-sm">सध्याच्या खाद्याबद्दल समाधान?</Label>
@@ -634,9 +574,9 @@ export default function DairySurvey() {
             </section>
           </div>
 
-          {/* Sections 11 & 12: Storage & Problems */}
+          {/* Sections 10 & 11: Storage & Problems */}
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">११. साठवण सुविधा</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१०. साठवण सुविधा</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label className="text-sm">गोदाम क्षमता (MT)</Label>
@@ -657,7 +597,7 @@ export default function DairySurvey() {
           </section>
 
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१२. समस्या व सूचना</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">११. समस्या व सूचना</h3>
             <div className="space-y-6">
               <div className="space-y-2">
                 <Label className="text-sm">मुख्य समस्या काय आहे?</Label>
@@ -735,3 +675,4 @@ export default function DairySurvey() {
     </div>
   );
 }
+
