@@ -39,10 +39,8 @@ export default function BrandManagement() {
   const [viewingBrand, setViewingBrand] = useState<MasterBrand | null>(null);
   const [showFullReport, setShowFullReport] = useState(false);
   
-  // Filter State
   const [filterBrandId, setFilterBrandId] = useState("all");
 
-  // Form States
   const [newBrandName, setNewBrandName] = useState("");
   const [feedType, setFeedType] = useState("Pellet");
   const [bagWeight, setBagWeight] = useState("");
@@ -124,7 +122,7 @@ export default function BrandManagement() {
       price,
       nutrition,
       ingredients,
-      customPoints: customPoints.map(p => ({ point: p.point, value: "" })) // Maintaining compatibility
+      customPoints: customPoints.map(p => ({ point: p.point, value: "" }))
     };
 
     if (editingId) {

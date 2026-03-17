@@ -76,8 +76,8 @@ const farmerSchema = z.object({
   switchIfCheaper: z.string().optional(),
   idealFeedQualities: z.string(),
   customQuestions: z.array(z.object({
-    question: z.string(), // Point content
-    answer: z.string(), // Compatibility
+    question: z.string(),
+    answer: z.string(),
   })).default([]),
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -122,7 +122,6 @@ export default function FarmerSurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // Auto-fill all information
     form.setValue("currentBrand", selected.name);
     form.setValue("bagPrice", selected.price);
     form.setValue("bagWeight", selected.bagWeight);
@@ -134,7 +133,7 @@ export default function FarmerSurvey() {
 
     toast({ 
       title: "ब्रँड माहिती अपडेट झाली", 
-      description: `${selected.name} चे सर्व तपशील (किंमत, वजन, पोषण मूल्ये) आपोआप भरले गेले आहेत.` 
+      description: `${selected.name} चे सर्व तपशील आपोआप भरले गेले आहेत.` 
     });
   };
 

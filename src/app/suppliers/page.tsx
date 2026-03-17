@@ -45,12 +45,10 @@ export default function SupplierManagement() {
   const [viewingSupplier, setViewingSupplier] = useState<Supplier | null>(null);
   const [showFullReport, setShowFullReport] = useState(false);
   
-  // Filter States
   const [filterDistrict, setFilterDistrict] = useState("all");
   const [filterTaluka, setFilterTaluka] = useState("all");
   const [filterBrand, setFilterBrand] = useState("all");
 
-  // Form States
   const [name, setName] = useState("");
   const [shopName, setShopName] = useState("");
   const [contact, setContact] = useState("");
@@ -124,7 +122,7 @@ export default function SupplierManagement() {
       suppliedBrands,
       providesDelivery,
       providesCredit,
-      customPoints: customPoints.map(p => ({ point: p.point, value: "" })) // Maintaining compatibility
+      customPoints: customPoints.map(p => ({ point: p.point, value: "" }))
     };
 
     if (editingId) {
@@ -261,7 +259,6 @@ export default function SupplierManagement() {
           </div>
         </header>
 
-        {/* Filter Section */}
         <Card className="mb-8 border-primary/10 shadow-sm bg-primary/5">
           <CardHeader className="py-3 px-4 flex flex-row items-center gap-2">
             <Filter className="h-4 w-4 text-primary" />

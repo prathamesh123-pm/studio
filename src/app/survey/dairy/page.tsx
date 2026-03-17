@@ -91,8 +91,8 @@ const dairySchema = z.object({
   sampleTrial: z.string().optional(),
   goodFeedOpinion: z.string().optional(),
   customQuestions: z.array(z.object({
-    question: z.string(), // We use this field for the point content
-    answer: z.string(), // Kept for compatibility
+    question: z.string(),
+    answer: z.string(),
   })).default([]),
   surveyorName: z.string().min(1, "सर्वेक्षकाचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -165,7 +165,6 @@ export default function DairySurvey() {
     selectedBrandIds.forEach(id => {
       const selected = masterBrands.find(b => b.id === id);
       if (selected) {
-        // Check if already added
         const isAlreadyAdded = brandFields.some(f => f.name === selected.name);
         if (!isAlreadyAdded) {
           appendBrand({
