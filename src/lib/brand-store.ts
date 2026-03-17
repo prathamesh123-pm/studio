@@ -2,6 +2,9 @@
 export interface MasterBrand {
   id: string;
   name: string;
+  feedType: string;
+  bagWeight: string;
+  price: string;
   nutrition: {
     protein: string;
     fat: string;

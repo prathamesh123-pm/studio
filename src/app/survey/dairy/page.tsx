@@ -148,7 +148,7 @@ export default function DairySurvey() {
     }
   });
 
-  const { fields: brandFields, append: appendBrand, remove: removeBrand } = useFieldArray({
+  const { fields: brandFields, append: appendBrand, remove: removeBrand, replace: replaceBrands } = useFieldArray({
     control: form.control,
     name: "brandDetails",
   });
@@ -166,11 +166,16 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // 1. Set Company Name in the first brand detail row
-    form.setValue(`brandDetails.0.company`, selected.name);
-    form.setValue(`brandDetails.0.type`, "ReadyMade");
+    // 1. Update brandDetails table with weight and price
+    replaceBrands([{
+      type: selected.feedType || "ReadyMade",
+      company: selected.name,
+      weight: selected.bagWeight || "",
+      price: selected.price || "",
+      monthlyBags: ""
+    }]);
 
-    // 2. Set Nutrition values explicitly
+    // 2. Set Nutrition values
     form.setValue("nutrition.protein", selected.nutrition.protein);
     form.setValue("nutrition.fat", selected.nutrition.fat);
     form.setValue("nutrition.fiber", selected.nutrition.fiber);
@@ -180,7 +185,7 @@ export default function DairySurvey() {
     form.setValue("nutrition.mineralMix", selected.nutrition.mineralMix);
     form.setValue("nutrition.others", selected.nutrition.others);
 
-    // 3. Replace all ingredients in the table
+    // 3. Update ingredients table
     const newIngredients = selected.ingredients.map(ing => ({
       brand: selected.name,
       ingredient: ing.ingredient,
@@ -190,7 +195,7 @@ export default function DairySurvey() {
 
     toast({ 
       title: "माहिती यशस्वीरित्या भरली गेली", 
-      description: `${selected.name} ची पोषण मूल्ये आणि सर्व घटक फॉर्ममध्ये आपोआप भरले आहेत.` 
+      description: `${selected.name} ची पोषण मूल्ये, वजन, किंमत आणि सर्व घटक फॉर्ममध्ये भरले आहेत.` 
     });
   };
 
@@ -245,7 +250,7 @@ export default function DairySurvey() {
                     <div className="p-2 text-xs text-muted-foreground">कृपया आधी 'Master Brands' पेजवर ब्रँड ऍड करा.</div>
                   ) : (
                     masterBrands.map(b => (
-                      <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                      <SelectItem key={b.id} value={b.id}>{b.name} ({b.bagWeight}kg)</SelectItem>
                     ))
                   )}
                 </SelectContent>

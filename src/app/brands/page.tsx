@@ -8,21 +8,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Beef } from "lucide-react";
+import { Plus, Trash2, Save, Beef, Package, IndianRupee } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function BrandManagement() {
   const { getBrands, addBrand, deleteBrand } = useBrandStore();
   const [brands, setBrands] = useState<MasterBrand[]>([]);
   const [newBrandName, setNewBrandName] = useState("");
+  const [feedType, setFeedType] = useState("Pellet");
+  const [bagWeight, setBagWeight] = useState("");
+  const [price, setPrice] = useState("");
   const [nutrition, setNutrition] = useState({
     protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
   });
@@ -53,14 +55,24 @@ export default function BrandManagement() {
     }
     addBrand({
       name: newBrandName,
+      feedType,
+      bagWeight,
+      price,
       nutrition,
       ingredients
     });
     setBrands(getBrands());
+    resetForm();
+    toast({ title: "यशस्वी", description: "नवीन ब्रँड मास्टर लिस्टमध्ये जतन झाला!" });
+  };
+
+  const resetForm = () => {
     setNewBrandName("");
+    setFeedType("Pellet");
+    setBagWeight("");
+    setPrice("");
     setNutrition({ protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" });
     setIngredients([{ ingredient: "", percentage: "" }]);
-    toast({ title: "यशस्वी", description: "नवीन ब्रँड मास्टर लिस्टमध्ये जतन झाला!" });
   };
 
   return (
@@ -86,6 +98,34 @@ export default function BrandManagement() {
                 <div className="space-y-2">
                   <Label>ब्रँड / कंपनीचे नाव</Label>
                   <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="उदा. गोदरेज गोल्ड" />
+                </div>
+
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <Label>खाद्य प्रकार</Label>
+                    <Select value={feedType} onValueChange={setFeedType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="प्रकार निवडा" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Pellet">पेलेट (Pellet)</SelectItem>
+                        <SelectItem value="Mesh">मेश (Mesh)</SelectItem>
+                        <SelectItem value="Crumb">क्रंब (Crumb)</SelectItem>
+                        <SelectItem value="Cubes">क्यूब्स (Cubes)</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1"><Package className="h-3 w-3" /> वजन (किग्रॅ)</Label>
+                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="flex items-center gap-1"><IndianRupee className="h-3 w-3" /> किंमत (₹)</Label>
+                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
+                  </div>
                 </div>
 
                 <div className="pt-4 border-t">
@@ -168,8 +208,17 @@ export default function BrandManagement() {
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                        <h3 className="font-bold text-lg text-primary">{brand.name}</h3>
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2 text-xs">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-bold text-lg text-primary">{brand.name}</h3>
+                            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{brand.feedType}</span>
+                          </div>
+                          <div className="text-right text-xs">
+                            <p className="font-bold text-accent">₹{brand.price}</p>
+                            <p className="text-muted-foreground">{brand.bagWeight} किग्रॅ</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4 text-xs">
                           <div><span className="font-semibold">प्रोटीन:</span> {brand.nutrition.protein}%</div>
                           <div><span className="font-semibold">फॅट:</span> {brand.nutrition.fat}%</div>
                           <div><span className="font-semibold">फायबर:</span> {brand.nutrition.fiber}%</div>
