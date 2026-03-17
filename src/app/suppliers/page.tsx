@@ -68,12 +68,14 @@ export default function SupplierManagement() {
     setMasterBrands(getBrands());
   };
 
-  const handleBrandToggle = (brandName: string) => {
-    setSuppliedBrands(prev => 
-      prev.includes(brandName) 
-        ? prev.filter(b => b !== brandName) 
-        : [...prev, brandName]
-    );
+  const handleBrandSelect = (brandName: string) => {
+    if (brandName && !suppliedBrands.includes(brandName)) {
+      setSuppliedBrands([...suppliedBrands, brandName]);
+    }
+  };
+
+  const removeBrand = (brandName: string) => {
+    setSuppliedBrands(suppliedBrands.filter(b => b !== brandName));
   };
 
   const handleAddPoint = () => {
@@ -213,7 +215,7 @@ export default function SupplierManagement() {
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. अतिरिक्त मुद्दे (Add Points)</h4>
+          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. अतिरिक्त मुद्दे</h4>
           <Table className="border rounded-sm">
             <TableBody>
               {supplier.customPoints.map((pt, idx) => (
@@ -289,19 +291,33 @@ export default function SupplierManagement() {
 
                 <div className="pt-2 border-t">
                   <Label className="text-xs font-bold text-primary mb-2 block">पुरवठा करत असलेले ब्रँड्स (मास्टर लिस्ट मधून निवडा)</Label>
-                  <div className="grid grid-cols-2 gap-2 max-h-[150px] overflow-y-auto p-2 border rounded-md bg-muted/5">
-                    {masterBrands.length === 0 ? (
-                      <p className="text-[10px] text-muted-foreground col-span-2">मास्टर ब्रँड लिस्टमध्ये ब्रँड्स जोडा.</p>
+                  <Select onValueChange={handleBrandSelect}>
+                    <SelectTrigger className="h-9 text-xs">
+                      <SelectValue placeholder="ब्रँड निवडा (ड्रॉप-डाउन)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {masterBrands.length === 0 ? (
+                        <SelectItem value="none" disabled>प्रथम ब्रँड मास्टर लिस्टमध्ये जोडा</SelectItem>
+                      ) : (
+                        masterBrands.map(b => (
+                          <SelectItem key={b.id} value={b.name}>{b.name}</SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  
+                  <div className="flex flex-wrap gap-1 mt-2 min-h-[32px] p-1 border rounded-md bg-muted/5">
+                    {suppliedBrands.length === 0 ? (
+                      <span className="text-[10px] text-muted-foreground p-1 italic">निवडलेले ब्रँड्स येथे दिसतील...</span>
                     ) : (
-                      masterBrands.map(b => (
-                        <div key={b.id} className="flex items-center space-x-2">
-                          <Checkbox 
-                            id={`brand-${b.id}`} 
-                            checked={suppliedBrands.includes(b.name)}
-                            onCheckedChange={() => handleBrandToggle(b.name)}
+                      suppliedBrands.map((brandName) => (
+                        <Badge key={brandName} variant="secondary" className="text-[10px] h-6 px-2 flex items-center gap-1 group">
+                          {brandName}
+                          <X 
+                            className="h-3 w-3 cursor-pointer hover:text-destructive text-muted-foreground group-hover:text-primary" 
+                            onClick={() => removeBrand(brandName)}
                           />
-                          <Label htmlFor={`brand-${b.id}`} className="text-[10px] truncate">{b.name}</Label>
-                        </div>
+                        </Badge>
                       ))
                     )}
                   </div>
@@ -471,3 +487,4 @@ export default function SupplierManagement() {
     </div>
   );
 }
+
