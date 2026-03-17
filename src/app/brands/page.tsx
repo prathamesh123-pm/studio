@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Printer, FileText, PlusCircle } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Printer, FileText, PlusCircle, Search, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -16,13 +16,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -39,6 +39,10 @@ export default function BrandManagement() {
   const [viewingBrand, setViewingBrand] = useState<MasterBrand | null>(null);
   const [showFullReport, setShowFullReport] = useState(false);
   
+  // Filter State
+  const [filterBrandId, setFilterBrandId] = useState("all");
+
+  // Form States
   const [newBrandName, setNewBrandName] = useState("");
   const [feedType, setFeedType] = useState("Pellet");
   const [bagWeight, setBagWeight] = useState("");
@@ -53,6 +57,11 @@ export default function BrandManagement() {
   useEffect(() => {
     setBrands(getBrands());
   }, []);
+
+  const filteredBrands = useMemo(() => {
+    if (filterBrandId === "all") return brands;
+    return brands.filter(b => b.id === filterBrandId);
+  }, [brands, filterBrandId]);
 
   const handleAddIngredient = () => {
     setIngredients([...ingredients, { ingredient: "", percentage: "" }]);
@@ -238,8 +247,8 @@ export default function BrandManagement() {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-1 space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="lg:col-span-4 space-y-6">
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-4">
                 <CardTitle className="text-lg">
@@ -385,18 +394,40 @@ export default function BrandManagement() {
             </Card>
           </div>
 
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-8">
             <Card className="border-primary/20 shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg">मास्टर ब्रँड यादी ({brands.length})</CardTitle>
+              <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <CardTitle className="text-lg">मास्टर ब्रँड यादी ({filteredBrands.length})</CardTitle>
+                
+                {/* Brand Filter Dropdown */}
+                <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 min-w-[250px]">
+                  <Filter className="h-4 w-4 text-primary" />
+                  <div className="flex flex-col flex-1">
+                    <span className="text-[10px] font-bold text-primary uppercase">ब्रँड फिल्टर करा</span>
+                    <Select value={filterBrandId} onValueChange={setFilterBrandId}>
+                      <SelectTrigger className="h-8 bg-white text-xs border-primary/20">
+                        <SelectValue placeholder="सर्व ब्रँड" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">सर्व ब्रँड (All Brands)</SelectItem>
+                        {brands.map(b => (
+                          <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
               </CardHeader>
               <CardContent>
-                {brands.length === 0 ? (
-                  <div className="text-center py-10 text-muted-foreground">कोणतेही ब्रँड उपलब्ध नाहीत.</div>
+                {filteredBrands.length === 0 ? (
+                  <div className="text-center py-16 text-muted-foreground bg-muted/5 rounded-lg border border-dashed">
+                    <Search className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                    निवडलेल्या फिल्टरनुसार ब्रँड उपलब्ध नाहीत.
+                  </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {brands.map((brand) => (
-                      <div key={brand.id} className="p-4 border rounded-lg bg-muted/5 relative group hover:border-primary/30 transition-colors">
+                    {filteredBrands.map((brand) => (
+                      <div key={brand.id} className="p-4 border rounded-xl bg-white relative group hover:border-primary/40 transition-all shadow-sm">
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity no-print">
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => setViewingBrand(brand)}><Eye className="h-4 w-4" /></Button>
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => handleEditBrand(brand)}><Edit2 className="h-4 w-4" /></Button>
@@ -404,7 +435,7 @@ export default function BrandManagement() {
                         </div>
                         <h3 className="font-bold text-base text-primary leading-tight pr-12">{brand.name}</h3>
                         <Badge variant="outline" className="text-[10px] my-1.5 h-4">{brand.feedType}</Badge>
-                        <div className="flex justify-between items-center text-xs mt-1 border-t pt-2">
+                        <div className="flex justify-between items-center text-xs mt-3 border-t pt-2">
                           <p className="font-bold text-primary">₹{brand.price}</p>
                           <p className="text-muted-foreground">{brand.bagWeight} किग्रॅ</p>
                         </div>
@@ -422,9 +453,12 @@ export default function BrandManagement() {
         <div className="text-center border-b-2 border-black pb-2 mb-4">
           <h1 className="text-xl font-bold uppercase">मास्टर ब्रँड लिस्ट रिपोर्ट</h1>
           <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+          {filterBrandId !== "all" && (
+            <p className="text-[10px] mt-1 font-bold">फिल्टर: {brands.find(b => b.id === filterBrandId)?.name}</p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {brands.map((brand, index) => (
+          {filteredBrands.map((brand, index) => (
             <div key={brand.id} className="border border-gray-200 p-2 rounded-sm break-inside-avoid shadow-none">
               <h2 className="text-xs font-bold border-b border-gray-200 mb-2 pb-1 text-primary">{index + 1}. {brand.name}</h2>
               <DetailedBrandTable brand={brand} isPrint={true} />
@@ -457,7 +491,7 @@ export default function BrandManagement() {
             </div>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {brands.map((brand, index) => (
+            {filteredBrands.map((brand, index) => (
               <div key={brand.id} className="border p-3 rounded-lg bg-white shadow-sm break-inside-avoid">
                 <h3 className="text-sm font-bold text-primary border-b mb-3 pb-1">
                   {index + 1}. {brand.name} ({brand.feedType})
