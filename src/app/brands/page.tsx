@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee, Layers } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -36,8 +36,10 @@ const CowIcon = ({ className }: { className?: string }) => (
 );
 
 export default function BrandManagement() {
-  const { getBrands, addBrand, deleteBrand } = useBrandStore();
+  const { getBrands, addBrand, updateBrand, deleteBrand } = useBrandStore();
   const [brands, setBrands] = useState<MasterBrand[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  
   const [newBrandName, setNewBrandName] = useState("");
   const [feedType, setFeedType] = useState("Pellet");
   const [bagWeight, setBagWeight] = useState("");
@@ -66,12 +68,30 @@ export default function BrandManagement() {
     setIngredients(newIngs);
   };
 
+  const handleEditBrand = (brand: MasterBrand) => {
+    setEditingId(brand.id);
+    setNewBrandName(brand.name);
+    setFeedType(brand.feedType);
+    setBagWeight(brand.bagWeight);
+    setAvailableWeights(brand.availableWeights);
+    setPrice(brand.price);
+    setNutrition(brand.nutrition);
+    setIngredients(brand.ingredients);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    resetForm();
+  };
+
   const handleSaveBrand = () => {
     if (!newBrandName) {
       toast({ variant: "destructive", title: "त्रुटी", description: "ब्रँडचे नाव आवश्यक आहे." });
       return;
     }
-    addBrand({
+
+    const brandData = {
       name: newBrandName,
       feedType,
       bagWeight,
@@ -79,10 +99,19 @@ export default function BrandManagement() {
       price,
       nutrition,
       ingredients
-    });
+    };
+
+    if (editingId) {
+      updateBrand(editingId, brandData);
+      toast({ title: "यशस्वी", description: "ब्रँडची माहिती अपडेट झाली!" });
+    } else {
+      addBrand(brandData);
+      toast({ title: "यशस्वी", description: "नवीन ब्रँड मास्टर लिस्टमध्ये जतन झाला!" });
+    }
+
     setBrands(getBrands());
+    setEditingId(null);
     resetForm();
-    toast({ title: "यशस्वी", description: "नवीन ब्रँड मास्टर लिस्टमध्ये जतन झाला!" });
   };
 
   const handleDeleteBrand = (id: string) => {
@@ -118,11 +147,18 @@ export default function BrandManagement() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Add New Brand Form */}
+          {/* Add/Edit Brand Form */}
           <div className="lg:col-span-1 space-y-6">
             <Card className="border-primary/20 shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg">नवीन ब्रँड जोडा</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg">
+                  {editingId ? "ब्रँड संपादित करा" : "नवीन ब्रँड जोडा"}
+                </CardTitle>
+                {editingId && (
+                  <Button variant="ghost" size="icon" onClick={handleCancelEdit}>
+                    <X className="h-4 w-4" />
+                  </Button>
+                )}
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -217,9 +253,16 @@ export default function BrandManagement() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-primary mt-4 shadow-md" onClick={handleSaveBrand}>
-                  <Save className="mr-2 h-4 w-4" /> ब्रँड जतन करा
-                </Button>
+                <div className="flex gap-2 pt-4">
+                  {editingId && (
+                    <Button variant="outline" className="flex-1" onClick={handleCancelEdit}>
+                      रद्द करा
+                    </Button>
+                  )}
+                  <Button className="flex-1 bg-primary shadow-md" onClick={handleSaveBrand}>
+                    <Save className="mr-2 h-4 w-4" /> {editingId ? "अपडेट करा" : "ब्रँड जतन करा"}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -237,14 +280,24 @@ export default function BrandManagement() {
                   <div className="space-y-4">
                     {brands.map((brand) => (
                       <div key={brand.id} className="p-4 border rounded-lg bg-muted/20 relative group hover:border-primary/30 transition-colors">
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="absolute top-2 right-2 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleDeleteBrand(brand.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-primary"
+                            onClick={() => handleEditBrand(brand)}
+                          >
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="text-destructive"
+                            onClick={() => handleDeleteBrand(brand.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-bold text-lg text-primary">{brand.name}</h3>

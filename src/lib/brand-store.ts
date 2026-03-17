@@ -39,11 +39,17 @@ export const useBrandStore = () => {
     return newBrand;
   };
 
+  const updateBrand = (id: string, updatedData: Omit<MasterBrand, 'id'>) => {
+    const brands = getBrands();
+    const updatedBrands = brands.map(b => b.id === id ? { ...updatedData, id } : b);
+    localStorage.setItem('pashudhan_master_brands', JSON.stringify(updatedBrands));
+  };
+
   const deleteBrand = (id: string) => {
     const brands = getBrands();
     const filtered = brands.filter(b => b.id !== id);
     localStorage.setItem('pashudhan_master_brands', JSON.stringify(filtered));
   };
 
-  return { getBrands, addBrand, deleteBrand };
+  return { getBrands, addBrand, updateBrand, deleteBrand };
 };
