@@ -223,13 +223,13 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {d.customQuestions && d.customQuestions.length > 0 && (
+        {d.customPoints && d.customPoints.length > 0 && (
           <section className="break-inside-avoid">
             <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>११. ॲड पॉइंट्स</h4>
             <Table className="border rounded-sm">
               <TableBody>
-                {d.customQuestions.map((cq: any, idx: number) => (
-                  <DataRow key={idx} label={`मुद्दा ${idx + 1}`} value={cq.question} />
+                {d.customPoints.map((pt: any, idx: number) => (
+                  <DataRow key={idx} label={`मुद्दा ${idx + 1}`} value={pt.point} />
                 ))}
               </TableBody>
             </Table>
@@ -247,7 +247,7 @@ export default function SurveysList() {
   };
 
   const SurveyItem = ({ survey }: { survey: SurveyRecord }) => (
-    <Card key={survey.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3">
+    <Card key={survey.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
       <CardContent className="p-0">
         <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
           <div className="flex gap-3 items-center">
@@ -259,7 +259,7 @@ export default function SurveysList() {
                 {survey.data.dairyName || survey.data.farmerName}
               </h3>
               <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
-                <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {survey.data.village}, {survey.data.taluka}</span>
+                <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {survey.data.village}, {survey.data.taluka}</span>
                 <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
                 <Badge variant={survey.type === 'dairy' ? 'default' : 'secondary'} className={`${survey.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
                   {survey.type === 'dairy' ? 'दूध संकलन केंद्र' : 'शेतकरी ब्रँड'}
@@ -267,7 +267,7 @@ export default function SurveysList() {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+          <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
             <Button 
               variant="outline" 
               size="sm" 
@@ -277,10 +277,10 @@ export default function SurveysList() {
                 setIsDialogOpen(true);
               }}
             >
-              <Eye className="h-3.5 w-3.5" /> View
+              <Eye className="h-3.5 w-3.5" /> पहा
             </Button>
             <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(survey.id)}>
-              <Trash2 className="h-3.5 w-3.5" /> Delete
+              <Trash2 className="h-3.5 w-3.5" /> हटवा
             </Button>
           </div>
         </div>
@@ -301,7 +301,7 @@ export default function SurveysList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input 
               placeholder="शोध (नाव, गाव...)" 
-              className="pl-9 h-9 text-sm"
+              className="pl-9 h-9 text-sm bg-white"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -321,7 +321,7 @@ export default function SurveysList() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all">
+          <TabsContent value="all" className="space-y-1">
             {filterSurveys().length === 0 ? (
               <EmptyState />
             ) : (
@@ -329,7 +329,7 @@ export default function SurveysList() {
             )}
           </TabsContent>
 
-          <TabsContent value="dairy">
+          <TabsContent value="dairy" className="space-y-1">
             {filterSurveys('dairy').length === 0 ? (
               <EmptyState message="दूध संकलन केंद्र रिपोर्ट उपलब्ध नाहीत." />
             ) : (
@@ -337,7 +337,7 @@ export default function SurveysList() {
             )}
           </TabsContent>
 
-          <TabsContent value="farmer">
+          <TabsContent value="farmer" className="space-y-1">
             {filterSurveys('farmer').length === 0 ? (
               <EmptyState message="शेतकरी ब्रँड रिपोर्ट उपलब्ध नाहीत." />
             ) : (
@@ -370,7 +370,7 @@ export default function SurveysList() {
           ` }} />
           <div className="print-report-container w-full">
             {selectedSurvey ? (
-              <div className="border p-3 rounded-sm mb-4 break-inside-avoid">
+              <div className="border p-3 rounded-sm mb-4 break-inside-avoid shadow-none">
                 <div className="text-center border-b pb-1 mb-2">
                   <h2 className="text-lg font-bold">पशुखाद्य सर्वेक्षण रिपोर्ट</h2>
                   <p className="text-[10px]">{selectedSurvey.type === 'dairy' ? 'दूध संकलन केंद्र' : 'शेतकरी ब्रँड'} सर्वेक्षण</p>
@@ -379,7 +379,7 @@ export default function SurveysList() {
               </div>
             ) : (
               surveys.map(survey => (
-                <div key={survey.id} className="border p-3 rounded-sm mb-4 break-inside-avoid">
+                <div key={survey.id} className="border p-3 rounded-sm mb-4 break-inside-avoid shadow-none">
                   <div className="text-center border-b pb-1 mb-2 bg-muted/5">
                     <h2 className="text-md font-bold">पशुखाद्य सर्वेक्षण रिपोर्ट</h2>
                     <p className="text-[9px]">{survey.type === 'dairy' ? 'दूध संकलन केंद्र' : 'शेतकरी ब्रँड'}</p>
@@ -397,9 +397,9 @@ export default function SurveysList() {
 
 function EmptyState({ message = "कोणतेही सर्वेक्षण उपलब्ध नाही." }: { message?: string }) {
   return (
-    <div className="text-center py-16 bg-white rounded-xl border border-dashed">
-      <FileText className="h-10 w-10 text-muted-foreground mx-auto mb-3 opacity-20" />
-      <p className="text-muted-foreground text-sm">{message}</p>
+    <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
+      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
+      <p className="text-muted-foreground text-sm font-medium">{message}</p>
     </div>
   );
 }

@@ -90,9 +90,8 @@ const dairySchema = z.object({
   otherProblem: z.string().optional(),
   sampleTrial: z.string().optional(),
   goodFeedOpinion: z.string().optional(),
-  customQuestions: z.array(z.object({
-    question: z.string(),
-    answer: z.string(),
+  customPoints: z.array(z.object({
+    point: z.string(),
   })).default([]),
   surveyorName: z.string().min(1, "सर्वेक्षकाचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -117,7 +116,7 @@ export default function DairySurvey() {
       district: "",
       taluka: "",
       brandsInfo: [],
-      customQuestions: [],
+      customPoints: [],
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
     }
@@ -128,9 +127,9 @@ export default function DairySurvey() {
     name: "brandsInfo",
   });
 
-  const { fields: customFields, append: appendCustom, remove: removeCustom } = useFieldArray({
+  const { fields: pointFields, append: appendPoint, remove: removePoint } = useFieldArray({
     control: form.control,
-    name: "customQuestions",
+    name: "customPoints",
   });
 
   useEffect(() => {
@@ -225,7 +224,7 @@ export default function DairySurvey() {
           <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold font-headline text-primary">पशुखाद्य सर्वेक्षण फॉर्म (Dairy Survey)</h1>
+          <h1 className="text-2xl font-bold font-headline text-primary">डेअरी सर्वेक्षण फॉर्म (Dairy Survey)</h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -646,7 +645,7 @@ export default function DairySurvey() {
               <div className="space-y-2">
                 <Label className="text-sm">पशुखाद्याबाबत मुख्य समस्या काय आहे?</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {["जास्त किंमत", "कमी गुणवत्ता", "उपलब्धतेची अडचण", "उधारी मिळत नाही"].map((p) => (
+                  {["जास्त किंमत", "कमी गुणवत्ता", "उपलब्धतेची अडधण", "उधारी मिळत नाही"].map((p) => (
                     <div key={p} className="flex items-center space-x-2">
                       <Checkbox 
                         id={p} 
@@ -690,29 +689,33 @@ export default function DairySurvey() {
                 type="button" 
                 variant="outline" 
                 size="sm" 
-                onClick={() => appendCustom({ question: "", answer: "" })}
+                onClick={() => appendPoint({ point: "" })}
                 className="gap-2"
               >
                 <PlusCircle className="h-4 w-4" /> नवीन मुद्दा जोडा
               </Button>
             </h3>
             <div className="space-y-4">
-              {customFields.length === 0 ? (
+              {pointFields.length === 0 ? (
                 <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या गरजेनुसार अतिरिक्त मुद्दे जोडू शकता.</p>
               ) : (
-                customFields.map((field, index) => (
-                  <div key={field.id} className="p-2 border rounded-lg space-y-1 relative group">
+                pointFields.map((field, index) => (
+                  <div key={field.id} className="p-3 border rounded-lg bg-muted/5 relative space-y-2 group">
                     <Button 
                       type="button"
                       variant="ghost" 
                       size="icon" 
-                      className="absolute top-2 right-2 text-destructive h-7 w-7"
-                      onClick={() => removeCustom(index)}
+                      className="absolute top-2 right-2 text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removePoint(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                    <Label className="text-xs">मुद्दा {index + 1}</Label>
-                    <Textarea {...form.register(`customQuestions.${index}.question` as const)} placeholder="माहिती लिहा..." className="h-16 text-xs" />
+                    <Label className="text-xs font-bold text-primary">मुद्दा {index + 1}</Label>
+                    <Textarea 
+                      {...form.register(`customPoints.${index}.point` as const)} 
+                      placeholder="माहिती लिहा..." 
+                      className="h-20 text-xs bg-white" 
+                    />
                   </div>
                 ))
               )}
@@ -741,7 +744,7 @@ export default function DairySurvey() {
             <Button type="button" variant="outline" onClick={() => window.print()} className="gap-2">
               <Printer className="h-4 w-4" /> PDF प्रिंट करा
             </Button>
-            <Button type="submit" className="gap-2 bg-primary">
+            <Button type="submit" className="gap-2 bg-primary hover:bg-primary/90">
               <Save className="h-4 w-4" /> डेटा जतन करा
             </Button>
           </div>

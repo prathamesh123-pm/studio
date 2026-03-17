@@ -75,9 +75,8 @@ const farmerSchema = z.object({
   improvements: z.string(),
   switchIfCheaper: z.string().optional(),
   idealFeedQualities: z.string(),
-  customQuestions: z.array(z.object({
-    question: z.string(),
-    answer: z.string(),
+  customPoints: z.array(z.object({
+    point: z.string(),
   })).default([]),
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -102,16 +101,16 @@ export default function FarmerSurvey() {
       selectionReason: [],
       switchReason: [],
       problems: [],
-      customQuestions: [],
+      customPoints: [],
       packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "" },
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
     }
   });
 
-  const { fields: customFields, append: appendCustom, remove: removeCustom } = useFieldArray({
+  const { fields: pointFields, append: appendPoint, remove: removePoint } = useFieldArray({
     control: form.control,
-    name: "customQuestions",
+    name: "customPoints",
   });
 
   useEffect(() => {
@@ -592,29 +591,33 @@ export default function FarmerSurvey() {
                 type="button" 
                 variant="outline" 
                 size="sm" 
-                onClick={() => appendCustom({ question: "", answer: "" })}
+                onClick={() => appendPoint({ point: "" })}
                 className="gap-2 text-accent border-accent hover:bg-accent/10"
               >
                 <PlusCircle className="h-4 w-4" /> नवीन मुद्दा जोडा
               </Button>
             </h3>
             <div className="space-y-4">
-              {customFields.length === 0 ? (
+              {pointFields.length === 0 ? (
                 <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या गरजेनुसार अतिरिक्त मुद्दे जोडू शकता.</p>
               ) : (
-                customFields.map((field, index) => (
-                  <div key={field.id} className="p-2 border rounded-lg space-y-1 relative group">
+                pointFields.map((field, index) => (
+                  <div key={field.id} className="p-3 border rounded-lg bg-accent/5 relative space-y-2 group">
                     <Button 
                       type="button"
                       variant="ghost" 
                       size="icon" 
-                      className="absolute top-2 right-2 text-destructive h-7 w-7"
-                      onClick={() => removeCustom(index)}
+                      className="absolute top-2 right-2 text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removePoint(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                    <Label className="text-xs">मुद्दा {index + 1}</Label>
-                    <Textarea {...form.register(`customQuestions.${index}.question` as const)} placeholder="माहिती लिहा..." className="h-16 text-xs" />
+                    <Label className="text-xs font-bold text-accent">मुद्दा {index + 1}</Label>
+                    <Textarea 
+                      {...form.register(`customPoints.${index}.point` as const)} 
+                      placeholder="माहिती लिहा..." 
+                      className="h-20 text-xs bg-white" 
+                    />
                   </div>
                 ))
               )}

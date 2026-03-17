@@ -39,12 +39,16 @@ export default function Dashboard() {
     // Calculate stats
     const uniqueDistricts = new Set(surveys.map(s => s.data.district).filter(Boolean));
     
-    // Simple brand frequency
+    // Simple brand frequency calculation
     const brandCounts: Record<string, number> = {};
     surveys.forEach(s => {
+      // In Farmer survey it's currentBrand, in Dairy it might be in brandsInfo or bestBrand
       const brand = s.data.currentBrand || s.data.bestBrand;
-      if (brand) brandCounts[brand] = (brandCounts[brand] || 0) + 1;
+      if (brand && typeof brand === 'string') {
+        brandCounts[brand] = (brandCounts[brand] || 0) + 1;
+      }
     });
+    
     const topBrand = Object.entries(brandCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "माहिती नाही";
 
     setStats({
@@ -83,7 +87,7 @@ export default function Dashboard() {
         </header>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <Card className="bg-white border-primary/20 shadow-sm">
+          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">एकूण सर्वेक्षणे</CardTitle>
               <Users className="h-4 w-4 text-primary" />
@@ -92,7 +96,7 @@ export default function Dashboard() {
               <div className="text-2xl font-bold">{stats.total}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-primary/20 shadow-sm">
+          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">सक्रिय जिल्हे</CardTitle>
               <MapPin className="h-4 w-4 text-primary" />
@@ -101,7 +105,7 @@ export default function Dashboard() {
               <div className="text-2xl font-bold">{stats.districts}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-primary/20 shadow-sm">
+          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">लोकप्रिय ब्रँड</CardTitle>
               <TrendingUp className="h-4 w-4 text-accent" />
@@ -110,7 +114,7 @@ export default function Dashboard() {
               <div className="text-lg font-bold text-accent truncate">{stats.popularBrand}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-primary/20 shadow-sm">
+          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">मास्टर ब्रँड्स</CardTitle>
               <FileText className="h-4 w-4 text-primary" />
@@ -119,7 +123,7 @@ export default function Dashboard() {
               <div className="text-2xl font-bold">{stats.totalBrands}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-primary/20 shadow-sm">
+          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">पुरवठादार</CardTitle>
               <Store className="h-4 w-4 text-primary" />
@@ -171,7 +175,7 @@ export default function Dashboard() {
             <Card className="bg-white border-primary/20 shadow-md h-full">
               <CardHeader>
                 <CardTitle className="text-primary font-headline flex items-center gap-2">
-                  <Clock className="h-5 w-5" /> अलीकडील हालचाली
+                  <Clock className="h-5 w-5" /> अलीकडील सर्वेक्षणे
                 </CardTitle>
                 <CardDescription>नुकतेच पूर्ण झालेले सर्वे रिपोर्ट.</CardDescription>
               </CardHeader>
@@ -184,13 +188,13 @@ export default function Dashboard() {
                     </div>
                   ) : (
                     recentSurveys.map((survey, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-transparent hover:border-primary/20 transition-colors">
+                      <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-transparent hover:border-primary/20 transition-all hover:bg-white hover:shadow-sm">
                         <div>
                           <p className="font-bold text-sm text-primary">
                             {survey.type === 'dairy' ? survey.data.dairyName : survey.data.farmerName}
                           </p>
                           <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
-                            <MapPin className="h-3 w-3" /> {survey.data.village}, {survey.data.taluka}
+                            <MapPin className="h-3 w-3 text-primary" /> {survey.data.village}, {survey.data.taluka}
                           </p>
                           <div className="mt-1">
                             <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full ${survey.type === 'dairy' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
@@ -198,7 +202,7 @@ export default function Dashboard() {
                             </span>
                           </div>
                         </div>
-                        <span className="text-[10px] font-medium text-muted-foreground bg-white px-2 py-1 rounded border shadow-sm">
+                        <span className="text-[10px] font-medium text-muted-foreground bg-white px-2 py-1 rounded border shadow-sm shrink-0 ml-2">
                           {new Date(survey.timestamp).toLocaleDateString('mr-IN')}
                         </span>
                       </div>
