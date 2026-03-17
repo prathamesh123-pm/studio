@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -32,7 +31,6 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
@@ -152,53 +150,40 @@ export default function SupplierManagement() {
 
   const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b">
-      <TableHead className="w-1/2 font-bold bg-muted/10 py-1 px-2 text-[10px] md:text-xs h-auto border-r">{label}</TableHead>
-      <TableCell className="py-1 px-2 text-[10px] md:text-xs h-auto">
+      <TableHead className="w-[45%] font-bold bg-muted/5 py-1 px-2 text-[10px] md:text-xs h-auto border-r leading-tight">{label}</TableHead>
+      <TableCell className="py-1 px-2 text-[10px] md:text-xs h-auto leading-tight">
         {typeof value === 'boolean' ? (value ? 'होय' : 'नाही') : (value || '-')}
       </TableCell>
     </TableRow>
   );
 
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
-    <div className={`space-y-3 py-2 ${isPrint ? 'space-y-1' : ''}`}>
-      <section>
-        <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">१. सामान्य माहिती</h4>
+    <div className={`space-y-2 py-1 ${isPrint ? 'space-y-1' : ''}`}>
+      <section className="break-inside-avoid">
+        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">१. सामान्य व संपर्क</h4>
         <Table className="border rounded-sm">
           <TableBody>
-            <SupplierDataRow label="दुकानाचे / एजन्सीचे नाव" value={supplier.shopName} />
-            <SupplierDataRow label="पुरवठादार प्रकार" value={supplier.supplierType === 'Retailer' ? 'किरकोळ (Retailer)' : supplier.supplierType === 'Wholesaler' ? 'घाऊक (Wholesaler)' : 'डिस्ट्रीब्युटर'} />
-            <SupplierDataRow label="पुरवठादाराचे नाव" value={supplier.name} />
-            <SupplierDataRow label="संपर्क क्रमांक" value={supplier.contact} />
+            <SupplierDataRow label="दुकानाचे नाव" value={supplier.shopName} />
+            <SupplierDataRow label="प्रकार" value={supplier.supplierType} />
+            <SupplierDataRow label="मालक / संपर्क" value={`${supplier.name} / ${supplier.contact}`} />
           </TableBody>
         </Table>
       </section>
 
-      <section>
-        <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">२. लोकेशन व पत्ता</h4>
+      <section className="break-inside-avoid">
+        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">२. लोकेशन व ब्रँड्स</h4>
         <Table className="border rounded-sm">
           <TableBody>
-            <SupplierDataRow label="जिल्हा" value={supplier.district} />
-            <SupplierDataRow label="तालुका" value={supplier.taluka} />
-            <SupplierDataRow label="पूर्ण पत्ता" value={supplier.address} />
-          </TableBody>
-        </Table>
-      </section>
-
-      <section>
-        <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">३. व्यावसायिक माहिती</h4>
-        <Table className="border rounded-sm">
-          <TableBody>
+            <SupplierDataRow label="पत्ता" value={`${supplier.taluka}, ${supplier.district}`} />
             <SupplierDataRow label="मुख्य ब्रँड्स" value={supplier.mainBrands} />
-            <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery} />
-            <SupplierDataRow label="उधारी सुविधा" value={supplier.providesCredit} />
-            <SupplierDataRow label="नोंदणी दिनांक" value={new Date(supplier.timestamp).toLocaleDateString('mr-IN')} />
+            <SupplierDataRow label="डिलिव्हरी / उधारी" value={`${supplier.providesDelivery ? 'आहे' : 'नाही'} / ${supplier.providesCredit ? 'आहे' : 'नाही'}`} />
           </TableBody>
         </Table>
       </section>
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
-        <section>
-          <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">४. ऍड पॉईंट्स (इतर मुद्दे)</h4>
+        <section className="break-inside-avoid">
+          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">३. ऍड पॉईंट्स</h4>
           <Table className="border rounded-sm">
             <TableBody>
               {supplier.customPoints.map((pt, idx) => (
@@ -217,7 +202,7 @@ export default function SupplierManagement() {
       <div className="container mx-auto px-4 py-8 max-w-7xl no-print">
         <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पुरवठादार व्यवस्थापन (Suppliers)</h1>
+            <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पुरवठादार व्यवस्थापन</h1>
             <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही पशुखाद्य पुरवठादारांची माहिती जतन करू शकता.</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
@@ -225,19 +210,18 @@ export default function SupplierManagement() {
               <FileText className="h-4 w-4" /> मास्टर रिपोर्ट पहा
             </Button>
             <Button onClick={() => window.print()} className="gap-2 bg-primary">
-              <Printer className="h-4 w-4" /> प्रिंट रिपोर्ट
+              <Printer className="h-4 w-4" /> प्रिंट लिस्ट
             </Button>
           </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Add/Edit Form */}
           <div className="lg:col-span-4">
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="pb-4 flex flex-row items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <UserPlus className="h-5 w-5 text-primary" /> 
-                  {editingId ? "पुरवठादार संपादन करा" : "नवीन पुरवठादार जोडा"}
+                  {editingId ? "पुरवठादार संपादन" : "नवीन पुरवठादार"}
                 </CardTitle>
                 {editingId && (
                   <Button variant="ghost" size="icon" onClick={resetForm}>
@@ -246,38 +230,36 @@ export default function SupplierManagement() {
                 )}
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <Label>पुरवठादाराचे नाव</Label>
-                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="उदा. विशाल कदम" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>दुकानाचे / एजन्सीचे नाव</Label>
-                    <Input value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="उदा. महालक्ष्मी पशुखाद्य" />
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">पुरवठादाराचे नाव</Label>
+                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="पूर्ण नाव" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">दुकानाचे नाव</Label>
+                  <Input value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="उदा. महालक्ष्मी पशुखाद्य" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>संपर्क क्रमांक</Label>
-                    <Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="मोबाईल नंबर" maxLength={10} />
+                    <Label className="text-xs">संपर्क</Label>
+                    <Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="मोबाईल" maxLength={10} />
                   </div>
                   <div className="space-y-2">
-                    <Label>पुरवठादार प्रकार</Label>
+                    <Label className="text-xs">प्रकार</Label>
                     <Select value={supplierType} onValueChange={(v: any) => setSupplierType(v)}>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Retailer">किरकोळ (Retailer)</SelectItem>
-                        <SelectItem value="Wholesaler">घाऊक (Wholesaler)</SelectItem>
-                        <SelectItem value="Distributor">डिस्ट्रीब्युटर</SelectItem>
+                        <SelectItem value="Retailer">Retailer</SelectItem>
+                        <SelectItem value="Wholesaler">Wholesaler</SelectItem>
+                        <SelectItem value="Distributor">Distributor</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label>मुख्य ब्रँड्स (Main Brands)</Label>
-                  <Input value={mainBrands} onChange={(e) => setMainBrands(e.target.value)} placeholder="उदा. गोदरेज, कपिला, अमूल" />
+                  <Label className="text-xs">मुख्य ब्रँड्स</Label>
+                  <Input value={mainBrands} onChange={(e) => setMainBrands(e.target.value)} placeholder="उदा. गोदरेज, कपिला" />
                 </div>
                 
                 <LocationSelector 
@@ -287,42 +269,42 @@ export default function SupplierManagement() {
                 />
 
                 <div className="space-y-2">
-                  <Label>पूर्ण पत्ता</Label>
-                  <Textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="गावाचे नाव, गल्ली इ." className="h-16" />
+                  <Label className="text-xs">पूर्ण पत्ता</Label>
+                  <Textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="गावाचे नाव इ." className="h-16 text-xs" />
                 </div>
 
                 <div className="flex flex-wrap gap-4 pt-2">
                   <div className="flex items-center space-x-2">
                     <Checkbox id="delivery" checked={providesDelivery} onCheckedChange={(v: boolean) => setProvidesDelivery(v)} />
-                    <Label htmlFor="delivery" className="text-xs cursor-pointer flex items-center gap-1"><Truck className="h-3 w-3" /> डिलिव्हरी सुविधा</Label>
+                    <Label htmlFor="delivery" className="text-[10px] cursor-pointer flex items-center gap-1"><Truck className="h-3 w-3" /> डिलिव्हरी</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Checkbox id="credit" checked={providesCredit} onCheckedChange={(v: boolean) => setProvidesCredit(v)} />
-                    <Label htmlFor="credit" className="text-xs cursor-pointer flex items-center gap-1"><CreditCard className="h-3 w-3" /> उधारी सुविधा</Label>
+                    <Label htmlFor="credit" className="text-[10px] cursor-pointer flex items-center gap-1"><CreditCard className="h-3 w-3" /> उधारी</Label>
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-primary font-bold">ऍड पॉईंट्स (इतर मुद्दे)</Label>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-xs">
-                      <PlusCircle className="h-3 w-3 mr-1" /> मुद्दा जोडा
+                    <Label className="text-primary font-bold text-sm">ऍड पॉईंट्स (इतर)</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-[10px]">
+                      <PlusCircle className="h-3 w-3 mr-1" /> जोडा
                     </Button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {customPoints.map((pt, idx) => (
-                      <div key={idx} className="p-3 border rounded-lg bg-muted/20 relative space-y-2">
+                      <div key={idx} className="p-3 border rounded-lg bg-muted/10 relative space-y-2">
                         <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6 text-destructive" onClick={() => handleRemovePoint(idx)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                         <Input 
-                          placeholder="मुद्दा / प्रश्न" 
+                          placeholder="मुद्दा" 
                           value={pt.point} 
                           onChange={(e) => handlePointChange(idx, "point", e.target.value)}
                           className="h-8 text-xs"
                         />
                         <Textarea 
-                          placeholder="उत्तर / माहिती" 
+                          placeholder="माहिती" 
                           value={pt.value} 
                           onChange={(e) => handlePointChange(idx, "value", e.target.value)}
                           className="h-16 text-xs"
@@ -334,17 +316,16 @@ export default function SupplierManagement() {
 
                 <div className="flex gap-2 pt-4">
                   {editingId && (
-                    <Button variant="outline" className="flex-1" onClick={resetForm}>रद्द करा</Button>
+                    <Button variant="outline" className="flex-1" onClick={resetForm}>रद्द</Button>
                   )}
                   <Button className="flex-1 bg-primary shadow-sm" onClick={handleSaveSupplier}>
-                    <Save className="mr-2 h-4 w-4" /> {editingId ? "अपडेट करा" : "जतन करा"}
+                    <Save className="mr-2 h-4 w-4" /> {editingId ? "अपडेट" : "जतन करा"}
                   </Button>
                 </div>
               </CardContent>
             </Card>
           </div>
 
-          {/* List View */}
           <div className="lg:col-span-8">
             <Card className="border-primary/20 shadow-md">
               <CardHeader>
@@ -352,80 +333,24 @@ export default function SupplierManagement() {
               </CardHeader>
               <CardContent>
                 {suppliers.length === 0 ? (
-                  <div className="text-center py-16 text-muted-foreground bg-muted/20 rounded-lg border border-dashed">
+                  <div className="text-center py-16 text-muted-foreground bg-muted/5 rounded-lg border border-dashed">
                     <Store className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                    अद्याप कोणतीही माहिती जोडलेली नाही.
+                    पुरवठादार उपलब्ध नाहीत.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {suppliers.map((s) => (
-                      <div key={s.id} className="p-4 border rounded-xl bg-white relative group hover:border-primary/40 transition-all shadow-sm flex flex-col">
-                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-primary"
-                            onClick={() => setViewingSupplier(s)}
-                            title="पहा"
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-primary"
-                            onClick={() => handleEdit(s)}
-                            title="संपादन करा"
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button 
-                            variant="ghost" 
-                            size="icon" 
-                            className="h-8 w-8 text-destructive"
-                            onClick={() => handleDelete(s.id)}
-                            title="हटवा"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
+                      <div key={s.id} className="p-4 border rounded-xl bg-white relative group hover:border-primary/40 transition-all shadow-sm">
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity no-print">
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => setViewingSupplier(s)}><Eye className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => handleEdit(s)}><Edit2 className="h-4 w-4" /></Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleDelete(s.id)}><Trash2 className="h-4 w-4" /></Button>
                         </div>
-                        
-                        <div className="mb-3">
-                          <div className="flex items-center justify-between mb-1">
-                            <Badge variant="outline" className="text-[10px] font-bold uppercase bg-primary/5 border-primary/20 text-primary">
-                              {s.supplierType === 'Retailer' ? 'किरकोळ' : s.supplierType === 'Wholesaler' ? 'घाऊक' : 'डिस्ट्रीब्युटर'}
-                            </Badge>
-                          </div>
-                          <h3 className="font-bold text-lg text-primary leading-tight pr-12">{s.shopName}</h3>
-                          <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mt-1">
-                            <UserPlus className="h-3.5 w-3.5" /> {s.name}
-                          </p>
-                        </div>
-
-                        {s.mainBrands && (
-                          <div className="mb-4">
-                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1">
-                              <ShoppingBag className="h-3 w-3" /> मुख्य ब्रँड्स:
-                            </p>
-                            <div className="flex flex-wrap gap-1">
-                              {s.mainBrands.split(',').map((brand, i) => (
-                                <Badge key={i} variant="secondary" className="text-[9px] py-0 px-1.5 bg-muted/50 font-normal">
-                                  {brand.trim()}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-
-                        <div className="mt-auto space-y-2 border-t pt-3">
-                          <div className="flex items-center gap-2 text-xs">
-                            <Phone className="h-3.5 w-3.5 text-primary/60" /> 
-                            <span className="font-bold">{s.contact}</span>
-                          </div>
-                          <div className="flex items-start gap-2 text-xs text-muted-foreground">
-                            <MapPin className="h-3.5 w-3.5 text-primary/60 shrink-0" /> 
-                            <span className="truncate">{s.taluka}, {s.district}</span>
-                          </div>
+                        <h3 className="font-bold text-base text-primary leading-tight pr-12">{s.shopName}</h3>
+                        <p className="text-xs font-medium text-muted-foreground mt-1">{s.name} ({s.supplierType})</p>
+                        <div className="mt-4 pt-3 border-t flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2 text-xs font-bold"><Phone className="h-3.5 w-3.5 text-primary" /> {s.contact}</div>
+                          <div className="flex items-center gap-2 text-[10px] text-muted-foreground"><MapPin className="h-3.5 w-3.5 text-primary" /> {s.taluka}, {s.district}</div>
                         </div>
                       </div>
                     ))}
@@ -437,51 +362,48 @@ export default function SupplierManagement() {
         </div>
       </div>
 
-      {/* Print View Layout */}
-      <div className="hidden print:block p-4 space-y-4 text-black bg-white">
+      <div className="hidden print:block p-4 text-black bg-white">
         <div className="text-center border-b-2 border-black pb-2 mb-4">
-          <h1 className="text-xl font-bold uppercase">पुरवठादार मास्टर रिपोर्ट (Table Format)</h1>
+          <h1 className="text-xl font-bold uppercase">पुरवठादार मास्टर रिपोर्ट</h1>
           <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
         </div>
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-2 gap-4">
           {suppliers.map((s, index) => (
-            <div key={s.id} className="border border-black p-2 rounded-sm break-inside-avoid">
-              <h2 className="text-sm font-bold border-b border-black mb-2">{index + 1}. {s.shopName} ({s.supplierType})</h2>
+            <div key={s.id} className="border border-gray-200 p-2 rounded-sm break-inside-avoid">
+              <h2 className="text-xs font-bold border-b border-gray-200 mb-2 pb-1 text-primary">{index + 1}. {s.shopName} ({s.supplierType})</h2>
               <DetailedSupplierTable supplier={s} isPrint={true} />
             </div>
           ))}
         </div>
       </div>
 
-      {/* View Details Dialog */}
       <Dialog open={!!viewingSupplier} onOpenChange={(open) => !open && setViewingSupplier(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-primary">
-              <Store className="h-5 w-5" /> पुरवठादार माहिती
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4">
+          <DialogHeader className="mb-2">
+            <DialogTitle className="flex items-center gap-2 text-primary border-b pb-1">
+              <Store className="h-5 w-5" /> पुरवठादार तपशील
             </DialogTitle>
           </DialogHeader>
           {viewingSupplier && <DetailedSupplierTable supplier={viewingSupplier} />}
         </DialogContent>
       </Dialog>
 
-      {/* Full Report Dialog */}
       <Dialog open={showFullReport} onOpenChange={setShowFullReport}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-6">
-          <DialogHeader className="border-b pb-4 mb-4">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4">
+          <DialogHeader className="border-b pb-2 mb-4">
             <div className="flex justify-between items-center">
               <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
-                <FileText className="h-6 w-6" /> संपूर्ण पुरवठादार रिपोर्ट (Table Format)
+                <FileText className="h-6 w-6" /> संपूर्ण पुरवठादार रिपोर्ट
               </DialogTitle>
-              <Button size="sm" onClick={() => window.print()} className="gap-2">
+              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs">
                 <Printer className="h-4 w-4" /> प्रिंट
               </Button>
             </div>
           </DialogHeader>
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {suppliers.map((s, index) => (
-              <div key={s.id} className="border p-4 rounded-lg bg-white shadow-sm">
-                <h3 className="text-lg font-bold text-primary border-b-2 mb-4 pb-1">
+              <div key={s.id} className="border p-3 rounded-lg bg-white shadow-sm break-inside-avoid">
+                <h3 className="text-sm font-bold text-primary border-b mb-3 pb-1">
                   {index + 1}. {s.shopName} ({s.supplierType})
                 </h3>
                 <DetailedSupplierTable supplier={s} />
