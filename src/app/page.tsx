@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardList, Database, FileText, BarChart3, Truck } from 'lucide-react';
+import { ClipboardList, BarChart3, LayoutDashboard, Truck } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -24,8 +24,8 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/dashboard">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg">
-                    डॅशबोर्ड पहा
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg gap-2">
+                    <LayoutDashboard className="h-5 w-5" /> डॅशबोर्ड पहा
                   </Button>
                 </Link>
               </div>
@@ -72,35 +72,6 @@ export default function Home() {
                 </Link>
               </CardContent>
             </Card>
-          </div>
-        </section>
-
-        {/* Features Info */}
-        <section className="py-16 bg-muted">
-          <div className="container px-4 mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-              <div className="flex flex-col items-center space-y-2">
-                <div className="p-3 bg-white rounded-full shadow-md">
-                  <Database className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-bold">सुरक्षित डेटा स्टोरेज</h3>
-                <p className="text-sm text-muted-foreground">सर्व सर्वेक्षणांचा डेटा सुरक्षितपणे साठवला जातो.</p>
-              </div>
-              <div className="flex flex-col items-center space-y-2">
-                <div className="p-3 bg-white rounded-full shadow-md">
-                  <FileText className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-bold">PDF रिपोर्ट जनरेशन</h3>
-                <p className="text-sm text-muted-foreground">प्रत्येक सर्वेक्षणानंतर त्वरित PDF रिपोर्ट डाउनलोड करा.</p>
-              </div>
-              <div className="flex flex-col items-center space-y-2">
-                <div className="p-3 bg-white rounded-full shadow-md">
-                  <BarChart3 className="h-6 w-6 text-primary" />
-                </div>
-                <h3 className="font-bold">AI विश्लेषण</h3>
-                <p className="text-sm text-muted-foreground">भागातील पशुखाद्य ट्रेंड्सचे स्वयंचलित AI विश्लेषण मिळवा.</p>
-              </div>
-            </div>
           </div>
         </section>
       </main>
