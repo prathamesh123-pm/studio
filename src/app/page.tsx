@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardList, Star, LayoutDashboard, Database, FileText, BarChart3, Truck } from 'lucide-react';
+import { ClipboardList, Database, FileText, BarChart3, Truck } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -25,7 +25,6 @@ export default function Home() {
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/dashboard">
                   <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg">
-                    <LayoutDashboard className="mr-2 h-5 w-5" />
                     डॅशबोर्ड पहा
                   </Button>
                 </Link>
@@ -43,7 +42,7 @@ export default function Home() {
                 <div className="p-3 bg-primary/10 rounded-full w-fit mb-2">
                   <ClipboardList className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="font-headline text-xl">डेअरी/मिल्किंग सेंटर सर्वेक्षण</CardTitle>
+                <CardTitle className="font-headline text-xl">गवळी/चिलिंग सेंटर सर्वेक्षण</CardTitle>
                 <CardDescription>पशुखाद्य सर्वेक्षण फॉर्म (Dairy Survey Form)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
