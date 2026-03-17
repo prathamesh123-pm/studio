@@ -160,30 +160,42 @@ export default function SupplierManagement() {
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
     <div className={`space-y-2 py-1 ${isPrint ? 'space-y-1' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">१. सामान्य व संपर्क</h4>
+        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">१. सामान्य माहिती</h4>
         <Table className="border rounded-sm">
           <TableBody>
             <SupplierDataRow label="दुकानाचे नाव" value={supplier.shopName} />
-            <SupplierDataRow label="प्रकार" value={supplier.supplierType} />
-            <SupplierDataRow label="मालक / संपर्क" value={`${supplier.name} / ${supplier.contact}`} />
+            <SupplierDataRow label="पुरवठादाराचे नाव" value={supplier.name} />
+            <SupplierDataRow label="संपर्क क्रमांक" value={supplier.contact} />
+            <SupplierDataRow label="पुरवठादार प्रकार" value={supplier.supplierType} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">२. लोकेशन व ब्रँड्स</h4>
+        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">२. लोकेशन व पत्ता</h4>
         <Table className="border rounded-sm">
           <TableBody>
-            <SupplierDataRow label="पत्ता" value={`${supplier.taluka}, ${supplier.district}`} />
+            <SupplierDataRow label="जिल्हा" value={supplier.district} />
+            <SupplierDataRow label="तालुका" value={supplier.taluka} />
+            <SupplierDataRow label="संपूर्ण पत्ता" value={supplier.address} />
+          </TableBody>
+        </Table>
+      </section>
+
+      <section className="break-inside-avoid">
+        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">३. व्यवसाय तपशील</h4>
+        <Table className="border rounded-sm">
+          <TableBody>
             <SupplierDataRow label="मुख्य ब्रँड्स" value={supplier.mainBrands} />
-            <SupplierDataRow label="डिलिव्हरी / उधारी" value={`${supplier.providesDelivery ? 'आहे' : 'नाही'} / ${supplier.providesCredit ? 'आहे' : 'नाही'}`} />
+            <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery} />
+            <SupplierDataRow label="उधारी सुविधा" value={supplier.providesCredit} />
           </TableBody>
         </Table>
       </section>
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">३. ऍड पॉईंट्स</h4>
+          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. अतिरिक्त मुद्दे (Add Points)</h4>
           <Table className="border rounded-sm">
             <TableBody>
               {supplier.customPoints.map((pt, idx) => (
@@ -231,7 +243,7 @@ export default function SupplierManagement() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-xs">पुरवठादाराचे नाव</Label>
+                  <Label className="text-xs">पुरवठादाराचे नाव (मालक)</Label>
                   <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="पूर्ण नाव" />
                 </div>
                 <div className="space-y-2">
