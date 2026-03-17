@@ -36,24 +36,24 @@ export function Navbar() {
         </Link>
         <div className="flex items-center gap-0.5 md:gap-1 lg:gap-2">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="h-8 px-2 md:h-9 md:px-3 gap-1.5 text-xs md:text-sm">
-              <BarChart3 className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-3 gap-1 md:gap-1.5 text-[10px] md:text-sm">
+              <BarChart3 className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Dashboard</span>
             </Button>
           </Link>
           <Link href="/brands">
-            <Button variant="ghost" size="sm" className="h-8 px-2 md:h-9 md:px-3 gap-1.5 text-xs md:text-sm">
-              <BookMarked className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-3 gap-1 md:gap-1.5 text-[10px] md:text-sm">
+              <BookMarked className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Brands</span>
             </Button>
           </Link>
           <Link href="/surveys">
-            <Button variant="ghost" size="sm" className="h-8 px-2 md:h-9 md:px-3 gap-1.5 text-xs md:text-sm">
-              <ClipboardList className="h-4 w-4" />
+            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-3 gap-1 md:gap-1.5 text-[10px] md:text-sm">
+              <ClipboardList className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Surveys</span>
             </Button>
           </Link>
-          <Button variant="outline" size="icon" className="rounded-full h-8 w-8 md:h-9 md:w-9 shrink-0 ml-1">
+          <Button variant="outline" size="icon" className="rounded-full h-8 w-8 md:h-9 md:w-9 shrink-0 ml-0.5">
             <User className="h-4 w-4" />
           </Button>
         </div>

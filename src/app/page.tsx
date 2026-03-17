@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Navbar } from '@/components/layout/Navbar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { ClipboardList, Star, LayoutDashboard, Database, FileText, BarChart3 } from 'lucide-react';
+import { ClipboardList, Star, LayoutDashboard, Database, FileText, BarChart3, Truck } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -43,12 +43,12 @@ export default function Home() {
                 <div className="p-3 bg-primary/10 rounded-full w-fit mb-2">
                   <ClipboardList className="h-8 w-8 text-primary" />
                 </div>
-                <CardTitle className="font-headline">डेअरी/मिल्किंग सेंटर सर्वेक्षण</CardTitle>
-                <CardDescription>पशुखाद्य सर्वेक्षण फॉर्म (Cattle Feed Survey Form)</CardDescription>
+                <CardTitle className="font-headline text-xl">डेअरी/मिल्किंग सेंटर सर्वेक्षण</CardTitle>
+                <CardDescription>पशुखाद्य सर्वेक्षण फॉर्म (Dairy Survey Form)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  दूध संकलन केंद्राकडून पशुखाद्य वापर, पशुधन संख्या आणि खरेदी तपशील गोळा करा.
+                  दूध संकलन केंद्राकडून पशुखाद्य वापर आणि खरेदी तपशील गोळा करा.
                 </p>
                 <Link href="/survey/dairy">
                   <Button className="w-full bg-primary shadow-sm">फॉर्म भरा</Button>
@@ -59,17 +59,17 @@ export default function Home() {
             <Card className="hover:shadow-lg transition-all border-accent/20 bg-white">
               <CardHeader>
                 <div className="p-3 bg-accent/10 rounded-full w-fit mb-2">
-                  <Star className="h-8 w-8 text-accent" />
+                  <Truck className="h-8 w-8 text-accent" />
                 </div>
-                <CardTitle className="font-headline">शेतकरी ब्रँड रिव्ह्यू</CardTitle>
-                <CardDescription>पशुखाद्य ब्रँड रिव्ह्यू व सर्वे प्रश्नावली</CardDescription>
+                <CardTitle className="font-headline text-xl">गवळी/चिलिंग सेंटर सर्वेक्षण</CardTitle>
+                <CardDescription>पशुखाद्य वितरण व वापर सर्वे प्रश्नावली</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  थेट शेतकऱ्यांकडून विविध पशुखाद्य ब्रँड्सची गुणवत्ता आणि परिणामांबद्दल माहिती घ्या.
+                  गवळी आणि चिलिंग सेंटर्सकडून पशुखाद्य पुरवठा व गुणवत्तेबद्दल माहिती घ्या.
                 </p>
                 <Link href="/survey/farmer">
-                  <Button className="w-full bg-accent hover:bg-accent/90 shadow-sm">रिव्ह्यू सुरू करा</Button>
+                  <Button className="w-full bg-accent hover:bg-accent/90 shadow-sm">सर्वेक्षण सुरू करा</Button>
                 </Link>
               </CardContent>
             </Card>
