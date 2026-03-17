@@ -20,7 +20,6 @@ import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 const farmerSchema = z.object({
-  // 1. शेतकरी माहिती
   farmerName: z.string().min(1, "नाव आवश्यक आहे"),
   mobile: z.string().min(10, "क्रमांक चुकीचा आहे"),
   district: z.string(),
@@ -32,44 +31,30 @@ const farmerSchema = z.object({
     buffaloes: z.string().default("0"),
     calves: z.string().default("0"),
   }),
-
-  // 2. कॅटल फीड वापर माहिती
   currentBrand: z.string().min(1, "ब्रँड नाव आवश्यक आहे"),
   usageDuration: z.string().optional(),
   dailyQtyPerAnimal: z.string(),
   frequency: z.string().optional(),
   otherFeeds: z.array(z.string()).default([]),
   otherFeedText: z.string().optional(),
-
-  // 3. ब्रँड निवड कारण
   selectionReason: z.array(z.string()).default([]),
   startMethod: z.string().optional(),
-
-  // 4. गुणवत्ता व परिणाम
   quality: z.string().optional(),
   milkIncrease: z.string().optional(),
   healthImprovement: z.string().optional(),
   likesFeed: z.string().optional(),
   fatDiff: z.string().optional(),
-
-  // 5. किंमत व खरेदी
   bagPrice: z.string(),
   bagWeight: z.string(),
   monthlyBags: z.string(),
   purchaseSource: z.string().optional(),
   hasCredit: z.string().optional(),
-
-  // 6. ब्रँड तुलना
   previousBrands: z.string(),
   betterBrand: z.string(),
   switchReason: z.array(z.string()).default([]),
-
-  // 7. उपलब्धता व सेवा
   easyAvailability: z.string().optional(),
   repVisit: z.string().optional(),
   samplesInfo: z.string().optional(),
-
-  // 8. घटक माहिती
   knowsIngredients: z.string().optional(),
   packNutrition: z.object({
     protein: z.string(),
@@ -78,23 +63,15 @@ const farmerSchema = z.object({
     calcium: z.string(),
     phosphorus: z.string(),
   }),
-
-  // 9. समाधान रेटिंग
   rating: z.string(),
-
-  // 10. समस्या व सूचना
   problems: z.array(z.string()).default([]),
   improvements: z.string(),
   switchIfCheaper: z.string().optional(),
   idealFeedQualities: z.string(),
-
-  // 11. अतिरिक्त प्रश्न
   customQuestions: z.array(z.object({
     question: z.string(),
     answer: z.string(),
   })).default([]),
-
-  // Surveyor Details
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
   surveyDate: z.string().optional(),
@@ -172,7 +149,7 @@ export default function FarmerSurvey() {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="flex items-center gap-4 mb-6 no-print">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-bold font-headline text-accent">कॅटल फीड ब्रँड रिव्ह्यू व सर्वे प्रश्नावली</h1>
@@ -554,7 +531,6 @@ export default function FarmerSurvey() {
             </div>
           </section>
 
-          {/* Section 11: Custom Questions */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center justify-between">
               ११. अतिरिक्त प्रश्न (Custom Questions)
@@ -575,6 +551,7 @@ export default function FarmerSurvey() {
                 customFields.map((field, index) => (
                   <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
                     <Button 
+                      type="button"
                       variant="ghost" 
                       size="icon" 
                       className="absolute top-2 right-2 text-destructive"

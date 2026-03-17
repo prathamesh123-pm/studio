@@ -79,20 +79,19 @@ export default function BrandManagement() {
 
   const handleEditBrand = (brand: MasterBrand) => {
     setEditingId(brand.id);
-    setNewBrandName(brand.name ?? "");
-    setFeedType(brand.feedType ?? "Pellet");
-    setBagWeight(brand.bagWeight ?? "");
-    setAvailableWeights(brand.availableWeights ?? "");
-    setPrice(brand.price ?? "");
-    setNutrition(brand.nutrition ?? {
+    setNewBrandName(brand.name || "");
+    setFeedType(brand.feedType || "Pellet");
+    setBagWeight(brand.bagWeight || "");
+    setAvailableWeights(brand.availableWeights || "");
+    setPrice(brand.price || "");
+    setNutrition(brand.nutrition || {
       protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
     });
-    setIngredients(brand.ingredients ?? [{ ingredient: "", percentage: "" }]);
+    setIngredients(brand.ingredients || [{ ingredient: "", percentage: "" }]);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancelEdit = () => {
-    setEditingId(null);
     resetForm();
   };
 
@@ -121,7 +120,6 @@ export default function BrandManagement() {
     }
 
     setBrands(getBrands());
-    setEditingId(null);
     resetForm();
   };
 
@@ -141,6 +139,7 @@ export default function BrandManagement() {
     setPrice("");
     setNutrition({ protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" });
     setIngredients([{ ingredient: "", percentage: "" }]);
+    setEditingId(null);
   };
 
   return (
@@ -152,8 +151,8 @@ export default function BrandManagement() {
             <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पशुखाद्य ब्रँड व्यवस्थापन</h1>
             <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक जतन करू शकता.</p>
           </div>
-          <div className="bg-primary/5 p-3 rounded-full hidden md:block">
-            <CowIcon className="h-10 w-10 text-primary opacity-40" />
+          <div className="bg-primary/5 p-3 rounded-full hidden md:block border border-primary/10">
+            <CowIcon className="h-10 w-10 text-primary opacity-60" />
           </div>
         </header>
 
@@ -166,7 +165,7 @@ export default function BrandManagement() {
                   {editingId ? "ब्रँड संपादित करा" : "नवीन ब्रँड जोडा"}
                 </CardTitle>
                 {editingId && (
-                  <Button variant="ghost" size="icon" onClick={handleCancelEdit}>
+                  <Button type="button" variant="ghost" size="icon" onClick={handleCancelEdit}>
                     <X className="h-4 w-4" />
                   </Button>
                 )}
@@ -174,13 +173,13 @@ export default function BrandManagement() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label>ब्रँड / कंपनीचे नाव</Label>
-                  <Input value={newBrandName ?? ""} onChange={(e) => setNewBrandName(e.target.value)} placeholder="उदा. गोदरेज गोल्ड" />
+                  <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value)} placeholder="उदा. गोदरेज गोल्ड" />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4">
                   <div className="space-y-2">
                     <Label>खाद्य प्रकार</Label>
-                    <Select value={feedType ?? "Pellet"} onValueChange={setFeedType}>
+                    <Select value={feedType} onValueChange={setFeedType}>
                       <SelectTrigger>
                         <SelectValue placeholder="प्रकार निवडा" />
                       </SelectTrigger>
@@ -197,18 +196,18 @@ export default function BrandManagement() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="flex items-center gap-1"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
-                    <Input type="number" value={bagWeight ?? ""} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
+                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value)} placeholder="उदा. 50" />
                   </div>
                   <div className="space-y-2">
                     <Label className="flex items-center gap-1"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
-                    <Input type="number" value={price ?? ""} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
+                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="उदा. 1500" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="flex items-center gap-1"><Layers className="h-3 w-3" /> उपलब्ध पॅकिंग (बॅग वजन किग्रॅ)</Label>
                   <Input 
-                    value={availableWeights ?? ""} 
+                    value={availableWeights} 
                     onChange={(e) => setAvailableWeights(e.target.value)} 
                     placeholder="उदा. 50, 25, 10" 
                   />
@@ -223,7 +222,7 @@ export default function BrandManagement() {
                         <Label className="text-xs capitalize">{key === 'mineralMix' ? 'Mineral Mix' : key}</Label>
                         <Input 
                           type="number" 
-                          value={(nutrition as any)[key] ?? ""} 
+                          value={(nutrition as any)[key] || ""} 
                           onChange={(e) => setNutrition({...nutrition, [key]: e.target.value})}
                           placeholder="%"
                           className="h-8"
@@ -236,7 +235,7 @@ export default function BrandManagement() {
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
                     <Label className="text-primary font-bold">घटक (Ingredients)</Label>
-                    <Button variant="outline" size="sm" onClick={handleAddIngredient}>
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient}>
                       <Plus className="h-3 w-3 mr-1" /> घटक
                     </Button>
                   </div>
@@ -245,18 +244,18 @@ export default function BrandManagement() {
                       <div key={idx} className="flex gap-2 items-center">
                         <Input 
                           placeholder="घटक" 
-                          value={ing.ingredient ?? ""} 
+                          value={ing.ingredient} 
                           onChange={(e) => handleIngredientChange(idx, "ingredient", e.target.value)}
                           className="h-8 flex-1"
                         />
                         <Input 
                           placeholder="%" 
-                          value={ing.percentage ?? ""} 
+                          value={ing.percentage} 
                           onChange={(e) => handleIngredientChange(idx, "percentage", e.target.value)}
                           className="h-8 w-16"
                           type="number"
                         />
-                        <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveIngredient(idx)}>
+                        <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveIngredient(idx)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
@@ -266,11 +265,11 @@ export default function BrandManagement() {
 
                 <div className="flex gap-2 pt-4">
                   {editingId && (
-                    <Button variant="outline" className="flex-1" onClick={handleCancelEdit}>
+                    <Button type="button" variant="outline" className="flex-1" onClick={handleCancelEdit}>
                       रद्द करा
                     </Button>
                   )}
-                  <Button className="flex-1 bg-primary shadow-md" onClick={handleSaveBrand}>
+                  <Button type="button" className="flex-1 bg-primary shadow-md" onClick={handleSaveBrand}>
                     <Save className="mr-2 h-4 w-4" /> {editingId ? "अपडेट करा" : "ब्रँड जतन करा"}
                   </Button>
                 </div>
@@ -293,6 +292,7 @@ export default function BrandManagement() {
                       <div key={brand.id} className="p-4 border rounded-lg bg-muted/20 relative group hover:border-primary/30 transition-colors">
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                           <Button 
+                            type="button"
                             variant="ghost" 
                             size="icon" 
                             className="h-8 w-8 text-primary"
@@ -301,6 +301,7 @@ export default function BrandManagement() {
                             <Eye className="h-4 w-4" />
                           </Button>
                           <Button 
+                            type="button"
                             variant="ghost" 
                             size="icon" 
                             className="h-8 w-8 text-primary"
@@ -309,6 +310,7 @@ export default function BrandManagement() {
                             <Edit2 className="h-4 w-4" />
                           </Button>
                           <Button 
+                            type="button"
                             variant="ghost" 
                             size="icon" 
                             className="h-8 w-8 text-destructive"

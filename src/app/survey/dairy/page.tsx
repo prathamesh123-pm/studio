@@ -35,7 +35,6 @@ import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle }
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
-  // 1. सामान्य माहिती
   dairyName: z.string().min(1, "नाव आवश्यक आहे"),
   ownerName: z.string().min(1, "मालकाचे नाव आवश्यक आहे"),
   contact: z.string().min(10, "संपर्क क्रमांक चुकीचा आहे"),
@@ -46,8 +45,6 @@ const dairySchema = z.object({
   milkCollection: z.string(),
   farmerCount: z.string(),
   location: z.string().optional(),
-
-  // 2. पशुधन माहिती
   livestock: z.object({
     totalAnimals: z.string().default("0"),
     cows: z.string().default("0"),
@@ -56,15 +53,11 @@ const dairySchema = z.object({
     milkingAnimals: z.string().default("0"),
     avgMilkPerAnimal: z.string().default("0"),
   }),
-
-  // 3. पशुखाद्य वापर माहिती
   feedType: z.enum(["ReadyMade", "HomeMade", "Both"]).optional(),
   feedFrequency: z.string().optional(),
   dailyFeedPerAnimal: z.string(),
   supplements: z.array(z.string()).default([]),
   otherSupplement: z.string().optional(),
-
-  // 4. ब्रँड व पोषण माहिती
   brandsInfo: z.array(z.object({
     name: z.string(),
     feedType: z.string(),
@@ -79,43 +72,27 @@ const dairySchema = z.object({
     mineralMix: z.string(),
     others: z.string(),
   })).default([]),
-
-  // 5. खरेदी पद्धत
   purchaseMethod: z.string().optional(),
   creditDays: z.string().optional(),
-
-  // 6. पुरवठा माहिती
   supplySource: z.string().optional(),
   otherSupplySource: z.string().optional(),
   supplierName: z.string(),
   timelySupply: z.enum(["Yes", "No"]).optional(),
-
-  // 7. खर्च माहिती
   monthlyExp: z.string(),
   monthlyBags: z.string(),
-
-  // 8. गुणवत्ता व समाधान
   satisfaction: z.string().optional(),
   milkIncrease: z.string().optional(),
   bestBrand: z.string(),
-
-  // 9. साठवण सुविधा
   warehouseCapacity: z.string(),
   hasStorage: z.string().optional(),
-
-  // 10. समस्या व सूचना
   mainProblem: z.string().optional(),
   otherProblem: z.string().optional(),
   sampleTrial: z.string().optional(),
   goodFeedOpinion: z.string().optional(),
-
-  // 11. अतिरिक्त प्रश्न
   customQuestions: z.array(z.object({
     question: z.string(),
     answer: z.string(),
   })).default([]),
-
-  // Surveyor Details
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
   surveyDate: z.string().optional(),
@@ -235,7 +212,7 @@ export default function DairySurvey() {
       <Navbar />
       <div className="container mx-auto px-4 py-8 max-w-[95%]">
         <div className="flex items-center gap-4 mb-6 no-print">
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
+          <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-bold font-headline text-primary">पशुखाद्य सर्वेक्षण फॉर्म (Dairy Survey)</h1>
@@ -480,7 +457,7 @@ export default function DairySurvey() {
                       <TableCell><Input {...form.register(`brandsInfo.${index}.salt` as const)} className="h-8 text-xs w-14" /></TableCell>
                       <TableCell><Input {...form.register(`brandsInfo.${index}.mineralMix` as const)} className="h-8 text-xs w-14" /></TableCell>
                       <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => removeBrand(index)}>
+                        <Button type="button" variant="ghost" size="icon" onClick={() => removeBrand(index)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </TableCell>
@@ -658,13 +635,12 @@ export default function DairySurvey() {
               </div>
 
               <div className="space-y-2">
-                <Label className="text-sm">तुमच्या मते चांगल्या कॅटल फीडमध्ये काय असावे?</Label>
+                <Label className="form-label-mr">तुमच्या मते चांगल्या कॅटल फीडमध्ये काय असावे?</Label>
                 <Textarea {...form.register("goodFeedOpinion")} />
               </div>
             </div>
           </section>
 
-          {/* Section 11: Custom Questions */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center justify-between">
               ११. अतिरिक्त प्रश्न (Custom Questions)
@@ -685,6 +661,7 @@ export default function DairySurvey() {
                 customFields.map((field, index) => (
                   <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
                     <Button 
+                      type="button"
                       variant="ghost" 
                       size="icon" 
                       className="absolute top-2 right-2 text-destructive"
