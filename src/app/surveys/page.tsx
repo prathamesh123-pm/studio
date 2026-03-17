@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -437,10 +438,10 @@ export default function SurveysList() {
           <DialogContent className="max-w-[95vw] md:max-w-3xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex justify-between items-center border-b pb-2">
-                <h2 className="text-xl font-bold flex items-center gap-2">
+                <DialogTitle className="text-xl font-bold flex items-center gap-2">
                   {selectedSurvey?.type === 'dairy' ? <FileText className="text-primary" /> : <ClipboardList className="text-accent" />}
                   सविस्तर रिपोर्ट: {selectedSurvey?.data.dairyName || selectedSurvey?.data.farmerName}
-                </h2>
+                </DialogTitle>
                 <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-1 no-print">
                   <Printer className="h-4 w-4" /> प्रिंट
                 </Button>
