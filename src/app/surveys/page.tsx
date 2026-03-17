@@ -80,7 +80,7 @@ export default function SurveysList() {
     if (value === 'No') displayValue = 'नाही';
     if (value === 'ReadyMade') displayValue = 'रेडीमेड कॅटल फीड';
     if (value === 'HomeMade') displayValue = 'घरगुती मिश्रण';
-    if (value === 'Both') displayValue = 'दोनों (रेडीमेड व घरगुती)';
+    if (value === 'Both') displayValue = 'दोन्ही (रेडीमेड व घरगुती)';
 
     return (
       <TableRow className="hover:bg-transparent border-b">
@@ -202,9 +202,9 @@ export default function SurveysList() {
                 </>
               ) : (
                 <>
-                  <DataRow label="किंमत / वजन / पोती" value={`₹${d.bagPrice} / ${d.bagWeight} किलो / ${d.monthlyBags} महिना`} />
-                  <DataRow label="स्त्रोत / उधारी / ईस्टर्न ब्रँड्स" value={`${d.purchaseSource || '-'} / ${d.hasCredit === 'Yes' ? 'मिळते' : 'नाही'} / ${d.previousBrands || '-'}`} />
-                  <DataRow label="चांगला ब्रँड / बदल कारण" value={`${d.betterBrand || '-'} / ${d.switchReason}`} />
+                  <DataRow label="किंमत / वजन / पोती" value={`₹${d.bagPrice} / ${d.bagWeight} किग्रॅ / ${d.monthlyBags} महिना`} />
+                  <DataRow label="स्त्रोत / उधारी / मागील ब्रँड्स" value={`${d.purchaseSource || '-'} / ${d.hasCredit === 'Yes' ? 'मिळते' : 'नाही'} / ${d.previousBrands || '-'}`} />
+                  <DataRow label="चांगला ब्रँड / कारण" value={`${d.betterBrand || '-'} / ${d.switchReason}`} />
                 </>
               )}
             </TableBody>
@@ -223,7 +223,7 @@ export default function SurveysList() {
 
         {d.customQuestions && d.customQuestions.length > 0 && (
           <section className="break-inside-avoid">
-            <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>११. ऍड पॉईंट्स</h4>
+            <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>११. ॲड पॉइंट्स</h4>
             <Table className="border rounded-sm">
               <TableBody>
                 {d.customQuestions.map((cq: any, idx: number) => (
@@ -370,7 +370,7 @@ export default function SurveysList() {
             {selectedSurvey ? (
               <div className="border p-3 rounded-sm mb-4 break-inside-avoid">
                 <div className="text-center border-b pb-1 mb-2">
-                  <h2 className="text-lg font-bold">Cattle Feed Survey Report</h2>
+                  <h2 className="text-lg font-bold">पशुखाद्य सर्वेक्षण रिपोर्ट</h2>
                   <p className="text-[10px]">{selectedSurvey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'} सर्वेक्षण</p>
                 </div>
                 {renderDetailedReport(selectedSurvey)}
@@ -379,7 +379,7 @@ export default function SurveysList() {
               surveys.map(survey => (
                 <div key={survey.id} className="border p-3 rounded-sm mb-4 break-inside-avoid">
                   <div className="text-center border-b pb-1 mb-2 bg-muted/5">
-                    <h2 className="text-md font-bold">Cattle Feed Survey Report</h2>
+                    <h2 className="text-md font-bold">पशुखाद्य सर्वेक्षण रिपोर्ट</h2>
                     <p className="text-[9px]">{survey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'}</p>
                   </div>
                   {renderDetailedReport(survey)}

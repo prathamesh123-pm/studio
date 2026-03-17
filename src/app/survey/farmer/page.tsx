@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,9 +14,17 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSurveyStore } from "@/lib/survey-store";
-import { Save, Printer, ArrowLeft, Star, MapPin, Loader2, PlusCircle, Trash2 } from "lucide-react";
+import { useBrandStore, MasterBrand } from "@/lib/brand-store";
+import { Save, Printer, ArrowLeft, Star, MapPin, Loader2, PlusCircle, Trash2, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const farmerSchema = z.object({
   farmerName: z.string().min(1, "नाव आवश्यक आहे"),
@@ -82,6 +89,8 @@ type FarmerFormValues = z.infer<typeof farmerSchema>;
 export default function FarmerSurvey() {
   const router = useRouter();
   const { addSurvey } = useSurveyStore();
+  const { getBrands } = useBrandStore();
+  const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
   const [locating, setLocating] = useState(false);
   
   const form = useForm<FarmerFormValues>({
@@ -104,6 +113,29 @@ export default function FarmerSurvey() {
     control: form.control,
     name: "customQuestions",
   });
+
+  useEffect(() => {
+    setMasterBrands(getBrands());
+  }, []);
+
+  const handleMasterBrandSelect = (brandId: string) => {
+    const selected = masterBrands.find(b => b.id === brandId);
+    if (!selected) return;
+
+    form.setValue("currentBrand", selected.name);
+    form.setValue("bagPrice", selected.price);
+    form.setValue("bagWeight", selected.bagWeight);
+    form.setValue("packNutrition.protein", selected.nutrition.protein);
+    form.setValue("packNutrition.fat", selected.nutrition.fat);
+    form.setValue("packNutrition.fiber", selected.nutrition.fiber);
+    form.setValue("packNutrition.calcium", selected.nutrition.calcium);
+    form.setValue("packNutrition.phosphorus", selected.nutrition.phosphorus);
+
+    toast({ 
+      title: "ब्रँड माहिती अपडेट झाली", 
+      description: `${selected.name} चे तपशील आपोआप भरले गेले आहेत.` 
+    });
+  };
 
   const handleGetLocation = () => {
     setLocating(true);
@@ -152,7 +184,7 @@ export default function FarmerSurvey() {
           <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold font-headline text-accent">कॅटल फीड ब्रँड रिव्ह्यू व सर्वे प्रश्नावली</h1>
+          <h1 className="text-2xl font-bold font-headline text-accent">शेतकरी ब्रँड सर्वेक्षण प्रश्नावली</h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -188,11 +220,11 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">मोबाईल नंबर</Label>
-                <Input {...form.register("mobile")} placeholder="१० अंकी क्रमांक" />
+                <Input {...form.register("mobile")} placeholder="१० अंकी क्रमांक" maxLength={10} />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">गाव</Label>
-                <Input {...form.register("village")} />
+                <Input {...form.register("village")} placeholder="गावाचे नाव" />
               </div>
             </div>
             <div className="mt-4">
@@ -220,7 +252,29 @@ export default function FarmerSurvey() {
           </section>
 
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">२. कॅटल फीड वापर माहिती</h3>
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
+              <h3 className="text-lg font-bold text-accent">२. कॅटल फीड वापर माहिती</h3>
+              <div className="flex items-center gap-2 bg-accent/5 p-2 rounded-lg border border-accent/20 no-print">
+                <Search className="h-4 w-4 text-accent" />
+                <div className="flex flex-col">
+                  <span className="text-[10px] font-bold text-accent uppercase">मास्टर ब्रँड निवडा</span>
+                  <Select onValueChange={handleMasterBrandSelect}>
+                    <SelectTrigger className="h-8 bg-white w-[200px] text-xs">
+                      <SelectValue placeholder="येथून ब्रँड निवडा" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {masterBrands.length === 0 ? (
+                        <div className="p-2 text-xs text-muted-foreground">प्रथम ब्रँड मास्टर लिस्टमध्ये जतन करा</div>
+                      ) : (
+                        masterBrands.map(b => (
+                          <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="form-label-mr">सध्या कोणत्या कॅटल फीड ब्रँडचा वापर करता?</Label>
@@ -351,7 +405,7 @@ export default function FarmerSurvey() {
                 <Input {...form.register("bagPrice")} type="number" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">पोत्याचे वजन (किलो)</Label>
+                <Label className="form-label-mr">पोत्याचे वजन (किग्रॅ)</Label>
                 <Input {...form.register("bagWeight")} type="number" />
               </div>
               <div className="space-y-2">
@@ -386,10 +440,10 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">सध्याच्या ब्रँडपेक्षा चांगला ब्रँड कोणता वाटतो?</Label>
-                <Input {...form.register("betterBrand")} />
+                <Input {...form.register("betterBrand")} placeholder="ब्रँडचे नाव" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">हा ब्रँड वापरण्याचे कारण काय</Label>
+                <Label className="form-label-mr">हा ब्रँड वापरण्याचे कारण काय?</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                   {["किंमत", "गुणवत्ता", "उपलब्धता", "दूध उत्पादन"].map((reason) => (
                     <div key={reason} className="flex items-center space-x-2">
@@ -440,7 +494,7 @@ export default function FarmerSurvey() {
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">८. घटक माहिती</h3>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="form-label-mr">तुम्हाला कॅटल फीडमधील घटक माहिती आहे का?</Label>
+                <Label className="form-label-mr">तुम्हाला कॅटल फीडमधील घटक माहिती आहेत का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("knowsIngredients", v)} className="flex gap-4 mt-2">
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="ki1" /><Label htmlFor="ki1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ki2" /><Label htmlFor="ki2">नाही</Label></div>
@@ -515,7 +569,7 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">कंपनीने कोणत्या सुधारणा करायला हव्यात?</Label>
-                <Textarea {...form.register("improvements")} />
+                <Textarea {...form.register("improvements")} placeholder="सूचना लिहा..." />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">जर दुसऱ्या कंपनीचे स्वस्त आणि चांगले फीड मिळाले तर ब्रँड बदलाल का?</Label>
@@ -525,15 +579,15 @@ export default function FarmerSurvey() {
                 </RadioGroup>
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">तुमच्या मते सर्वात चांगल्या कॅटल फीडमध्ये कोणते गुण असावे?</Label>
-                <Textarea {...form.register("idealFeedQualities")} />
+                <Label className="form-label-mr">तुमच्या मते सर्वात चांगल्या कॅटल फीडमध्ये कोणते गुण असावेत?</Label>
+                <Textarea {...form.register("idealFeedQualities")} placeholder="उदा. जास्त दूध वाढ, वाजवी किंमत" />
               </div>
             </div>
           </section>
 
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center justify-between">
-              ११. ऍड पॉईंट्स (इतर मुद्दे)
+              ११. ॲड पॉइंट्स (इतर मुद्दे)
               <Button 
                 type="button" 
                 variant="outline" 

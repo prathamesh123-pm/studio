@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Printer, FileText, PlusCircle, Search, Filter } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Edit2, X, Eye, Printer, FileText, PlusCircle, Search, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -215,7 +215,7 @@ export default function BrandManagement() {
 
       {brand.customPoints && brand.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. ऍड पॉईंट्स</h4>
+          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. ॲड पॉइंट्स</h4>
           <Table className="border rounded-sm">
             <TableBody>
               {brand.customPoints.map((pt, idx) => (
@@ -283,11 +283,11 @@ export default function BrandManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1 text-xs"><Package className="h-3 w-3" /> बेस वजन</Label>
+                    <Label className="flex items-center gap-1 text-xs"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
                     <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value || "")} placeholder="किग्रॅ" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1 text-xs"><IndianRupee className="h-3 w-3" /> बेस किंमत</Label>
+                    <Label className="flex items-center gap-1 text-xs"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
                     <Input type="number" value={price} onChange={(e) => setPrice(e.target.value || "")} placeholder="₹" />
                   </div>
                 </div>
@@ -352,7 +352,7 @@ export default function BrandManagement() {
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-primary font-bold text-sm">ऍड पॉईंट्स (इतर)</Label>
+                    <Label className="text-primary font-bold text-sm">ॲड पॉइंट्स (इतर)</Label>
                     <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-[10px]">
                       <PlusCircle className="h-3 w-3 mr-1" /> जोडा
                     </Button>
@@ -399,7 +399,6 @@ export default function BrandManagement() {
               <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <CardTitle className="text-lg">मास्टर ब्रँड यादी ({filteredBrands.length})</CardTitle>
                 
-                {/* Brand Filter Dropdown */}
                 <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 min-w-[250px]">
                   <Filter className="h-4 w-4 text-primary" />
                   <div className="flex flex-col flex-1">
