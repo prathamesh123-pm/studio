@@ -82,6 +82,14 @@ export default function BrandManagement() {
     toast({ title: "यशस्वी", description: "नवीन ब्रँड मास्टर लिस्टमध्ये जतन झाला!" });
   };
 
+  const handleDeleteBrand = (id: string) => {
+    if (confirm("हा ब्रँड हटवायचा आहे का?")) {
+      deleteBrand(id);
+      setBrands(getBrands());
+      toast({ title: "यशस्वी", description: "ब्रँड हटवण्यात आला आहे." });
+    }
+  };
+
   const resetForm = () => {
     setNewBrandName("");
     setFeedType("Pellet");
@@ -219,10 +227,7 @@ export default function BrandManagement() {
                           variant="ghost" 
                           size="icon" 
                           className="absolute top-2 right-2 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => {
-                            deleteBrand(brand.id);
-                            setBrands(getBrands());
-                          }}
+                          onClick={() => handleDeleteBrand(brand.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
