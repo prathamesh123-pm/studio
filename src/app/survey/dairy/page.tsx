@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -92,8 +91,8 @@ const dairySchema = z.object({
   sampleTrial: z.string().optional(),
   goodFeedOpinion: z.string().optional(),
   customQuestions: z.array(z.object({
-    question: z.string(),
-    answer: z.string(),
+    question: z.string(), // We use this field for the point content
+    answer: z.string(), // Kept for compatibility
   })).default([]),
   surveyorName: z.string().min(1, "सर्वेक्षकाचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -407,7 +406,7 @@ export default function DairySurvey() {
 
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (मास्टर ब्रँड मल्टिपल सिलेक्शन)</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
@@ -703,24 +702,18 @@ export default function DairySurvey() {
                 <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या गरजेनुसार अतिरिक्त मुद्दे जोडू शकता.</p>
               ) : (
                 customFields.map((field, index) => (
-                  <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
+                  <div key={field.id} className="p-2 border rounded-lg space-y-1 relative group">
                     <Button 
                       type="button"
                       variant="ghost" 
                       size="icon" 
-                      className="absolute top-2 right-2 text-destructive"
+                      className="absolute top-2 right-2 text-destructive h-7 w-7"
                       onClick={() => removeCustom(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                    <div className="space-y-2 pr-8">
-                      <Label className="text-xs">मुद्दा / प्रश्न {index + 1}</Label>
-                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="येथे लिहा..." />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs">उत्तर / माहिती</Label>
-                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="येथे नोंदवा..." className="h-20" />
-                    </div>
+                    <Label className="text-xs">मुद्दा {index + 1}</Label>
+                    <Textarea {...form.register(`customQuestions.${index}.question` as const)} placeholder="माहिती लिहा..." className="h-16 text-xs" />
                   </div>
                 ))
               )}

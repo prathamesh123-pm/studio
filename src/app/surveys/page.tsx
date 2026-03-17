@@ -227,7 +227,7 @@ export default function SurveysList() {
             <Table className="border rounded-sm">
               <TableBody>
                 {d.customQuestions.map((cq: any, idx: number) => (
-                  <DataRow key={idx} label={cq.question} value={cq.answer} />
+                  <DataRow key={idx} label={`मुद्दा ${idx + 1}`} value={cq.question} />
                 ))}
               </TableBody>
             </Table>

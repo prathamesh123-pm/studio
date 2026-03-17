@@ -62,7 +62,7 @@ export default function SupplierManagement() {
   const [suppliedBrands, setSuppliedBrands] = useState<string[]>([]);
   const [providesDelivery, setProvidesDelivery] = useState(false);
   const [providesCredit, setProvidesCredit] = useState(false);
-  const [customPoints, setCustomPoints] = useState<Array<{ point: string, value: string }>>([]);
+  const [customPoints, setCustomPoints] = useState<Array<{ point: string }>>([]);
 
   useEffect(() => {
     loadData();
@@ -93,16 +93,16 @@ export default function SupplierManagement() {
   };
 
   const handleAddPoint = () => {
-    setCustomPoints([...customPoints, { point: "", value: "" }]);
+    setCustomPoints([...customPoints, { point: "" }]);
   };
 
   const handleRemovePoint = (index: number) => {
     setCustomPoints(customPoints.filter((_, i) => i !== index));
   };
 
-  const handlePointChange = (index: number, field: string, value: string) => {
+  const handlePointChange = (index: number, value: string) => {
     const newPoints = [...customPoints];
-    (newPoints[index] as any)[field] = value;
+    newPoints[index].point = value;
     setCustomPoints(newPoints);
   };
 
@@ -124,7 +124,7 @@ export default function SupplierManagement() {
       suppliedBrands,
       providesDelivery,
       providesCredit,
-      customPoints
+      customPoints: customPoints.map(p => ({ point: p.point, value: "" })) // Maintaining compatibility
     };
 
     if (editingId) {
@@ -153,7 +153,7 @@ export default function SupplierManagement() {
     setSuppliedBrands(s.suppliedBrands || []);
     setProvidesDelivery(s.providesDelivery || false);
     setProvidesCredit(s.providesCredit || false);
-    setCustomPoints(s.customPoints || []);
+    setCustomPoints(s.customPoints?.map(p => ({ point: p.point })) || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -233,7 +233,7 @@ export default function SupplierManagement() {
           <Table className="border rounded-sm">
             <TableBody>
               {supplier.customPoints.map((pt, idx) => (
-                <SupplierDataRow key={idx} label={pt.point} value={pt.value} />
+                <SupplierDataRow key={idx} label={`मुद्दा ${idx + 1}`} value={pt.point} />
               ))}
             </TableBody>
           </Table>
@@ -414,27 +414,22 @@ export default function SupplierManagement() {
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-primary font-bold text-sm">ऍड पॉईंट्स (इतर)</Label>
+                    <Label className="text-primary font-bold text-sm">ॲड पॉइंट्स (इतर)</Label>
                     <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-[10px]">
                       <PlusCircle className="h-3 w-3 mr-1" /> जोडा
                     </Button>
                   </div>
                   <div className="space-y-2">
                     {customPoints.map((pt, idx) => (
-                      <div key={idx} className="p-3 border rounded-lg bg-muted/10 relative space-y-2">
+                      <div key={idx} className="p-2 border rounded-lg bg-muted/10 relative space-y-1">
                         <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6 text-destructive" onClick={() => handleRemovePoint(idx)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
-                        <Input 
-                          placeholder="मुद्दा" 
-                          value={pt.point} 
-                          onChange={(e) => handlePointChange(idx, "point", e.target.value)}
-                          className="h-8 text-xs"
-                        />
+                        <Label className="text-[10px]">मुद्दा {idx + 1}</Label>
                         <Textarea 
-                          placeholder="माहिती" 
-                          value={pt.value} 
-                          onChange={(e) => handlePointChange(idx, "value", e.target.value)}
+                          placeholder="माहिती लिहा..." 
+                          value={pt.point} 
+                          onChange={(e) => handlePointChange(idx, e.target.value)}
                           className="h-16 text-xs"
                         />
                       </div>

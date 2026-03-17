@@ -52,7 +52,7 @@ export default function BrandManagement() {
     protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
   });
   const [ingredients, setIngredients] = useState([{ ingredient: "", percentage: "" }]);
-  const [customPoints, setCustomPoints] = useState<Array<{ point: string, value: string }>>([]);
+  const [customPoints, setCustomPoints] = useState<Array<{ point: string }>>([]);
 
   useEffect(() => {
     setBrands(getBrands());
@@ -78,16 +78,16 @@ export default function BrandManagement() {
   };
 
   const handleAddPoint = () => {
-    setCustomPoints([...customPoints, { point: "", value: "" }]);
+    setCustomPoints([...customPoints, { point: "" }]);
   };
 
   const handleRemovePoint = (index: number) => {
     setCustomPoints(customPoints.filter((_, i) => i !== index));
   };
 
-  const handlePointChange = (index: number, field: string, value: string) => {
+  const handlePointChange = (index: number, value: string) => {
     const newPoints = [...customPoints];
-    (newPoints[index] as any)[field] = value;
+    newPoints[index].point = value;
     setCustomPoints(newPoints);
   };
 
@@ -102,7 +102,7 @@ export default function BrandManagement() {
       protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
     });
     setIngredients(brand.ingredients || [{ ingredient: "", percentage: "" }]);
-    setCustomPoints(brand.customPoints || []);
+    setCustomPoints(brand.customPoints?.map(p => ({ point: p.point })) || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -124,7 +124,7 @@ export default function BrandManagement() {
       price,
       nutrition,
       ingredients,
-      customPoints
+      customPoints: customPoints.map(p => ({ point: p.point, value: "" })) // Maintaining compatibility
     };
 
     if (editingId) {
@@ -194,7 +194,10 @@ export default function BrandManagement() {
             </TableRow>
             <TableRow className="hover:bg-transparent border-b">
               <TableCell className="w-1/2 p-1 text-[10px] border-r">फॉस्फरस: <b>{brand.nutrition.phosphorus}%</b></TableCell>
-              <TableCell className="p-1 text-[10px]">मिनरल: <b>{brand.nutrition.mineralMix}%</b></TableCell>
+              <TableCell className="p-1 text-[10px]">मीठ: <b>{brand.nutrition.salt}%</b></TableCell>
+            </TableRow>
+            <TableRow className="hover:bg-transparent border-b">
+              <TableCell colSpan={2} className="p-1 text-[10px]">मिनरल मिक्स: <b>{brand.nutrition.mineralMix}%</b></TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -219,7 +222,7 @@ export default function BrandManagement() {
           <Table className="border rounded-sm">
             <TableBody>
               {brand.customPoints.map((pt, idx) => (
-                <BrandDataRow key={idx} label={pt.point} value={pt.value} />
+                <BrandDataRow key={idx} label={`मुद्दा ${idx + 1}`} value={pt.point} />
               ))}
             </TableBody>
           </Table>
@@ -359,20 +362,15 @@ export default function BrandManagement() {
                   </div>
                   <div className="space-y-2">
                     {customPoints.map((pt, idx) => (
-                      <div key={idx} className="p-3 border rounded-lg bg-muted/10 relative space-y-2">
+                      <div key={idx} className="p-2 border rounded-lg bg-muted/10 relative space-y-1">
                         <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6 text-destructive" onClick={() => handleRemovePoint(idx)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
-                        <Input 
-                          placeholder="मुद्दा" 
-                          value={pt.point} 
-                          onChange={(e) => handlePointChange(idx, "point", e.target.value)}
-                          className="h-8 text-xs"
-                        />
+                        <Label className="text-[10px]">मुद्दा {idx + 1}</Label>
                         <Textarea 
-                          placeholder="माहिती" 
-                          value={pt.value} 
-                          onChange={(e) => handlePointChange(idx, "value", e.target.value)}
+                          placeholder="माहिती लिहा..." 
+                          value={pt.point} 
+                          onChange={(e) => handlePointChange(idx, e.target.value)}
                           className="h-16 text-xs"
                         />
                       </div>

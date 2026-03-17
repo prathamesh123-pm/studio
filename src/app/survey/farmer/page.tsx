@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -77,8 +76,8 @@ const farmerSchema = z.object({
   switchIfCheaper: z.string().optional(),
   idealFeedQualities: z.string(),
   customQuestions: z.array(z.object({
-    question: z.string(),
-    answer: z.string(),
+    question: z.string(), // Point content
+    answer: z.string(), // Compatibility
   })).default([]),
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
@@ -605,24 +604,18 @@ export default function FarmerSurvey() {
                 <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या गरजेनुसार अतिरिक्त मुद्दे जोडू शकता.</p>
               ) : (
                 customFields.map((field, index) => (
-                  <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
+                  <div key={field.id} className="p-2 border rounded-lg space-y-1 relative group">
                     <Button 
                       type="button"
                       variant="ghost" 
                       size="icon" 
-                      className="absolute top-2 right-2 text-destructive"
+                      className="absolute top-2 right-2 text-destructive h-7 w-7"
                       onClick={() => removeCustom(index)}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
-                    <div className="space-y-2 pr-8">
-                      <Label className="text-xs">मुद्दा / प्रश्न {index + 1}</Label>
-                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="येथे लिहा..." />
-                    </div>
-                    <div className="space-y-2">
-                      <Label className="text-xs">उत्तर / माहिती</Label>
-                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="येथे नोंदवा..." className="h-20" />
-                    </div>
+                    <Label className="text-xs">मुद्दा {index + 1}</Label>
+                    <Textarea {...form.register(`customQuestions.${index}.question` as const)} placeholder="माहिती लिहा..." className="h-16 text-xs" />
                   </div>
                 ))
               )}
