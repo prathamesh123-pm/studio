@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Trash2, Search } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
@@ -45,6 +45,7 @@ const dairySchema = z.object({
   address: z.string(),
   milkCollection: z.string(),
   farmerCount: z.string(),
+  location: z.string().optional(),
 
   // 2. पशुधन माहिती
   livestock: z.object({
@@ -121,6 +122,7 @@ export default function DairySurvey() {
   const { addSurvey } = useSurveyStore();
   const { getBrands } = useBrandStore();
   const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
+  const [locating, setLocating] = useState(false);
   
   const form = useForm<DairyFormValues>({
     resolver: zodResolver(dairySchema),
@@ -131,6 +133,7 @@ export default function DairySurvey() {
       taluka: "",
       brandsInfo: [],
       surveyDate: new Date().toISOString().split('T')[0],
+      location: "",
     }
   });
 
@@ -142,6 +145,30 @@ export default function DairySurvey() {
   useEffect(() => {
     setMasterBrands(getBrands());
   }, []);
+
+  const handleGetLocation = () => {
+    setLocating(true);
+    if (!navigator.geolocation) {
+      toast({ variant: "destructive", title: "त्रुटी", description: "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही." });
+      setLocating(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+        form.setValue("location", coords);
+        setLocating(false);
+        toast({ title: "यशस्वी", description: "लोकेशन प्राप्त झाले आहे." });
+      },
+      (error) => {
+        console.error(error);
+        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली. कृपया परमिशन तपासा." });
+        setLocating(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
 
   const handleMasterBrandSelect = (brandId: string) => {
     const selected = masterBrands.find(b => b.id === brandId);
@@ -204,6 +231,30 @@ export default function DairySurvey() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Location Section */}
+          <section className="form-section bg-primary/5">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center gap-2">
+              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (Location Tagging)
+            </h3>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <Button 
+                type="button" 
+                onClick={handleGetLocation} 
+                disabled={locating}
+                className="bg-primary hover:bg-primary/90"
+              >
+                {locating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+                लोकेशन मिळवा (Get Location)
+              </Button>
+              {form.watch("location") && (
+                <div className="text-sm font-medium text-green-700 bg-green-50 px-3 py-2 rounded-md border border-green-200">
+                  नोंदवलेले लोकेशन: {form.watch("location")}
+                </div>
+              )}
+              <Input type="hidden" {...form.register("location")} />
+            </div>
+          </section>
+
           {/* Section 1: General Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य माहिती</h3>

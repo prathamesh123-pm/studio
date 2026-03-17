@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -13,7 +15,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSurveyStore } from "@/lib/survey-store";
-import { Save, Printer, ArrowLeft, Star } from "lucide-react";
+import { Save, Printer, ArrowLeft, Star, MapPin, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +26,7 @@ const farmerSchema = z.object({
   district: z.string(),
   taluka: z.string(),
   village: z.string().min(1, "गाव आवश्यक आहे"),
+  location: z.string().optional(),
   animalCount: z.object({
     cows: z.string().default("0"),
     buffaloes: z.string().default("0"),
@@ -96,6 +99,7 @@ type FarmerFormValues = z.infer<typeof farmerSchema>;
 export default function FarmerSurvey() {
   const router = useRouter();
   const { addSurvey } = useSurveyStore();
+  const [locating, setLocating] = useState(false);
   
   const form = useForm<FarmerFormValues>({
     resolver: zodResolver(farmerSchema),
@@ -108,8 +112,33 @@ export default function FarmerSurvey() {
       problems: [],
       packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "" },
       surveyDate: new Date().toISOString().split('T')[0],
+      location: "",
     }
   });
+
+  const handleGetLocation = () => {
+    setLocating(true);
+    if (!navigator.geolocation) {
+      toast({ variant: "destructive", title: "त्रुटी", description: "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही." });
+      setLocating(false);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const coords = `${position.coords.latitude.toFixed(6)}, ${position.coords.longitude.toFixed(6)}`;
+        form.setValue("location", coords);
+        setLocating(false);
+        toast({ title: "यशस्वी", description: "लोकेशन प्राप्त झाले आहे." });
+      },
+      (error) => {
+        console.error(error);
+        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली. कृपया परमिशन तपासा." });
+        setLocating(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
 
   const onSubmit = async (data: FarmerFormValues) => {
     try {
@@ -138,6 +167,30 @@ export default function FarmerSurvey() {
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          {/* Location Section */}
+          <section className="form-section bg-accent/5">
+            <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center gap-2">
+              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (Location Tagging)
+            </h3>
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              <Button 
+                type="button" 
+                onClick={handleGetLocation} 
+                disabled={locating}
+                className="bg-accent hover:bg-accent/90 text-white"
+              >
+                {locating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+                लोकेशन मिळवा (Get Location)
+              </Button>
+              {form.watch("location") && (
+                <div className="text-sm font-medium text-green-700 bg-green-50 px-3 py-2 rounded-md border border-green-200">
+                  नोंदवलेले लोकेशन: {form.watch("location")}
+                </div>
+              )}
+              <Input type="hidden" {...form.register("location")} />
+            </div>
+          </section>
+
           {/* Section 1: Farmer Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2">१. शेतकरी माहिती</h3>
