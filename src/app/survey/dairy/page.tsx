@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Plus, Trash2, Search } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
@@ -68,7 +68,7 @@ const dairySchema = z.object({
     brand: z.string(),
     ingredient: z.string(),
     percentage: z.string(),
-  })).default([{ brand: "", ingredient: "", percentage: "" }]),
+  })).default([]),
 
   // 5. कॅटल फीडमधील पोषण घटक
   nutrition: z.object({
@@ -138,7 +138,7 @@ export default function DairySurvey() {
     }
   });
 
-  const { fields: ingredientFields, replace: replaceIngredients, remove: removeIngredient } = useFieldArray({
+  const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient } = useFieldArray({
     control: form.control,
     name: "ingredientsInfo",
   });
@@ -151,27 +151,38 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // Set Nutrition values
-    form.setValue("nutrition.protein", selected.nutrition.protein);
-    form.setValue("nutrition.fat", selected.nutrition.fat);
-    form.setValue("nutrition.fiber", selected.nutrition.fiber);
-    form.setValue("nutrition.calcium", selected.nutrition.calcium);
-    form.setValue("nutrition.phosphorus", selected.nutrition.phosphorus);
-    form.setValue("nutrition.salt", selected.nutrition.salt);
-    form.setValue("nutrition.mineralMix", selected.nutrition.mineralMix);
-    form.setValue("nutrition.others", selected.nutrition.others);
+    // Helper to append values to nutrition fields without clearing previous ones
+    const updateNutrition = (field: keyof DairyFormValues["nutrition"], value: string) => {
+      const current = form.getValues(`nutrition.${field}`);
+      if (!current) {
+        form.setValue(`nutrition.${field}`, value);
+      } else if (!current.includes(value)) {
+        form.setValue(`nutrition.${field}`, `${current}, ${value}`);
+      }
+    };
 
-    // Update ingredients table
-    const newIngredients = selected.ingredients.map(ing => ({
-      brand: selected.name,
-      ingredient: ing.ingredient,
-      percentage: ing.percentage
-    }));
-    replaceIngredients(newIngredients);
+    // Update Nutrition values
+    updateNutrition("protein", selected.nutrition.protein);
+    updateNutrition("fat", selected.nutrition.fat);
+    updateNutrition("fiber", selected.nutrition.fiber);
+    updateNutrition("calcium", selected.nutrition.calcium);
+    updateNutrition("phosphorus", selected.nutrition.phosphorus);
+    updateNutrition("salt", selected.nutrition.salt);
+    updateNutrition("mineralMix", selected.nutrition.mineralMix);
+    updateNutrition("others", selected.nutrition.others);
+
+    // Append ingredients to table
+    selected.ingredients.forEach(ing => {
+      appendIngredient({
+        brand: selected.name,
+        ingredient: ing.ingredient,
+        percentage: ing.percentage
+      });
+    });
 
     toast({ 
-      title: "माहिती यशस्वीरित्या भरली गेली", 
-      description: `${selected.name} ची पोषण मूल्ये आणि सर्व घटक फॉर्ममध्ये भरले आहेत.` 
+      title: "माहिती जोडली गेली", 
+      description: `${selected.name} ची माहिती आधीच्या माहितीत जोडली गेली आहे.` 
     });
   };
 
@@ -403,7 +414,7 @@ export default function DairySurvey() {
                 {ingredientFields.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={4} className="text-center py-4 text-muted-foreground text-xs">
-                      घटक माहिती उपलब्ध नाही. वरून मास्टर ब्रँड निवडा.
+                      मास्टर ब्रँड निवडा जेणेकरून घटक माहिती आपोआप जोडली जाईल.
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -675,4 +686,3 @@ export default function DairySurvey() {
     </div>
   );
 }
-
