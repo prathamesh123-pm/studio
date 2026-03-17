@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Clock } from "lucide-react";
+import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Clock, Printer, FileText } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -26,12 +26,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function SupplierManagement() {
   const { getSuppliers, addSupplier, updateSupplier, deleteSupplier } = useSupplierStore();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [viewingSupplier, setViewingSupplier] = useState<Supplier | null>(null);
+  const [showFullReport, setShowFullReport] = useState(false);
   
   // Form States
   const [name, setName] = useState("");
@@ -122,17 +131,70 @@ export default function SupplierManagement() {
     setEditingId(null);
   };
 
+  const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
+    <TableRow className="hover:bg-transparent border-b">
+      <TableHead className="w-1/2 font-bold bg-muted/10 py-1 px-2 text-[10px] md:text-xs h-auto border-r">{label}</TableHead>
+      <TableCell className="py-1 px-2 text-[10px] md:text-xs h-auto">
+        {typeof value === 'boolean' ? (value ? 'होय' : 'नाही') : (value || '-')}
+      </TableCell>
+    </TableRow>
+  );
+
+  const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
+    <div className={`space-y-3 py-2 ${isPrint ? 'space-y-1' : ''}`}>
+      <section>
+        <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">१. सामान्य माहिती</h4>
+        <Table className="border rounded-sm">
+          <TableBody>
+            <SupplierDataRow label="दुकानाचे / एजन्सीचे नाव" value={supplier.shopName} />
+            <SupplierDataRow label="पुरवठादार प्रकार" value={supplier.supplierType === 'Retailer' ? 'किरकोळ (Retailer)' : supplier.supplierType === 'Wholesaler' ? 'घाऊक (Wholesaler)' : 'डिस्ट्रीब्युटर'} />
+            <SupplierDataRow label="पुरवठादाराचे नाव" value={supplier.name} />
+            <SupplierDataRow label="संपर्क क्रमांक" value={supplier.contact} />
+          </TableBody>
+        </Table>
+      </section>
+
+      <section>
+        <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">२. लोकेशन व पत्ता</h4>
+        <Table className="border rounded-sm">
+          <TableBody>
+            <SupplierDataRow label="जिल्हा" value={supplier.district} />
+            <SupplierDataRow label="तालुका" value={supplier.taluka} />
+            <SupplierDataRow label="पूर्ण पत्ता" value={supplier.address} />
+          </TableBody>
+        </Table>
+      </section>
+
+      <section>
+        <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">३. व्यावसायिक माहिती</h4>
+        <Table className="border rounded-sm">
+          <TableBody>
+            <SupplierDataRow label="मुख्य ब्रँड्स" value={supplier.mainBrands} />
+            <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery} />
+            <SupplierDataRow label="उधारी सुविधा" value={supplier.providesCredit} />
+            <SupplierDataRow label="नोंदणी दिनांक" value={new Date(supplier.timestamp).toLocaleDateString('mr-IN')} />
+          </TableBody>
+        </Table>
+      </section>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-background pb-12">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <header className="mb-8 flex justify-between items-center">
+      <div className="container mx-auto px-4 py-8 max-w-7xl no-print">
+        <header className="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पुरवठादार व्यवस्थापन (Suppliers)</h1>
             <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही पशुखाद्य पुरवठादारांची माहिती जतन करू शकता.</p>
           </div>
-          <div className="bg-primary/5 p-3 rounded-full hidden md:block border border-primary/10">
-            <Store className="h-8 w-8 text-primary opacity-60" />
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="outline" onClick={() => setShowFullReport(true)} className="gap-2 border-primary text-primary">
+              <FileText className="h-4 w-4" /> मास्टर रिपोर्ट पहा
+            </Button>
+            <Button onClick={() => window.print()} className="gap-2 bg-primary">
+              <Printer className="h-4 w-4" /> प्रिंट रिपोर्ट
+            </Button>
           </div>
         </header>
 
@@ -313,72 +375,57 @@ export default function SupplierManagement() {
         </div>
       </div>
 
+      {/* Print View Layout */}
+      <div className="hidden print:block p-4 space-y-4 text-black bg-white">
+        <div className="text-center border-b-2 border-black pb-2 mb-4">
+          <h1 className="text-xl font-bold uppercase">पुरवठादार मास्टर रिपोर्ट (Table Format)</h1>
+          <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+        </div>
+        <div className="grid grid-cols-1 gap-4">
+          {suppliers.map((s, index) => (
+            <div key={s.id} className="border border-black p-2 rounded-sm break-inside-avoid">
+              <h2 className="text-sm font-bold border-b border-black mb-2">{index + 1}. {s.shopName} ({s.supplierType})</h2>
+              <DetailedSupplierTable supplier={s} isPrint={true} />
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* View Details Dialog */}
       <Dialog open={!!viewingSupplier} onOpenChange={(open) => !open && setViewingSupplier(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Store className="h-5 w-5 text-primary" /> पुरवठादार माहिती
+            <DialogTitle className="flex items-center gap-2 text-primary">
+              <Store className="h-5 w-5" /> पुरवठादार माहिती
             </DialogTitle>
           </DialogHeader>
-          {viewingSupplier && (
-            <div className="space-y-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground text-[10px] uppercase">दुकानाचे नाव</Label>
-                  <p className="font-bold text-lg text-primary">{viewingSupplier.shopName}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground text-[10px] uppercase">प्रकार</Label>
-                  <p className="font-semibold">{viewingSupplier.supplierType}</p>
-                </div>
-              </div>
+          {viewingSupplier && <DetailedSupplierTable supplier={viewingSupplier} />}
+        </DialogContent>
+      </Dialog>
 
-              <div>
-                <Label className="text-muted-foreground text-[10px] uppercase">पुरवठादाराचे नाव</Label>
-                <p className="font-medium">{viewingSupplier.name}</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-muted-foreground text-[10px] uppercase">संपर्क</Label>
-                  <p className="font-bold flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> {viewingSupplier.contact}</p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground text-[10px] uppercase">नोंदणी तारीख</Label>
-                  <p className="text-sm flex items-center gap-2"><Clock className="h-4 w-4" /> {new Date(viewingSupplier.timestamp).toLocaleDateString('mr-IN')}</p>
-                </div>
-              </div>
-
-              <div>
-                <Label className="text-muted-foreground text-[10px] uppercase">पत्ता</Label>
-                <p className="text-sm bg-muted p-2 rounded-md border mt-1">
-                  {viewingSupplier.address}<br />
-                  {viewingSupplier.taluka}, {viewingSupplier.district}
-                </p>
-              </div>
-
-              {viewingSupplier.mainBrands && (
-                <div>
-                  <Label className="text-muted-foreground text-[10px] uppercase">मुख्य ब्रँड्स</Label>
-                  <div className="flex flex-wrap gap-1 mt-1">
-                    {viewingSupplier.mainBrands.split(',').map((b, i) => (
-                      <Badge key={i} variant="outline" className="text-xs">{b.trim()}</Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="flex gap-4 pt-4 border-t">
-                <Badge className={viewingSupplier.providesDelivery ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}>
-                  <Truck className="h-3 w-3 mr-1" /> डिलिव्हरी: {viewingSupplier.providesDelivery ? "होय" : "नाही"}
-                </Badge>
-                <Badge className={viewingSupplier.providesCredit ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-700"}>
-                  <CreditCard className="h-3 w-3 mr-1" /> उधारी: {viewingSupplier.providesCredit ? "होय" : "नाही"}
-                </Badge>
-              </div>
+      {/* Full Report Dialog */}
+      <Dialog open={showFullReport} onOpenChange={setShowFullReport}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-6">
+          <DialogHeader className="border-b pb-4 mb-4">
+            <div className="flex justify-between items-center">
+              <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
+                <FileText className="h-6 w-6" /> संपूर्ण पुरवठादार रिपोर्ट (Table Format)
+              </DialogTitle>
+              <Button size="sm" onClick={() => window.print()} className="gap-2">
+                <Printer className="h-4 w-4" /> प्रिंट
+              </Button>
             </div>
-          )}
+          </DialogHeader>
+          <div className="space-y-8">
+            {suppliers.map((s, index) => (
+              <div key={s.id} className="border p-4 rounded-lg bg-white shadow-sm">
+                <h3 className="text-lg font-bold text-primary border-b-2 mb-4 pb-1">
+                  {index + 1}. {s.shopName} ({s.supplierType})
+                </h3>
+                <DetailedSupplierTable supplier={s} />
+              </div>
+            ))}
+          </div>
         </DialogContent>
       </Dialog>
     </div>
