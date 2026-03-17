@@ -32,11 +32,19 @@ export const useSupplierStore = () => {
     return newSupplier;
   };
 
+  const updateSupplier = (id: string, updatedData: Omit<Supplier, 'id' | 'timestamp'>) => {
+    const suppliers = getSuppliers();
+    const updatedSuppliers = suppliers.map(s => 
+      s.id === id ? { ...updatedData, id, timestamp: s.timestamp } : s
+    );
+    localStorage.setItem('pashudhan_suppliers', JSON.stringify(updatedSuppliers));
+  };
+
   const deleteSupplier = (id: string) => {
     const suppliers = getSuppliers();
     const filtered = suppliers.filter(s => s.id !== id);
     localStorage.setItem('pashudhan_suppliers', JSON.stringify(filtered));
   };
 
-  return { getSuppliers, addSupplier, deleteSupplier };
+  return { getSuppliers, addSupplier, updateSupplier, deleteSupplier };
 };
