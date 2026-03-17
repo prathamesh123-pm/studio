@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Trash2, Search } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search, PlusCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
@@ -63,15 +63,12 @@ const dairySchema = z.object({
   supplements: z.array(z.string()).default([]),
   otherSupplement: z.string().optional(),
 
-  // 4. ब्रँडमधील घटक (Ingredients) माहिती
-  ingredientsInfo: z.array(z.object({
-    brand: z.string(),
-    ingredient: z.string(),
-    percentage: z.string(),
-  })).default([]),
-
-  // 5. कॅटल फीडमधील पोषण घटक
-  nutrition: z.object({
+  // 4. ब्रँड व पोषण माहिती (Consolidated)
+  brandsInfo: z.array(z.object({
+    name: z.string(),
+    feedType: z.string(),
+    bagWeight: z.string(),
+    price: z.string(),
     protein: z.string(),
     fat: z.string(),
     fiber: z.string(),
@@ -80,7 +77,14 @@ const dairySchema = z.object({
     salt: z.string(),
     mineralMix: z.string(),
     others: z.string(),
-  }),
+  })).default([]),
+
+  // 5. ब्रँडमधील घटक (Ingredients) माहिती
+  ingredientsInfo: z.array(z.object({
+    brand: z.string(),
+    ingredient: z.string(),
+    percentage: z.string(),
+  })).default([]),
 
   // 6. खरेदी पद्धत
   purchaseMethod: z.string().optional(),
@@ -132,10 +136,15 @@ export default function DairySurvey() {
       supplements: [],
       district: "",
       taluka: "",
+      brandsInfo: [],
       ingredientsInfo: [],
-      nutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" },
       surveyDate: new Date().toISOString().split('T')[0],
     }
+  });
+
+  const { fields: brandFields, append: appendBrand, remove: removeBrand } = useFieldArray({
+    control: form.control,
+    name: "brandsInfo",
   });
 
   const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient } = useFieldArray({
@@ -151,27 +160,23 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // Helper to append values to nutrition fields without clearing previous ones
-    const updateNutrition = (field: keyof DairyFormValues["nutrition"], value: string) => {
-      const current = form.getValues(`nutrition.${field}`);
-      if (!current) {
-        form.setValue(`nutrition.${field}`, value);
-      } else if (!current.includes(value)) {
-        form.setValue(`nutrition.${field}`, `${current}, ${value}`);
-      }
-    };
+    // Append to Brands Table
+    appendBrand({
+      name: selected.name,
+      feedType: selected.feedType,
+      bagWeight: selected.bagWeight,
+      price: selected.price,
+      protein: selected.nutrition.protein,
+      fat: selected.nutrition.fat,
+      fiber: selected.nutrition.fiber,
+      calcium: selected.nutrition.calcium,
+      phosphorus: selected.nutrition.phosphorus,
+      salt: selected.nutrition.salt,
+      mineralMix: selected.nutrition.mineralMix,
+      others: selected.nutrition.others,
+    });
 
-    // Update Nutrition values
-    updateNutrition("protein", selected.nutrition.protein);
-    updateNutrition("fat", selected.nutrition.fat);
-    updateNutrition("fiber", selected.nutrition.fiber);
-    updateNutrition("calcium", selected.nutrition.calcium);
-    updateNutrition("phosphorus", selected.nutrition.phosphorus);
-    updateNutrition("salt", selected.nutrition.salt);
-    updateNutrition("mineralMix", selected.nutrition.mineralMix);
-    updateNutrition("others", selected.nutrition.others);
-
-    // Append ingredients to table
+    // Append to Ingredients Table
     selected.ingredients.forEach(ing => {
       appendIngredient({
         brand: selected.name,
@@ -182,7 +187,7 @@ export default function DairySurvey() {
 
     toast({ 
       title: "माहिती जोडली गेली", 
-      description: `${selected.name} ची माहिती आधीच्या माहितीत जोडली गेली आहे.` 
+      description: `${selected.name} ची संपूर्ण माहिती तक्त्यामध्ये जोडली गेली आहे.` 
     });
   };
 
@@ -212,7 +217,7 @@ export default function DairySurvey() {
   return (
     <div className="min-h-screen pb-12 bg-background">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="container mx-auto px-4 py-8 max-w-[95%]">
         <div className="flex items-center gap-4 mb-6 no-print">
           <Button variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
@@ -224,7 +229,7 @@ export default function DairySurvey() {
           {/* Section 1: General Info */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य माहिती</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">मिल्किंग सेंटर / डेअरीचे नाव</Label>
                 <Input {...form.register("dairyName")} placeholder="नाव प्रविष्ट करा" />
@@ -352,7 +357,7 @@ export default function DairySurvey() {
 
               <div className="space-y-2">
                 <Label className="form-label-mr">खालील पूरक खाद्य वापरता का?</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                   {supplementOptions.map((opt) => (
                     <div key={opt.value} className="flex items-center space-x-2">
                       <Checkbox 
@@ -375,14 +380,14 @@ export default function DairySurvey() {
             </div>
           </section>
 
-          {/* Section 4: Ingredients Table */}
-          <section className="form-section">
+          {/* Section 4: Consolidated Brand & Nutrition Table */}
+          <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">४. ब्रँडमधील घटक (Ingredients) माहिती</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (Quick Fill)</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-primary uppercase">मास्टर ब्रँड निवडा (Quick Fill)</span>
+                  <span className="text-[10px] font-bold text-primary uppercase">मास्टर ब्रँड निवडा</span>
                   <Select onValueChange={handleMasterBrandSelect}>
                     <SelectTrigger className="h-8 bg-white w-[200px] text-xs">
                       <SelectValue placeholder="ब्रँड निवडा" />
@@ -400,7 +405,60 @@ export default function DairySurvey() {
                 </div>
               </div>
             </div>
-            
+
+            <Table className="min-w-[1200px]">
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead className="font-bold">ब्रँड नाव</TableHead>
+                  <TableHead className="font-bold">प्रकार</TableHead>
+                  <TableHead className="font-bold">वजन (किग्रॅ)</TableHead>
+                  <TableHead className="font-bold">किंमत (₹)</TableHead>
+                  <TableHead className="font-bold text-xs">प्रोटीन (%)</TableHead>
+                  <TableHead className="font-bold text-xs">फॅट (%)</TableHead>
+                  <TableHead className="font-bold text-xs">फायबर (%)</TableHead>
+                  <TableHead className="font-bold text-xs">कॅल्शियम (%)</TableHead>
+                  <TableHead className="font-bold text-xs">फॉस्फरस (%)</TableHead>
+                  <TableHead className="font-bold text-xs">मीठ (%)</TableHead>
+                  <TableHead className="font-bold text-xs">मिनरल (%)</TableHead>
+                  <TableHead className="w-10"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {brandFields.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={12} className="text-center py-6 text-muted-foreground text-sm">
+                      मास्टर ब्रँड निवडा जेणेकरून सर्व माहिती एकत्रितपणे येथे दिसेल.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  brandFields.map((field, index) => (
+                    <TableRow key={field.id}>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.name` as const)} className="h-8 text-xs font-bold" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.feedType` as const)} className="h-8 text-xs" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.bagWeight` as const)} className="h-8 text-xs w-16" type="number" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.price` as const)} className="h-8 text-xs w-20" type="number" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.protein` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.fat` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.fiber` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.calcium` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.phosphorus` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.salt` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell><Input {...form.register(`brandsInfo.${index}.mineralMix` as const)} className="h-8 text-xs w-14" /></TableCell>
+                      <TableCell>
+                        <Button variant="ghost" size="icon" onClick={() => removeBrand(index)}>
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </section>
+
+          {/* Section 5: Ingredients Table */}
+          <section className="form-section">
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. ब्रँडमधील घटक (Ingredients) माहिती</h3>
             <Table>
               <TableHeader>
                 <TableRow>
@@ -433,45 +491,6 @@ export default function DairySurvey() {
                 )}
               </TableBody>
             </Table>
-          </section>
-
-          {/* Section 5: Nutrition */}
-          <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. पोषण घटक (पॅकवर दिलेली माहिती %)</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-1">
-                <Label className="text-xs">क्रूड प्रोटीन</Label>
-                <Input {...form.register("nutrition.protein")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">क्रूड फॅट</Label>
-                <Input {...form.register("nutrition.fat")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">क्रूड फायबर</Label>
-                <Input {...form.register("nutrition.fiber")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">कॅल्शियम</Label>
-                <Input {...form.register("nutrition.calcium")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">फॉस्फरस</Label>
-                <Input {...form.register("nutrition.phosphorus")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">मीठ</Label>
-                <Input {...form.register("nutrition.salt")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">मिनरल मिक्सचर</Label>
-                <Input {...form.register("nutrition.mineralMix")} placeholder="%" />
-              </div>
-              <div className="space-y-1">
-                <Label className="text-xs">इतर</Label>
-                <Input {...form.register("nutrition.others")} placeholder="%" />
-              </div>
-            </div>
           </section>
 
           {/* Sections 6 & 7: Purchase & Supply */}
