@@ -1,3 +1,116 @@
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { Navbar } from '@/components/layout/Navbar';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { ClipboardList, Star, LayoutDashboard, Database, FileText, BarChart3 } from 'lucide-react';
+
 export default function Home() {
-  return <></>;
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-primary/5 border-b">
+          <div className="container px-4 md:px-6 mx-auto text-center">
+            <div className="flex flex-col items-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-primary font-headline">
+                  पशुधन इनसाइट (Pashudhan Insight)
+                </h1>
+                <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
+                  महाराष्ट्र राज्यातील पशुखाद्य सर्वेक्षणासाठी आधुनिक आणि सोपे व्यासपीठ.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link href="/dashboard">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90">
+                    <LayoutDashboard className="mr-2 h-5 w-5" />
+                    डॅशबोर्ड पहा
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Survey Cards */}
+        <section className="py-16 container px-4 mx-auto">
+          <h2 className="text-2xl font-bold text-center mb-12 font-headline">सर्वेक्षण सुरू करा</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <Card className="hover:shadow-md transition-all border-primary/20 bg-white">
+              <CardHeader>
+                <div className="p-3 bg-primary/10 rounded-full w-fit mb-2">
+                  <ClipboardList className="h-8 w-8 text-primary" />
+                </div>
+                <CardTitle className="font-headline">डेअरी/मिल्किंग सेंटर सर्वेक्षण</CardTitle>
+                <CardDescription>पशुखाद्य सर्वेक्षण फॉर्म (Cattle Feed Survey Form)</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  दूध संकलन केंद्राकडून पशुखाद्य वापर, पशुधन संख्या आणि खरेदी तपशील गोळा करा.
+                </p>
+                <Link href="/survey/dairy">
+                  <Button className="w-full bg-primary">फॉर्म भरा</Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="hover:shadow-md transition-all border-accent/20 bg-white">
+              <CardHeader>
+                <div className="p-3 bg-accent/10 rounded-full w-fit mb-2">
+                  <Star className="h-8 w-8 text-accent" />
+                </div>
+                <CardTitle className="font-headline">शेतकरी ब्रँड रिव्ह्यू</CardTitle>
+                <CardDescription>पशुखाद्य ब्रँड रिव्ह्यू व सर्वे प्रश्नावली</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  थेट शेतकऱ्यांकडून विविध पशुखाद्य ब्रँड्सची गुणवत्ता आणि परिणामांबद्दल माहिती घ्या.
+                </p>
+                <Link href="/survey/farmer">
+                  <Button className="w-full bg-accent hover:bg-accent/90">रिव्ह्यू सुरू करा</Button>
+                </Link>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
+
+        {/* Features Info */}
+        <section className="py-16 bg-muted">
+          <div className="container px-4 mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+              <div className="flex flex-col items-center space-y-2">
+                <div className="p-3 bg-white rounded-full shadow-sm">
+                  <Database className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold">सुरक्षित डेटा स्टोरेज</h3>
+                <p className="text-sm text-muted-foreground">सर्व सर्वेक्षणांचा डेटा सुरक्षितपणे साठवला जातो.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-2">
+                <div className="p-3 bg-white rounded-full shadow-sm">
+                  <FileText className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold">PDF रिपोर्ट जनरेशन</h3>
+                <p className="text-sm text-muted-foreground">प्रत्येक सर्वेक्षणानंतर त्वरित PDF रिपोर्ट डाउनलोड करा.</p>
+              </div>
+              <div className="flex flex-col items-center space-y-2">
+                <div className="p-3 bg-white rounded-full shadow-sm">
+                  <BarChart3 className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-bold">AI विश्लेषण</h3>
+                <p className="text-sm text-muted-foreground">भागातील पशुखाद्य ट्रेंड्सचे स्वयंचलित AI विश्लेषण मिळवा.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t py-8 bg-white">
+        <div className="container px-4 mx-auto text-center text-sm text-muted-foreground">
+          <p>© {new Date().getFullYear()} Pashudhan Insight. सर्व हक्क राखीव.</p>
+        </div>
+      </footer>
+    </div>
+  );
 }
