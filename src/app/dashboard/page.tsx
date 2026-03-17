@@ -42,7 +42,6 @@ export default function Dashboard() {
     // Simple brand frequency calculation
     const brandCounts: Record<string, number> = {};
     surveys.forEach(s => {
-      // In Farmer survey it's currentBrand, in Dairy it might be in brandsInfo or bestBrand
       const brand = s.data.currentBrand || s.data.bestBrand;
       if (brand && typeof brand === 'string') {
         brandCounts[brand] = (brandCounts[brand] || 0) + 1;
@@ -63,6 +62,7 @@ export default function Dashboard() {
   const getAiSummary = async () => {
     if (!district || !taluka) return;
     setLoading(true);
+    setAiSummary("");
     try {
       const result = await generateRegionalFeedSummary({ district, taluka });
       setAiSummary(result.summary);
