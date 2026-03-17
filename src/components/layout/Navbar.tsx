@@ -10,23 +10,23 @@ export function Navbar() {
       <div className="container mx-auto px-2 md:px-4 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-1 md:gap-2 font-bold text-base md:text-xl text-primary shrink-0">
           <Beef className="h-5 w-5 md:h-6 md:w-6" />
-          <span className="inline-block">कॅटल फीड सर्वे ॲप</span>
+          <span className="inline-block">Cattle Feed Survey App</span>
         </Link>
-        <div className="flex items-center gap-0.5 md:gap-2">
+        <div className="flex items-center gap-0.5 md:gap-1 lg:gap-2">
           <Link href="/dashboard">
-            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-3 gap-1 text-[10px] md:text-sm">
+            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-2 lg:px-3 gap-1 text-[10px] md:text-xs lg:text-sm">
               <BarChart3 className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Dashboard</span>
             </Button>
           </Link>
           <Link href="/brands">
-            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-3 gap-1 text-[10px] md:text-sm">
+            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-2 lg:px-3 gap-1 text-[10px] md:text-xs lg:text-sm">
               <BookMarked className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Brands</span>
             </Button>
           </Link>
           <Link href="/surveys">
-            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-3 gap-1 text-[10px] md:text-sm">
+            <Button variant="ghost" size="sm" className="h-8 px-1.5 md:h-9 md:px-2 lg:px-3 gap-1 text-[10px] md:text-xs lg:text-sm">
               <ClipboardList className="h-3.5 w-3.5 md:h-4 md:w-4" />
               <span className="hidden sm:inline">Surveys</span>
             </Button>

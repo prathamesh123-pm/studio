@@ -16,7 +16,7 @@ export default function Home() {
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl text-primary font-headline">
-                  कॅटल फीड सर्वे ॲप
+                  Cattle Feed Survey App
                 </h1>
                 <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
                   महाराष्ट्र राज्यातील पशुखाद्य सर्वेक्षणासाठी आधुनिक आणि सोपे व्यासपीठ.
@@ -108,7 +108,7 @@ export default function Home() {
 
       <footer className="border-t py-8 bg-white">
         <div className="container px-4 mx-auto text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} कॅटल फीड सर्वे ॲप. सर्व हक्क राखीव.</p>
+          <p>© {new Date().getFullYear()} Cattle Feed Survey App. सर्व हक्क राखीव.</p>
         </div>
       </footer>
     </div>

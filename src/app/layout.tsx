@@ -2,7 +2,7 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'कॅटल फीड सर्वे ॲप',
+  title: 'Cattle Feed Survey App',
   description: 'महाराष्ट्र राज्यातील पशुखाद्य सर्वेक्षणासाठी आधुनिक आणि सोपे व्यासपीठ.',
 };
 
