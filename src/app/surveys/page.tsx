@@ -6,35 +6,95 @@ import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Printer, FileText, Search, Clock, MapPin, ClipboardList, LayoutDashboard } from "lucide-react";
+import { 
+  Printer, 
+  FileText, 
+  Search, 
+  Clock, 
+  MapPin, 
+  ClipboardList, 
+  LayoutDashboard,
+  Eye,
+  Pencil,
+  Trash2
+} from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 
 export default function SurveysList() {
-  const { getSurveys } = useSurveyStore();
+  const { getSurveys, deleteSurvey } = useSurveyStore();
   const [surveys, setSurveys] = useState<SurveyRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSurvey, setSelectedSurvey] = useState<SurveyRecord | null>(null);
 
-  useEffect(() => {
-    // Sort surveys by date descending (newest first)
+  const loadSurveys = () => {
     const allSurveys = getSurveys().sort((a, b) => 
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
     setSurveys(allSurveys);
+  };
+
+  useEffect(() => {
+    loadSurveys();
   }, []);
+
+  const handleDelete = (id: string) => {
+    if (confirm("तुम्हाला खात्री आहे की तुम्ही हा रिपोर्ट हटवू इच्छिता?")) {
+      deleteSurvey(id);
+      loadSurveys();
+      toast({ title: "यशस्वी", description: "रिपोर्ट हटवण्यात आला आहे." });
+    }
+  };
 
   const filterSurveys = (type?: 'dairy' | 'farmer') => {
     return surveys.filter(s => {
       const matchesType = type ? s.type === type : true;
-      const matchesSearch = s.surveyorName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      const matchesSearch = 
+        (s.surveyorName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
         (s.data.dairyName || s.data.farmerName || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
         (s.data.village || "").toLowerCase().includes(searchTerm.toLowerCase());
       return matchesType && matchesSearch;
     });
   };
 
+  const renderDataAsTable = (data: any) => {
+    const excludedKeys = ['brandsInfo', 'livestock', 'animalCount', 'packNutrition', 'supplements', 'selectionReason', 'problems', 'switchReason'];
+    
+    return (
+      <Table>
+        <TableBody>
+          {Object.entries(data).map(([key, value]) => {
+            if (excludedKeys.includes(key) || typeof value === 'object') return null;
+            return (
+              <TableRow key={key}>
+                <TableHead className="w-1/3 font-bold bg-muted/20 capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</TableHead>
+                <TableCell>{String(value)}</TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    );
+  };
+
   const SurveyItem = ({ survey }: { survey: SurveyRecord }) => (
-    <Card key={survey.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden">
+    <Card key={survey.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-4">
       <CardContent className="p-0">
         <div className="p-4 md:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex gap-4 items-center">
@@ -48,16 +108,73 @@ export default function SurveysList() {
               <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs md:text-sm text-muted-foreground mt-1">
                 <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {survey.data.village}, {survey.data.taluka}</span>
                 <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
-                <span className="hidden sm:inline">ID: {survey.surveyorId}</span>
+                <Badge variant={survey.type === 'dairy' ? 'default' : 'secondary'} className={`${survey.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[10px]`}>
+                  {survey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'}
+                </Badge>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2 w-full md:w-auto justify-between md:justify-end">
-            <Badge variant={survey.type === 'dairy' ? 'default' : 'secondary'} className={`${survey.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[10px] md:text-xs`}>
-              {survey.type === 'dairy' ? 'गवळी/चिलिंग सेंटर' : 'शेतकरी ब्रँड'}
-            </Badge>
-            <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-2 h-8 px-2 md:h-9 md:px-3">
-              <Printer className="h-3.5 w-3.5" /> <span className="text-xs md:text-sm">रिपोर्ट</span>
+          <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="h-9 px-3 gap-2 border-primary text-primary hover:bg-primary/10" onClick={() => setSelectedSurvey(survey)}>
+                  <Eye className="h-4 w-4" /> <span className="hidden sm:inline">View</span>
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                    {survey.type === 'dairy' ? <FileText className="text-primary" /> : <ClipboardList className="text-accent" />}
+                    सविस्तर रिपोर्ट: {survey.data.dairyName || survey.data.farmerName}
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="mt-4 space-y-6">
+                  <div>
+                    <h4 className="font-bold text-primary mb-2 border-b">प्राथमिक माहिती</h4>
+                    {renderDataAsTable(survey.data)}
+                  </div>
+                  
+                  {survey.data.brandsInfo && survey.data.brandsInfo.length > 0 && (
+                    <div>
+                      <h4 className="font-bold text-primary mb-2 border-b">ब्रँड व पोषण माहिती</h4>
+                      <div className="overflow-x-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/50">
+                              <TableHead>ब्रँड</TableHead>
+                              <TableHead>किंमत</TableHead>
+                              <TableHead>प्रोटीन</TableHead>
+                              <TableHead>फॅट</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {survey.data.brandsInfo.map((b: any, i: number) => (
+                              <TableRow key={i}>
+                                <TableCell className="font-medium">{b.name}</TableCell>
+                                <TableCell>₹{b.price}</TableCell>
+                                <TableCell>{b.protein}%</TableCell>
+                                <TableCell>{b.fat}%</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </DialogContent>
+            </Dialog>
+
+            <Button variant="outline" size="sm" className="h-9 px-3 gap-2">
+              <Pencil className="h-4 w-4" /> <span className="hidden sm:inline">Edit</span>
+            </Button>
+            
+            <Button variant="outline" size="sm" className="h-9 px-3 gap-2 text-destructive border-destructive hover:bg-destructive/10" onClick={() => handleDelete(survey.id)}>
+              <Trash2 className="h-4 w-4" /> <span className="hidden sm:inline">Delete</span>
+            </Button>
+
+            <Button variant="outline" size="sm" onClick={() => window.print()} className="h-9 px-3 gap-2">
+              <Printer className="h-4 w-4" /> <span className="hidden sm:inline">Report</span>
             </Button>
           </div>
         </div>
@@ -98,34 +215,25 @@ export default function SurveysList() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all" className="space-y-4">
+          <TabsContent value="all">
             {filterSurveys().length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-                <p className="text-muted-foreground">कोणतेही सर्वेक्षण उपलब्ध नाही.</p>
-              </div>
+              <EmptyState />
             ) : (
               filterSurveys().map(survey => <SurveyItem key={survey.id} survey={survey} />)
             )}
           </TabsContent>
 
-          <TabsContent value="dairy" className="space-y-4">
+          <TabsContent value="dairy">
             {filterSurveys('dairy').length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-                <p className="text-muted-foreground">गवळी/चिलिंग सेंटर सर्वेक्षण रिपोर्ट उपलब्ध नाहीत.</p>
-              </div>
+              <EmptyState message="गवळी/चिलिंग सेंटर सर्वेक्षण रिपोर्ट उपलब्ध नाहीत." />
             ) : (
               filterSurveys('dairy').map(survey => <SurveyItem key={survey.id} survey={survey} />)
             )}
           </TabsContent>
 
-          <TabsContent value="farmer" className="space-y-4">
+          <TabsContent value="farmer">
             {filterSurveys('farmer').length === 0 ? (
-              <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-                <ClipboardList className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
-                <p className="text-muted-foreground">शेतकरी ब्रँड सर्वेक्षण रिपोर्ट उपलब्ध नाहीत.</p>
-              </div>
+              <EmptyState message="शेतकरी ब्रँड सर्वेक्षण रिपोर्ट उपलब्ध नाहीत." />
             ) : (
               filterSurveys('farmer').map(survey => <SurveyItem key={survey.id} survey={survey} />)
             )}
@@ -152,6 +260,15 @@ export default function SurveysList() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+function EmptyState({ message = "कोणतेही सर्वेक्षण उपलब्ध नाही." }: { message?: string }) {
+  return (
+    <div className="text-center py-20 bg-white rounded-xl border border-dashed">
+      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-20" />
+      <p className="text-muted-foreground">{message}</p>
     </div>
   );
 }
