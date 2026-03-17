@@ -31,7 +31,7 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Trash2, Search, PlusCircle } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
@@ -160,7 +160,7 @@ export default function DairySurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
-    // Append to Brands Table
+    // Append to Brands Table (Don't replace, add new row)
     appendBrand({
       name: selected.name,
       feedType: selected.feedType,
@@ -469,26 +469,18 @@ export default function DairySurvey() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {ingredientFields.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center py-4 text-muted-foreground text-xs">
-                      मास्टर ब्रँड निवडा जेणेकरून घटक माहिती आपोआप जोडली जाईल.
+                {ingredientFields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.brand` as const)} /></TableCell>
+                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.ingredient` as const)} /></TableCell>
+                    <TableCell><Input {...form.register(`ingredientsInfo.${index}.percentage` as const)} type="number" /></TableCell>
+                    <TableCell>
+                      <Button variant="ghost" size="icon" onClick={() => removeIngredient(index)}>
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
                     </TableCell>
                   </TableRow>
-                ) : (
-                  ingredientFields.map((field, index) => (
-                    <TableRow key={field.id}>
-                      <TableCell><Input {...form.register(`ingredientsInfo.${index}.brand` as const)} /></TableCell>
-                      <TableCell><Input {...form.register(`ingredientsInfo.${index}.ingredient` as const)} /></TableCell>
-                      <TableCell><Input {...form.register(`ingredientsInfo.${index}.percentage` as const)} type="number" /></TableCell>
-                      <TableCell>
-                        <Button variant="ghost" size="icon" onClick={() => removeIngredient(index)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                ))}
               </TableBody>
             </Table>
           </section>
