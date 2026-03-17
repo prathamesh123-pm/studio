@@ -12,6 +12,10 @@ export interface Supplier {
   providesDelivery: boolean;
   providesCredit: boolean;
   timestamp: string;
+  customPoints?: Array<{
+    point: string;
+    value: string;
+  }>;
 }
 
 export const useSupplierStore = () => {

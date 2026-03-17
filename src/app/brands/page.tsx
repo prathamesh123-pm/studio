@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Beaker, Printer, FileText } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee, Layers, Edit2, X, Eye, Printer, FileText, PlusCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -29,9 +29,9 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function BrandManagement() {
   const { getBrands, addBrand, updateBrand, deleteBrand } = useBrandStore();
@@ -49,6 +49,7 @@ export default function BrandManagement() {
     protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
   });
   const [ingredients, setIngredients] = useState([{ ingredient: "", percentage: "" }]);
+  const [customPoints, setCustomPoints] = useState<Array<{ point: string, value: string }>>([]);
 
   useEffect(() => {
     setBrands(getBrands());
@@ -68,6 +69,20 @@ export default function BrandManagement() {
     setIngredients(newIngs);
   };
 
+  const handleAddPoint = () => {
+    setCustomPoints([...customPoints, { point: "", value: "" }]);
+  };
+
+  const handleRemovePoint = (index: number) => {
+    setCustomPoints(customPoints.filter((_, i) => i !== index));
+  };
+
+  const handlePointChange = (index: number, field: string, value: string) => {
+    const newPoints = [...customPoints];
+    (newPoints[index] as any)[field] = value;
+    setCustomPoints(newPoints);
+  };
+
   const handleEditBrand = (brand: MasterBrand) => {
     setEditingId(brand.id);
     setNewBrandName(brand.name || "");
@@ -79,6 +94,7 @@ export default function BrandManagement() {
       protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
     });
     setIngredients(brand.ingredients || [{ ingredient: "", percentage: "" }]);
+    setCustomPoints(brand.customPoints || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -99,7 +115,8 @@ export default function BrandManagement() {
       availableWeights,
       price,
       nutrition,
-      ingredients
+      ingredients,
+      customPoints
     };
 
     if (editingId) {
@@ -130,6 +147,7 @@ export default function BrandManagement() {
     setPrice("");
     setNutrition({ protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" });
     setIngredients([{ ingredient: "", percentage: "" }]);
+    setCustomPoints([]);
     setEditingId(null);
   };
 
@@ -182,6 +200,19 @@ export default function BrandManagement() {
           </Table>
         </section>
       )}
+
+      {brand.customPoints && brand.customPoints.length > 0 && (
+        <section>
+          <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">४. ऍड पॉईंट्स (इतर मुद्दे)</h4>
+          <Table className="border rounded-sm">
+            <TableBody>
+              {brand.customPoints.map((pt, idx) => (
+                <BrandDataRow key={idx} label={pt.point} value={pt.value} />
+              ))}
+            </TableBody>
+          </Table>
+        </section>
+      )}
     </div>
   );
 
@@ -207,7 +238,7 @@ export default function BrandManagement() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1 space-y-6">
             <Card className="border-primary/20 shadow-md">
-              <CardHeader className="flex flex-row items-center justify-between">
+              <CardHeader className="flex flex-row items-center justify-between pb-4">
                 <CardTitle className="text-lg">
                   {editingId ? "ब्रँड संपादन करा" : "नवीन ब्रँड जोडा"}
                 </CardTitle>
@@ -279,7 +310,7 @@ export default function BrandManagement() {
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
                     <Label className="text-primary font-bold">घटक (Ingredients)</Label>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient}>
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient} className="h-7 text-xs">
                       <Plus className="h-3 w-3 mr-1" /> घटक जोडा
                     </Button>
                   </div>
@@ -290,18 +321,48 @@ export default function BrandManagement() {
                           placeholder="घटकाचे नाव" 
                           value={ing.ingredient} 
                           onChange={(e) => handleIngredientChange(idx, "ingredient", e.target.value)}
-                          className="h-8 flex-1"
+                          className="h-8 flex-1 text-xs"
                         />
                         <Input 
                           placeholder="%" 
                           value={ing.percentage} 
                           onChange={(e) => handleIngredientChange(idx, "percentage", e.target.value)}
-                          className="h-8 w-16"
+                          className="h-8 w-16 text-xs"
                           type="number"
                         />
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveIngredient(idx)}>
                           <Trash2 className="h-4 w-4" />
                         </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <div className="flex justify-between items-center mb-2">
+                    <Label className="text-primary font-bold">ऍड पॉईंट्स (इतर मुद्दे)</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-xs">
+                      <PlusCircle className="h-3 w-3 mr-1" /> मुद्दा जोडा
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {customPoints.map((pt, idx) => (
+                      <div key={idx} className="p-3 border rounded-lg bg-muted/20 relative space-y-2">
+                        <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6 text-destructive" onClick={() => handleRemovePoint(idx)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                        <Input 
+                          placeholder="मुद्दा (उदा. एक्सपायरी)" 
+                          value={pt.point} 
+                          onChange={(e) => handlePointChange(idx, "point", e.target.value)}
+                          className="h-8 text-xs"
+                        />
+                        <Textarea 
+                          placeholder="माहिती" 
+                          value={pt.value} 
+                          onChange={(e) => handlePointChange(idx, "value", e.target.value)}
+                          className="h-16 text-xs"
+                        />
                       </div>
                     ))}
                   </div>

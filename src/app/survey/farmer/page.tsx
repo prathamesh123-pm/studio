@@ -533,7 +533,7 @@ export default function FarmerSurvey() {
 
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center justify-between">
-              ११. अतिरिक्त प्रश्न (Custom Questions)
+              ११. ऍड पॉईंट्स (इतर मुद्दे)
               <Button 
                 type="button" 
                 variant="outline" 
@@ -541,12 +541,12 @@ export default function FarmerSurvey() {
                 onClick={() => appendCustom({ question: "", answer: "" })}
                 className="gap-2 text-accent border-accent hover:bg-accent/10"
               >
-                <PlusCircle className="h-4 w-4" /> नवीन प्रश्न जोडा
+                <PlusCircle className="h-4 w-4" /> नवीन मुद्दा जोडा
               </Button>
             </h3>
             <div className="space-y-4">
               {customFields.length === 0 ? (
-                <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या आवडीचे अतिरिक्त प्रश्न जोडू शकता.</p>
+                <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या गरजेनुसार अतिरिक्त मुद्दे जोडू शकता.</p>
               ) : (
                 customFields.map((field, index) => (
                   <div key={field.id} className="p-4 border rounded-lg space-y-3 relative group">
@@ -560,12 +560,12 @@ export default function FarmerSurvey() {
                       <Trash2 className="h-4 w-4" />
                     </Button>
                     <div className="space-y-2 pr-8">
-                      <Label className="text-xs">प्रश्न {index + 1}</Label>
-                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="तुमचा प्रश्न लिहा..." />
+                      <Label className="text-xs">मुद्दा / प्रश्न {index + 1}</Label>
+                      <Input {...form.register(`customQuestions.${index}.question` as const)} placeholder="येथे लिहा..." />
                     </div>
                     <div className="space-y-2">
-                      <Label className="text-xs">उत्तर</Label>
-                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="उत्तर लिहा..." className="h-20" />
+                      <Label className="text-xs">उत्तर / माहिती</Label>
+                      <Textarea {...form.register(`customQuestions.${index}.answer` as const)} placeholder="येथे नोंदवा..." className="h-20" />
                     </div>
                   </div>
                 ))
@@ -588,10 +588,6 @@ export default function FarmerSurvey() {
                 <Label className="form-label-mr">दिनांक</Label>
                 <Input {...form.register("surveyDate")} type="date" />
               </div>
-            </div>
-            <div className="mt-6 pt-6 border-t border-dashed flex justify-between items-end opacity-50">
-              <div className="text-sm italic">स्वाक्षरी: ___________________</div>
-              <div className="text-sm italic">दिनांक: {new Date().toLocaleDateString('mr-IN')}</div>
             </div>
           </section>
 

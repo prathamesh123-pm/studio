@@ -4,7 +4,7 @@ export interface MasterBrand {
   name: string;
   feedType: string;
   bagWeight: string;
-  availableWeights: string; // New field for multiple packing sizes
+  availableWeights: string;
   price: string;
   nutrition: {
     protein: string;
@@ -19,6 +19,10 @@ export interface MasterBrand {
   ingredients: Array<{
     ingredient: string;
     percentage: string;
+  }>;
+  customPoints?: Array<{
+    point: string;
+    value: string;
   }>;
 }
 

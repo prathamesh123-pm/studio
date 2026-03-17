@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,7 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Clock, Printer, FileText } from "lucide-react";
+import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Printer, FileText, PlusCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -53,6 +54,7 @@ export default function SupplierManagement() {
   const [mainBrands, setMainBrands] = useState("");
   const [providesDelivery, setProvidesDelivery] = useState(false);
   const [providesCredit, setProvidesCredit] = useState(false);
+  const [customPoints, setCustomPoints] = useState<Array<{ point: string, value: string }>>([]);
 
   useEffect(() => {
     loadSuppliers();
@@ -60,6 +62,20 @@ export default function SupplierManagement() {
 
   const loadSuppliers = () => {
     setSuppliers(getSuppliers());
+  };
+
+  const handleAddPoint = () => {
+    setCustomPoints([...customPoints, { point: "", value: "" }]);
+  };
+
+  const handleRemovePoint = (index: number) => {
+    setCustomPoints(customPoints.filter((_, i) => i !== index));
+  };
+
+  const handlePointChange = (index: number, field: string, value: string) => {
+    const newPoints = [...customPoints];
+    (newPoints[index] as any)[field] = value;
+    setCustomPoints(newPoints);
   };
 
   const handleSaveSupplier = () => {
@@ -78,7 +94,8 @@ export default function SupplierManagement() {
       supplierType,
       mainBrands,
       providesDelivery,
-      providesCredit
+      providesCredit,
+      customPoints
     };
 
     if (editingId) {
@@ -106,6 +123,7 @@ export default function SupplierManagement() {
     setMainBrands(s.mainBrands || "");
     setProvidesDelivery(s.providesDelivery || false);
     setProvidesCredit(s.providesCredit || false);
+    setCustomPoints(s.customPoints || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -128,6 +146,7 @@ export default function SupplierManagement() {
     setMainBrands("");
     setProvidesDelivery(false);
     setProvidesCredit(false);
+    setCustomPoints([]);
     setEditingId(null);
   };
 
@@ -176,6 +195,19 @@ export default function SupplierManagement() {
           </TableBody>
         </Table>
       </section>
+
+      {supplier.customPoints && supplier.customPoints.length > 0 && (
+        <section>
+          <h4 className="text-[11px] font-bold mb-1 border-b pb-0.5 text-primary">४. ऍड पॉईंट्स (इतर मुद्दे)</h4>
+          <Table className="border rounded-sm">
+            <TableBody>
+              {supplier.customPoints.map((pt, idx) => (
+                <SupplierDataRow key={idx} label={pt.point} value={pt.value} />
+              ))}
+            </TableBody>
+          </Table>
+        </section>
+      )}
     </div>
   );
 
@@ -201,7 +233,7 @@ export default function SupplierManagement() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Add/Edit Form */}
           <div className="lg:col-span-4">
-            <Card className="border-primary/20 shadow-md sticky top-24">
+            <Card className="border-primary/20 shadow-md">
               <CardHeader className="pb-4 flex flex-row items-center justify-between">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <UserPlus className="h-5 w-5 text-primary" /> 
@@ -270,7 +302,37 @@ export default function SupplierManagement() {
                   </div>
                 </div>
 
-                <div className="flex gap-2">
+                <div className="pt-4 border-t">
+                  <div className="flex justify-between items-center mb-2">
+                    <Label className="text-primary font-bold">ऍड पॉईंट्स (इतर मुद्दे)</Label>
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-xs">
+                      <PlusCircle className="h-3 w-3 mr-1" /> मुद्दा जोडा
+                    </Button>
+                  </div>
+                  <div className="space-y-3">
+                    {customPoints.map((pt, idx) => (
+                      <div key={idx} className="p-3 border rounded-lg bg-muted/20 relative space-y-2">
+                        <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6 text-destructive" onClick={() => handleRemovePoint(idx)}>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                        <Input 
+                          placeholder="मुद्दा / प्रश्न" 
+                          value={pt.point} 
+                          onChange={(e) => handlePointChange(idx, "point", e.target.value)}
+                          className="h-8 text-xs"
+                        />
+                        <Textarea 
+                          placeholder="उत्तर / माहिती" 
+                          value={pt.value} 
+                          onChange={(e) => handlePointChange(idx, "value", e.target.value)}
+                          className="h-16 text-xs"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-2 pt-4">
                   {editingId && (
                     <Button variant="outline" className="flex-1" onClick={resetForm}>रद्द करा</Button>
                   )}

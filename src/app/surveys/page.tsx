@@ -222,7 +222,7 @@ export default function SurveysList() {
 
         {d.customQuestions && d.customQuestions.length > 0 && (
           <section>
-            <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>११. अतिरिक्त प्रश्नोत्तरे</h4>
+            <h4 className={`text-[11px] font-bold mb-1 border-b pb-0.5 ${isDairy ? 'text-primary' : 'text-accent'}`}>११. ऍड पॉईंट्स (इतर मुद्दे)</h4>
             <Table className="border rounded-sm">
               <TableBody>
                 {d.customQuestions.map((cq: any, idx: number) => (
