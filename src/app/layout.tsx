@@ -2,8 +2,8 @@ import type {Metadata} from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Pashudhan Insight - Cattle Feed Survey',
-  description: 'Digital platform for cattle feed surveying and insights in Maharashtra.',
+  title: 'कॅटल फीड सर्वे ॲप',
+  description: 'महाराष्ट्र राज्यातील पशुखाद्य सर्वेक्षणासाठी आधुनिक आणि सोपे व्यासपीठ.',
 };
 
 export default function RootLayout({
