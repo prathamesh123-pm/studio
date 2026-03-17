@@ -22,17 +22,15 @@ const CowIcon = ({ className }: { className?: string }) => (
     viewBox="0 0 24 24" 
     fill="none" 
     stroke="currentColor" 
-    strokeWidth="2" 
+    strokeWidth="1.5" 
     strokeLinecap="round" 
     strokeLinejoin="round" 
     className={className}
   >
-    <path d="M14 11V5l-2-2-2 2v6" />
-    <path d="M9 11H3l-1 2v4a2 2 0 0 0 2 2h2" />
-    <path d="M15 11h6l1 2v4a2 2 0 0 1-2 2h-2" />
-    <path d="M10 17v4" />
-    <path d="M14 17v4" />
-    <circle cx="12" cy="14" r="3" />
+    <path d="M7 15c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2H7z" />
+    <path d="M17 15l1.5-3.5c.3-.7.1-1.5-.5-2L15 7l-1-2h-4l-1 2-3 2.5c-.6.5-.8 1.3-.5 2L7 15" />
+    <path d="M9 5c0-1.7-1.3-3-3-3s-3 1.3-3 3" />
+    <path d="M15 5c0-1.7 1.3-3 3-3s3 1.3 3 3" />
   </svg>
 );
 
@@ -99,10 +97,12 @@ export default function BrandManagement() {
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold font-headline text-primary text-2xl md:text-3xl">पशुखाद्य ब्रँड व्यवस्थापन</h1>
+            <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पशुखाद्य ब्रँड व्यवस्थापन</h1>
             <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक जतन करू शकता.</p>
           </div>
-          <CowIcon className="h-10 w-10 text-primary opacity-20 hidden md:block" />
+          <div className="bg-primary/5 p-3 rounded-full hidden md:block">
+            <CowIcon className="h-10 w-10 text-primary opacity-40" />
+          </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -195,7 +195,7 @@ export default function BrandManagement() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-primary mt-4" onClick={handleSaveBrand}>
+                <Button className="w-full bg-primary mt-4 shadow-md" onClick={handleSaveBrand}>
                   <Save className="mr-2 h-4 w-4" /> ब्रँड जतन करा
                 </Button>
               </CardContent>
@@ -214,7 +214,7 @@ export default function BrandManagement() {
                 ) : (
                   <div className="space-y-4">
                     {brands.map((brand) => (
-                      <div key={brand.id} className="p-4 border rounded-lg bg-muted/20 relative group">
+                      <div key={brand.id} className="p-4 border rounded-lg bg-muted/20 relative group hover:border-primary/30 transition-colors">
                         <Button 
                           variant="ghost" 
                           size="icon" 
@@ -229,10 +229,10 @@ export default function BrandManagement() {
                         <div className="flex justify-between items-start mb-2">
                           <div>
                             <h3 className="font-bold text-lg text-primary">{brand.name}</h3>
-                            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full">{brand.feedType}</span>
+                            <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">{brand.feedType}</span>
                           </div>
                           <div className="text-right text-xs">
-                            <p className="font-bold text-accent">₹{brand.price}</p>
+                            <p className="font-bold text-accent text-sm">₹{brand.price}</p>
                             <p className="text-muted-foreground">{brand.bagWeight} किग्रॅ</p>
                           </div>
                         </div>
@@ -246,7 +246,7 @@ export default function BrandManagement() {
                           <p className="text-xs font-semibold mb-1">घटक:</p>
                           <div className="flex flex-wrap gap-2">
                             {brand.ingredients.map((ing, i) => (
-                              <span key={i} className="bg-white px-2 py-0.5 rounded border text-[10px]">
+                              <span key={i} className="bg-white px-2 py-0.5 rounded border text-[10px] shadow-sm">
                                 {ing.ingredient} ({ing.percentage}%)
                               </span>
                             ))}

@@ -3,7 +3,7 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: 'Cattle Feed Survey App',
-  description: 'महाराष्ट्र राज्यातील पशुखाद्य सर्वेक्षणासाठी आधुनिक आणि सोपे व्यासपीठ.',
+  description: 'An advanced platform for cattle feed surveying and analysis in Maharashtra.',
 };
 
 export default function RootLayout({

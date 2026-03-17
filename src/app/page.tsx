@@ -24,7 +24,7 @@ export default function Home() {
               </div>
               <div className="flex flex-wrap justify-center gap-4">
                 <Link href="/dashboard">
-                  <Button size="lg" className="bg-primary hover:bg-primary/90">
+                  <Button size="lg" className="bg-primary hover:bg-primary/90 shadow-lg">
                     <LayoutDashboard className="mr-2 h-5 w-5" />
                     डॅशबोर्ड पहा
                   </Button>
@@ -38,7 +38,7 @@ export default function Home() {
         <section className="py-16 container px-4 mx-auto">
           <h2 className="text-2xl font-bold text-center mb-12 font-headline">सर्वेक्षण सुरू करा</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="hover:shadow-md transition-all border-primary/20 bg-white">
+            <Card className="hover:shadow-lg transition-all border-primary/20 bg-white">
               <CardHeader>
                 <div className="p-3 bg-primary/10 rounded-full w-fit mb-2">
                   <ClipboardList className="h-8 w-8 text-primary" />
@@ -51,12 +51,12 @@ export default function Home() {
                   दूध संकलन केंद्राकडून पशुखाद्य वापर, पशुधन संख्या आणि खरेदी तपशील गोळा करा.
                 </p>
                 <Link href="/survey/dairy">
-                  <Button className="w-full bg-primary">फॉर्म भरा</Button>
+                  <Button className="w-full bg-primary shadow-sm">फॉर्म भरा</Button>
                 </Link>
               </CardContent>
             </Card>
 
-            <Card className="hover:shadow-md transition-all border-accent/20 bg-white">
+            <Card className="hover:shadow-lg transition-all border-accent/20 bg-white">
               <CardHeader>
                 <div className="p-3 bg-accent/10 rounded-full w-fit mb-2">
                   <Star className="h-8 w-8 text-accent" />
@@ -69,7 +69,7 @@ export default function Home() {
                   थेट शेतकऱ्यांकडून विविध पशुखाद्य ब्रँड्सची गुणवत्ता आणि परिणामांबद्दल माहिती घ्या.
                 </p>
                 <Link href="/survey/farmer">
-                  <Button className="w-full bg-accent hover:bg-accent/90">रिव्ह्यू सुरू करा</Button>
+                  <Button className="w-full bg-accent hover:bg-accent/90 shadow-sm">रिव्ह्यू सुरू करा</Button>
                 </Link>
               </CardContent>
             </Card>
@@ -81,21 +81,21 @@ export default function Home() {
           <div className="container px-4 mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div className="flex flex-col items-center space-y-2">
-                <div className="p-3 bg-white rounded-full shadow-sm">
+                <div className="p-3 bg-white rounded-full shadow-md">
                   <Database className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-bold">सुरक्षित डेटा स्टोरेज</h3>
                 <p className="text-sm text-muted-foreground">सर्व सर्वेक्षणांचा डेटा सुरक्षितपणे साठवला जातो.</p>
               </div>
               <div className="flex flex-col items-center space-y-2">
-                <div className="p-3 bg-white rounded-full shadow-sm">
+                <div className="p-3 bg-white rounded-full shadow-md">
                   <FileText className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-bold">PDF रिपोर्ट जनरेशन</h3>
                 <p className="text-sm text-muted-foreground">प्रत्येक सर्वेक्षणानंतर त्वरित PDF रिपोर्ट डाउनलोड करा.</p>
               </div>
               <div className="flex flex-col items-center space-y-2">
-                <div className="p-3 bg-white rounded-full shadow-sm">
+                <div className="p-3 bg-white rounded-full shadow-md">
                   <BarChart3 className="h-6 w-6 text-primary" />
                 </div>
                 <h3 className="font-bold">AI विश्लेषण</h3>
