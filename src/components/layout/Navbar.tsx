@@ -1,8 +1,9 @@
+
 "use client";
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Beef, ClipboardList, BarChart3, User } from 'lucide-react';
+import { Beef, ClipboardList, BarChart3, User, BookMarked } from 'lucide-react';
 
 export function Navbar() {
   return (
@@ -17,6 +18,12 @@ export function Navbar() {
             <Button variant="ghost" size="sm" className="gap-2">
               <BarChart3 className="h-4 w-4" />
               Dashboard
+            </Button>
+          </Link>
+          <Link href="/brands">
+            <Button variant="ghost" size="sm" className="gap-2">
+              <BookMarked className="h-4 w-4" />
+              Master Brands
             </Button>
           </Link>
           <Link href="/surveys">

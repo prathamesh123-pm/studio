@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -29,7 +30,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
-import { Save, Printer, ArrowLeft, Plus, Trash2 } from "lucide-react";
+import { useBrandStore, MasterBrand } from "@/lib/brand-store";
+import { Save, Printer, ArrowLeft, Plus, Trash2, Search } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
 const dairySchema = z.object({
@@ -129,6 +131,8 @@ type DairyFormValues = z.infer<typeof dairySchema>;
 export default function DairySurvey() {
   const router = useRouter();
   const { addSurvey } = useSurveyStore();
+  const { getBrands } = useBrandStore();
+  const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
   
   const form = useForm<DairyFormValues>({
     resolver: zodResolver(dairySchema),
@@ -149,10 +153,38 @@ export default function DairySurvey() {
     name: "brandDetails",
   });
 
-  const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient } = useFieldArray({
+  const { fields: ingredientFields, append: appendIngredient, remove: removeIngredient, replace: replaceIngredients } = useFieldArray({
     control: form.control,
     name: "ingredientsInfo",
   });
+
+  useEffect(() => {
+    setMasterBrands(getBrands());
+  }, []);
+
+  const handleMasterBrandSelect = (brandId: string) => {
+    const selected = masterBrands.find(b => b.id === brandId);
+    if (!selected) return;
+
+    // Set Company Name in the first brand detail row if it's empty
+    const currentBrands = form.getValues("brandDetails");
+    if (currentBrands[0]) {
+      form.setValue(`brandDetails.0.company`, selected.name);
+    }
+
+    // Set Nutrition
+    form.setValue("nutrition", selected.nutrition);
+
+    // Set Ingredients
+    const newIngredients = selected.ingredients.map(ing => ({
+      brand: selected.name,
+      ingredient: ing.ingredient,
+      percentage: ing.percentage
+    }));
+    replaceIngredients(newIngredients);
+
+    toast({ title: "माहिती भरली गेली", description: `${selected.name} ची पोषण मूल्ये आणि घटक फॉर्ममध्ये आपोआप भरले आहेत.` });
+  };
 
   const onSubmit = async (data: DairyFormValues) => {
     try {
@@ -236,6 +268,26 @@ export default function DairySurvey() {
             </div>
           </section>
 
+          {/* Master Brand Quick Select */}
+          <section className="form-section bg-primary/5 border-primary/30">
+            <h3 className="text-lg font-bold mb-4 text-primary flex items-center gap-2">
+              <Search className="h-5 w-5" /> मास्टर ब्रँड मधून निवडा (Quick Fill)
+            </h3>
+            <div className="space-y-2 max-w-sm">
+              <Label className="text-sm">ब्रँड निवडा जेणेकरून घटक आणि पोषण माहिती आपोआप भरली जाईल</Label>
+              <Select onValueChange={handleMasterBrandSelect}>
+                <SelectTrigger className="bg-white">
+                  <SelectValue placeholder="ब्रँड निवडा" />
+                </SelectTrigger>
+                <SelectContent>
+                  {masterBrands.map(b => (
+                    <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </section>
+
           {/* Section 2: Livestock */}
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती</h3>
@@ -286,7 +338,7 @@ export default function DairySurvey() {
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="Both" id="rd3" />
-                    <Label htmlFor="rd3">दोन्ही</Label>
+                    <Label htmlFor="rd3">दोनों</Label>
                   </div>
                 </RadioGroup>
               </div>
