@@ -8,20 +8,35 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus } from "lucide-react";
+import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Package } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 export default function SupplierManagement() {
   const { getSuppliers, addSupplier, deleteSupplier } = useSupplierStore();
   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  
+  // Form States
   const [name, setName] = useState("");
   const [shopName, setShopName] = useState("");
   const [contact, setContact] = useState("");
   const [district, setDistrict] = useState("");
   const [taluka, setTaluka] = useState("");
   const [address, setAddress] = useState("");
+  const [supplierType, setSupplierType] = useState<'Retailer' | 'Wholesaler' | 'Distributor'>('Retailer');
+  const [mainBrands, setMainBrands] = useState("");
+  const [providesDelivery, setProvidesDelivery] = useState(false);
+  const [providesCredit, setProvidesCredit] = useState(false);
 
   useEffect(() => {
     setSuppliers(getSuppliers());
@@ -38,7 +53,11 @@ export default function SupplierManagement() {
       contact,
       district,
       taluka,
-      address
+      address,
+      supplierType,
+      mainBrands,
+      providesDelivery,
+      providesCredit
     });
     setSuppliers(getSuppliers());
     resetForm();
@@ -52,12 +71,16 @@ export default function SupplierManagement() {
     setDistrict("");
     setTaluka("");
     setAddress("");
+    setSupplierType('Retailer');
+    setMainBrands("");
+    setProvidesDelivery(false);
+    setProvidesCredit(false);
   };
 
   return (
     <div className="min-h-screen bg-background pb-12">
       <Navbar />
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
         <header className="mb-8 flex justify-between items-center">
           <div>
             <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary">पुरवठादार व्यवस्थापन (Suppliers)</h1>
@@ -68,9 +91,9 @@ export default function SupplierManagement() {
           </div>
         </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Add Form */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-4">
             <Card className="border-primary/20 shadow-md sticky top-24">
               <CardHeader className="pb-4">
                 <CardTitle className="text-lg flex items-center gap-2">
@@ -78,17 +101,38 @@ export default function SupplierManagement() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label>पुरवठादाराचे नाव</Label>
-                  <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="उदा. विशाल कदम" />
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-2">
+                    <Label>पुरवठादाराचे नाव</Label>
+                    <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="उदा. विशाल कदम" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>दुकानाचे / एजन्सीचे नाव</Label>
+                    <Input value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="उदा. महालक्ष्मी पशुखाद्य" />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label>दुकानाचे / एजन्सीचे नाव</Label>
-                  <Input value={shopName} onChange={(e) => setShopName(e.target.value)} placeholder="उदा. महालक्ष्मी पशुखाद्य" />
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>संपर्क क्रमांक</Label>
+                    <Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="मोबाईल नंबर" maxLength={10} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>पुरवठादार प्रकार</Label>
+                    <Select value={supplierType} onValueChange={(v: any) => setSupplierType(v)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Retailer">किरकोळ (Retailer)</SelectItem>
+                        <SelectItem value="Wholesaler">घाऊक (Wholesaler)</SelectItem>
+                        <SelectItem value="Distributor">डिस्ट्रीब्युटर</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
+
                 <div className="space-y-2">
-                  <Label>संपर्क क्रमांक</Label>
-                  <Input value={contact} onChange={(e) => setContact(e.target.value)} placeholder="१० अंकी मोबाईल नंबर" maxLength={10} />
+                  <Label>मुख्य ब्रँड्स (Main Brands)</Label>
+                  <Input value={mainBrands} onChange={(e) => setMainBrands(e.target.value)} placeholder="उदा. गोदरेज, कपिला, अमूल" />
                 </div>
                 
                 <LocationSelector 
@@ -97,7 +141,18 @@ export default function SupplierManagement() {
 
                 <div className="space-y-2">
                   <Label>पूर्ण पत्ता</Label>
-                  <Textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="गावाचे नाव, गल्ली इ." className="h-20" />
+                  <Textarea value={address} onChange={(e) => setAddress(e.target.value)} placeholder="गावाचे नाव, गल्ली इ." className="h-16" />
+                </div>
+
+                <div className="flex flex-wrap gap-4 pt-2">
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="delivery" checked={providesDelivery} onCheckedChange={(v: boolean) => setProvidesDelivery(v)} />
+                    <Label htmlFor="delivery" className="text-xs cursor-pointer flex items-center gap-1"><Truck className="h-3 w-3" /> डिलिव्हरी सुविधा</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Checkbox id="credit" checked={providesCredit} onCheckedChange={(v: boolean) => setProvidesCredit(v)} />
+                    <Label htmlFor="credit" className="text-xs cursor-pointer flex items-center gap-1"><CreditCard className="h-3 w-3" /> उधारी सुविधा</Label>
+                  </div>
                 </div>
 
                 <Button className="w-full bg-primary mt-2 shadow-sm" onClick={handleSaveSupplier}>
@@ -108,7 +163,7 @@ export default function SupplierManagement() {
           </div>
 
           {/* List View */}
-          <div className="lg:col-span-2">
+          <div className="lg:col-span-8">
             <Card className="border-primary/20 shadow-md">
               <CardHeader>
                 <CardTitle className="text-lg">पुरवठादारांची यादी ({suppliers.length})</CardTitle>
@@ -122,31 +177,69 @@ export default function SupplierManagement() {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {suppliers.map((s) => (
-                      <div key={s.id} className="p-4 border rounded-lg bg-white relative group hover:border-primary/40 transition-all shadow-sm">
+                      <div key={s.id} className="p-4 border rounded-xl bg-white relative group hover:border-primary/40 transition-all shadow-sm flex flex-col">
                         <Button 
                           variant="ghost" 
                           size="icon" 
                           className="absolute top-2 right-2 text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                           onClick={() => {
-                            deleteSupplier(s.id);
-                            setSuppliers(getSuppliers());
+                            if(confirm("हटवायचे आहे का?")) {
+                              deleteSupplier(s.id);
+                              setSuppliers(getSuppliers());
+                            }
                           }}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
-                        <div className="flex flex-col h-full">
-                          <h3 className="font-bold text-lg text-primary leading-tight mb-1">{s.shopName}</h3>
-                          <p className="text-sm font-medium mb-3 flex items-center gap-1.5"><UserPlus className="h-3.5 w-3.5 text-muted-foreground" /> {s.name}</p>
+                        
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <Badge variant="outline" className="text-[10px] font-bold uppercase bg-primary/5 border-primary/20 text-primary">
+                              {s.supplierType === 'Retailer' ? 'किरकोळ' : s.supplierType === 'Wholesaler' ? 'घाऊक' : 'डिस्ट्रीब्युटर'}
+                            </Badge>
+                          </div>
+                          <h3 className="font-bold text-lg text-primary leading-tight">{s.shopName}</h3>
+                          <p className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 mt-1">
+                            <UserPlus className="h-3.5 w-3.5" /> {s.name}
+                          </p>
+                        </div>
+
+                        {s.mainBrands && (
+                          <div className="mb-4">
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1">
+                              <ShoppingBag className="h-3 w-3" /> मुख्य ब्रँड्स:
+                            </p>
+                            <div className="flex flex-wrap gap-1">
+                              {s.mainBrands.split(',').map((brand, i) => (
+                                <Badge key={i} variant="secondary" className="text-[9px] py-0 px-1.5 bg-muted/50 font-normal">
+                                  {brand.trim()}
+                                </Badge>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        <div className="mt-auto space-y-2 border-t pt-3">
+                          <div className="flex items-center gap-2 text-xs">
+                            <Phone className="h-3.5 w-3.5 text-primary/60" /> 
+                            <span className="font-bold">{s.contact}</span>
+                          </div>
+                          <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                            <MapPin className="h-3.5 w-3.5 text-primary/60 shrink-0" /> 
+                            <span>{s.address}, {s.taluka}, {s.district}</span>
+                          </div>
                           
-                          <div className="mt-auto pt-3 border-t space-y-2 text-xs">
-                            <div className="flex items-center gap-2 text-muted-foreground">
-                              <Phone className="h-3.5 w-3.5 text-primary/60" /> 
-                              <span className="font-semibold text-foreground">{s.contact}</span>
-                            </div>
-                            <div className="flex items-start gap-2 text-muted-foreground">
-                              <MapPin className="h-3.5 w-3.5 text-primary/60 shrink-0" /> 
-                              <span>{s.address}, {s.taluka}, {s.district}</span>
-                            </div>
+                          <div className="flex gap-2 pt-1">
+                            {s.providesDelivery && (
+                              <Badge className="bg-green-100 text-green-700 hover:bg-green-100 border-none text-[9px] flex gap-1 items-center">
+                                <Truck className="h-3 w-3" /> होम डिलिव्हरी
+                              </Badge>
+                            )}
+                            {s.providesCredit && (
+                              <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-100 border-none text-[9px] flex gap-1 items-center">
+                                <CreditCard className="h-3 w-3" /> उधारी सुविधा
+                              </Badge>
+                            )}
                           </div>
                         </div>
                       </div>

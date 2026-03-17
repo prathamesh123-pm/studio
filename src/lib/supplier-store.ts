@@ -7,6 +7,10 @@ export interface Supplier {
   district: string;
   taluka: string;
   address: string;
+  supplierType: 'Retailer' | 'Wholesaler' | 'Distributor';
+  mainBrands: string;
+  providesDelivery: boolean;
+  providesCredit: boolean;
   timestamp: string;
 }
 
