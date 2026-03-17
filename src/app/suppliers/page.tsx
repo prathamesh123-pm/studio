@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, ShoppingBag, Eye, Edit2, X, Printer, FileText, PlusCircle, CheckCircle2 } from "lucide-react";
+import { Plus, Trash2, Save, Store, Phone, MapPin, UserPlus, Truck, CreditCard, Eye, Edit2, X, Printer, FileText, PlusCircle, Search, Filter } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -35,6 +34,7 @@ import {
   TableHead,
   TableRow,
 } from "@/components/ui/table";
+import { DISTRICTS, MAHARASHTRA_LOCATIONS } from "@/lib/location-data";
 
 export default function SupplierManagement() {
   const { getSuppliers, addSupplier, updateSupplier, deleteSupplier } = useSupplierStore();
@@ -45,6 +45,11 @@ export default function SupplierManagement() {
   const [viewingSupplier, setViewingSupplier] = useState<Supplier | null>(null);
   const [showFullReport, setShowFullReport] = useState(false);
   
+  // Filter States
+  const [filterDistrict, setFilterDistrict] = useState("all");
+  const [filterTaluka, setFilterTaluka] = useState("all");
+  const [filterBrand, setFilterBrand] = useState("all");
+
   // Form States
   const [name, setName] = useState("");
   const [shopName, setShopName] = useState("");
@@ -67,6 +72,15 @@ export default function SupplierManagement() {
     setSuppliers(getSuppliers());
     setMasterBrands(getBrands());
   };
+
+  const filteredSuppliers = useMemo(() => {
+    return suppliers.filter(s => {
+      const matchDistrict = filterDistrict === "all" || s.district === filterDistrict;
+      const matchTaluka = filterTaluka === "all" || s.taluka === filterTaluka;
+      const matchBrand = filterBrand === "all" || s.suppliedBrands?.includes(filterBrand);
+      return matchDistrict && matchTaluka && matchBrand;
+    });
+  }, [suppliers, filterDistrict, filterTaluka, filterBrand]);
 
   const handleBrandSelect = (brandName: string) => {
     if (brandName && !suppliedBrands.includes(brandName)) {
@@ -247,6 +261,54 @@ export default function SupplierManagement() {
           </div>
         </header>
 
+        {/* Filter Section */}
+        <Card className="mb-8 border-primary/10 shadow-sm bg-primary/5">
+          <CardHeader className="py-3 px-4 flex flex-row items-center gap-2">
+            <Filter className="h-4 w-4 text-primary" />
+            <CardTitle className="text-sm font-bold uppercase">फिल्टर निवडा (Filter Suppliers)</CardTitle>
+          </CardHeader>
+          <CardContent className="py-4 px-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground">जिल्हा निवडा</Label>
+                <Select value={filterDistrict} onValueChange={(v) => { setFilterDistrict(v); setFilterTaluka("all"); }}>
+                  <SelectTrigger className="h-9 text-xs bg-white">
+                    <SelectValue placeholder="सर्व जिल्हे" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">सर्व जिल्हे</SelectItem>
+                    {DISTRICTS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground">तालुका निवडा</Label>
+                <Select value={filterTaluka} onValueChange={setFilterTaluka} disabled={filterDistrict === "all"}>
+                  <SelectTrigger className="h-9 text-xs bg-white">
+                    <SelectValue placeholder="सर्व तालुके" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">सर्व तालुके</SelectItem>
+                    {(MAHARASHTRA_LOCATIONS[filterDistrict] || []).map(t => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-[10px] uppercase font-bold text-muted-foreground">ब्रँडनुसार शोधा</Label>
+                <Select value={filterBrand} onValueChange={setFilterBrand}>
+                  <SelectTrigger className="h-9 text-xs bg-white">
+                    <SelectValue placeholder="सर्व ब्रँड्स" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">सर्व ब्रँड्स</SelectItem>
+                    {masterBrands.map(b => <SelectItem key={b.id} value={b.name}>{b.name}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           <div className="lg:col-span-4">
             <Card className="border-primary/20 shadow-md">
@@ -394,18 +456,21 @@ export default function SupplierManagement() {
 
           <div className="lg:col-span-8">
             <Card className="border-primary/20 shadow-md">
-              <CardHeader>
-                <CardTitle className="text-lg">पुरवठादारांची यादी ({suppliers.length})</CardTitle>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <CardTitle className="text-lg">पुरवठादारांची यादी ({filteredSuppliers.length})</CardTitle>
+                {(filterDistrict !== "all" || filterTaluka !== "all" || filterBrand !== "all") && (
+                  <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary">फिल्टर लागू आहे</Badge>
+                )}
               </CardHeader>
               <CardContent>
-                {suppliers.length === 0 ? (
+                {filteredSuppliers.length === 0 ? (
                   <div className="text-center py-16 text-muted-foreground bg-muted/5 rounded-lg border border-dashed">
-                    <Store className="h-10 w-10 mx-auto mb-2 opacity-20" />
-                    पुरवठादार उपलब्ध नाहीत.
+                    <Search className="h-10 w-10 mx-auto mb-2 opacity-20" />
+                    फिल्टरशी सुसंगत पुरवठादार उपलब्ध नाहीत.
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {suppliers.map((s) => (
+                    {filteredSuppliers.map((s) => (
                       <div key={s.id} className="p-4 border rounded-xl bg-white relative group hover:border-primary/40 transition-all shadow-sm">
                         <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity no-print">
                           <Button variant="ghost" size="icon" className="h-8 w-8 text-primary" onClick={() => setViewingSupplier(s)}><Eye className="h-4 w-4" /></Button>
@@ -438,9 +503,16 @@ export default function SupplierManagement() {
         <div className="text-center border-b-2 border-black pb-2 mb-4">
           <h1 className="text-xl font-bold uppercase">पुरवठादार मास्टर रिपोर्ट</h1>
           <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+          {(filterDistrict !== "all" || filterTaluka !== "all" || filterBrand !== "all") && (
+            <p className="text-[9px] mt-1 italic">
+              फिल्टर: {filterDistrict !== "all" ? `जिल्हा: ${filterDistrict}` : ''} 
+              {filterTaluka !== "all" ? `, तालुका: ${filterTaluka}` : ''}
+              {filterBrand !== "all" ? `, ब्रँड: ${filterBrand}` : ''}
+            </p>
+          )}
         </div>
         <div className="grid grid-cols-2 gap-4">
-          {suppliers.map((s, index) => (
+          {filteredSuppliers.map((s, index) => (
             <div key={s.id} className="border border-gray-200 p-2 rounded-sm break-inside-avoid">
               <h2 className="text-xs font-bold border-b border-gray-200 mb-2 pb-1 text-primary">{index + 1}. {s.shopName} ({s.supplierType})</h2>
               <DetailedSupplierTable supplier={s} isPrint={true} />
@@ -473,7 +545,7 @@ export default function SupplierManagement() {
             </div>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {suppliers.map((s, index) => (
+            {filteredSuppliers.map((s, index) => (
               <div key={s.id} className="border p-3 rounded-lg bg-white shadow-sm break-inside-avoid">
                 <h3 className="text-sm font-bold text-primary border-b mb-3 pb-1">
                   {index + 1}. {s.shopName} ({s.supplierType})
@@ -487,4 +559,3 @@ export default function SupplierManagement() {
     </div>
   );
 }
-
