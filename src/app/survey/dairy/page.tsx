@@ -31,8 +31,10 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle, Check } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 const dairySchema = z.object({
   dairyName: z.string().min(1, "नाव आवश्यक आहे"),
@@ -106,6 +108,7 @@ export default function DairySurvey() {
   const { getBrands } = useBrandStore();
   const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
   const [locating, setLocating] = useState(false);
+  const [selectedBrandIds, setSelectedBrandIds] = useState<string[]>([]);
   
   const form = useForm<DairyFormValues>({
     resolver: zodResolver(dairySchema),
@@ -159,29 +162,38 @@ export default function DairySurvey() {
     );
   };
 
-  const handleMasterBrandSelect = (brandId: string) => {
-    const selected = masterBrands.find(b => b.id === brandId);
-    if (!selected) return;
-
-    appendBrand({
-      name: selected.name,
-      feedType: selected.feedType,
-      bagWeight: selected.bagWeight,
-      price: selected.price,
-      protein: selected.nutrition.protein,
-      fat: selected.nutrition.fat,
-      fiber: selected.nutrition.fiber,
-      calcium: selected.nutrition.calcium,
-      phosphorus: selected.nutrition.phosphorus,
-      salt: selected.nutrition.salt,
-      mineralMix: selected.nutrition.mineralMix,
-      others: selected.nutrition.others,
+  const handleAddSelectedBrands = () => {
+    selectedBrandIds.forEach(id => {
+      const selected = masterBrands.find(b => b.id === id);
+      if (selected) {
+        // Check if already added
+        const isAlreadyAdded = brandFields.some(f => f.name === selected.name);
+        if (!isAlreadyAdded) {
+          appendBrand({
+            name: selected.name,
+            feedType: selected.feedType,
+            bagWeight: selected.bagWeight,
+            price: selected.price,
+            protein: selected.nutrition.protein,
+            fat: selected.nutrition.fat,
+            fiber: selected.nutrition.fiber,
+            calcium: selected.nutrition.calcium,
+            phosphorus: selected.nutrition.phosphorus,
+            salt: selected.nutrition.salt,
+            mineralMix: selected.nutrition.mineralMix,
+            others: selected.nutrition.others,
+          });
+        }
+      }
     });
+    setSelectedBrandIds([]);
+    toast({ title: "यशस्वी", description: "निवडलेल्या सर्व ब्रँड्सची माहिती जोडली गेली आहे." });
+  };
 
-    toast({ 
-      title: "माहिती जोडली", 
-      description: `${selected.name} ची माहिती तक्त्यात जोडली गेली आहे.` 
-    });
+  const toggleBrandSelection = (id: string) => {
+    setSelectedBrandIds(prev => 
+      prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+    );
   };
 
   const onSubmit = async (data: DairyFormValues) => {
@@ -395,25 +407,57 @@ export default function DairySurvey() {
 
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (मास्टर ब्रँड ऑटो-फिल)</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (मास्टर ब्रँड मल्टिपल सिलेक्शन)</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
                   <span className="text-[10px] font-bold text-primary uppercase">मास्टर ब्रँड निवडा</span>
-                  <Select onValueChange={handleMasterBrandSelect}>
-                    <SelectTrigger className="h-8 bg-white w-[200px] text-xs">
-                      <SelectValue placeholder="येथून ब्रँड निवडा" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {masterBrands.length === 0 ? (
-                        <div className="p-2 text-xs text-muted-foreground">प्रथम ब्रँड मास्टर लिस्टमध्ये जतन करा</div>
-                      ) : (
-                        masterBrands.map(b => (
-                          <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button variant="outline" className="h-8 bg-white w-[250px] text-xs justify-between">
+                        {selectedBrandIds.length > 0 
+                          ? `${selectedBrandIds.length} ब्रँड निवडले आहेत` 
+                          : "येथून ब्रँड निवडा"}
+                        <PlusCircle className="h-4 w-4 ml-2" />
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-[300px] p-0" align="start">
+                      <div className="p-2 space-y-1 max-h-[300px] overflow-y-auto">
+                        {masterBrands.length === 0 ? (
+                          <div className="p-4 text-center text-xs text-muted-foreground italic">प्रथम ब्रँड मास्टर लिस्टमध्ये जतन करा</div>
+                        ) : (
+                          masterBrands.map((b) => (
+                            <div 
+                              key={b.id} 
+                              className={cn(
+                                "flex items-center gap-2 p-2 rounded-md hover:bg-muted cursor-pointer transition-colors",
+                                selectedBrandIds.includes(b.id) && "bg-primary/10"
+                              )}
+                              onClick={() => toggleBrandSelection(b.id)}
+                            >
+                              <div className={cn(
+                                "h-4 w-4 border rounded flex items-center justify-center",
+                                selectedBrandIds.includes(b.id) ? "bg-primary border-primary" : "border-input"
+                              )}>
+                                {selectedBrandIds.includes(b.id) && <Check className="h-3 w-3 text-white" />}
+                              </div>
+                              <span className="text-xs font-medium">{b.name}</span>
+                            </div>
+                          ))
+                        )}
+                      </div>
+                      <div className="p-2 border-t bg-muted/5">
+                        <Button 
+                          className="w-full h-8 text-xs" 
+                          size="sm" 
+                          onClick={handleAddSelectedBrands}
+                          disabled={selectedBrandIds.length === 0}
+                        >
+                          निवडलेले ब्रँड जोडा
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
                 </div>
               </div>
             </div>
@@ -643,7 +687,7 @@ export default function DairySurvey() {
 
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center justify-between">
-              ११. ऍड पॉईंट्स (इतर मुद्दे)
+              ११. ॲड पॉइंट्स (इतर मुद्दे)
               <Button 
                 type="button" 
                 variant="outline" 

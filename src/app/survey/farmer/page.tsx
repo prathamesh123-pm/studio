@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -122,6 +123,7 @@ export default function FarmerSurvey() {
     const selected = masterBrands.find(b => b.id === brandId);
     if (!selected) return;
 
+    // Auto-fill all information
     form.setValue("currentBrand", selected.name);
     form.setValue("bagPrice", selected.price);
     form.setValue("bagWeight", selected.bagWeight);
@@ -133,7 +135,7 @@ export default function FarmerSurvey() {
 
     toast({ 
       title: "ब्रँड माहिती अपडेट झाली", 
-      description: `${selected.name} चे तपशील आपोआप भरले गेले आहेत.` 
+      description: `${selected.name} चे सर्व तपशील (किंमत, वजन, पोषण मूल्ये) आपोआप भरले गेले आहेत.` 
     });
   };
 
