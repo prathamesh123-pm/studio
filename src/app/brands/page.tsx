@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -8,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Plus, Trash2, Save, Beef, Package, IndianRupee } from "lucide-react";
+import { Plus, Trash2, Save, Package, IndianRupee } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import {
   Select,
@@ -17,6 +16,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
+const CowIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M14 11V5l-2-2-2 2v6" />
+    <path d="M9 11H3l-1 2v4a2 2 0 0 0 2 2h2" />
+    <path d="M15 11h6l1 2v4a2 2 0 0 1-2 2h-2" />
+    <path d="M10 17v4" />
+    <path d="M14 17v4" />
+    <circle cx="12" cy="14" r="3" />
+  </svg>
+);
 
 export default function BrandManagement() {
   const { getBrands, addBrand, deleteBrand } = useBrandStore();
@@ -81,10 +99,10 @@ export default function BrandManagement() {
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold font-headline text-primary">पशुखाद्य ब्रँड व्यवस्थापन</h1>
-            <p className="text-muted-foreground">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक जतन करू शकता.</p>
+            <h1 className="text-3xl font-bold font-headline text-primary text-2xl md:text-3xl">पशुखाद्य ब्रँड व्यवस्थापन</h1>
+            <p className="text-muted-foreground text-sm md:text-base">येथे तुम्ही मास्टर ब्रँड आणि त्यांचे घटक जतन करू शकता.</p>
           </div>
-          <Beef className="h-10 w-10 text-primary opacity-20" />
+          <CowIcon className="h-10 w-10 text-primary opacity-20 hidden md:block" />
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

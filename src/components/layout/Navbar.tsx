@@ -2,14 +2,33 @@
 
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Beef, ClipboardList, BarChart3, User, BookMarked } from 'lucide-react';
+import { ClipboardList, BarChart3, User, BookMarked } from 'lucide-react';
+
+const CowIcon = ({ className }: { className?: string }) => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M14 11V5l-2-2-2 2v6" />
+    <path d="M9 11H3l-1 2v4a2 2 0 0 0 2 2h2" />
+    <path d="M15 11h6l1 2v4a2 2 0 0 1-2 2h-2" />
+    <path d="M10 17v4" />
+    <path d="M14 17v4" />
+    <circle cx="12" cy="14" r="3" />
+  </svg>
+);
 
 export function Navbar() {
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-2 md:px-4 flex h-16 items-center justify-between">
         <Link href="/" className="flex items-center gap-1 md:gap-2 font-bold text-base md:text-xl text-primary shrink-0">
-          <Beef className="h-5 w-5 md:h-6 md:w-6" />
+          <CowIcon className="h-5 w-5 md:h-6 md:w-6" />
           <span className="inline-block">Cattle Feed Survey App</span>
         </Link>
         <div className="flex items-center gap-0.5 md:gap-1 lg:gap-2">
