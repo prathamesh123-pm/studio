@@ -125,14 +125,14 @@ export default function SurveysList() {
     };
 
     if (Array.isArray(value)) {
-      displayValue = value.map(v => translations[v] || v).join(", ");
+      displayValue = value.map(v => (typeof v === 'string' ? translations[v] || v : JSON.stringify(v))).join(", ");
     } else if (typeof value === 'string') {
       displayValue = translations[value] || value;
     }
 
     return (
       <TableRow className="hover:bg-transparent border-b border-black print:border-black">
-        <TableHead className="w-[55%] font-black bg-gray-50 py-3 px-3 text-[13px] h-auto border-r border-black leading-tight text-black print:bg-gray-100 print:font-black print:text-black">
+        <TableHead className="w-[50%] font-black bg-gray-50 py-3 px-3 text-[13px] h-auto border-r border-black leading-tight text-black print:bg-gray-100 print:font-black print:text-black">
           {label}
         </TableHead>
         <TableCell className="py-3 px-3 text-[13px] h-auto leading-tight text-black font-bold print:text-black print:font-black">
@@ -210,10 +210,44 @@ export default function SurveysList() {
           </Table>
         </section>
 
+        {isDairy && d.brandsInfo && d.brandsInfo.length > 0 && (
+          <section className="break-inside-avoid">
+            <h4 className="text-[15px] font-black mb-3 border-b-2 border-black pb-1 text-black uppercase">
+              ४. ब्रँड व पोषण विश्लेषण तक्ता (Nutrition Table)
+            </h4>
+            <div className="border-2 border-black overflow-hidden mb-4">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-100 border-b border-black">
+                    <TableHead className="font-black text-black border-r border-black h-11 text-[11px] uppercase">ब्रँड नाव</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-11 text-[11px] uppercase">किंमत</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-11 text-[11px] uppercase">प्रोटीन</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-11 text-[11px] uppercase">फॅट</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-11 text-[11px] uppercase">फायबर</TableHead>
+                    <TableHead className="font-black text-black h-11 text-[11px] uppercase">कॅल्शियम</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {d.brandsInfo.map((b: any, i: number) => (
+                    <TableRow key={i} className="border-b border-black last:border-0">
+                      <TableCell className="font-black border-r border-black py-2 text-[11px]">{b.name}</TableCell>
+                      <TableCell className="border-r border-black py-2 text-[11px] font-bold">₹{b.price}</TableCell>
+                      <TableCell className="border-r border-black py-2 text-[11px] font-bold">{b.protein}%</TableCell>
+                      <TableCell className="border-r border-black py-2 text-[11px] font-bold">{b.fat}%</TableCell>
+                      <TableCell className="border-r border-black py-2 text-[11px] font-bold">{b.fiber}%</TableCell>
+                      <TableCell className="py-2 text-[11px] font-bold">{b.calcium}%</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </section>
+        )}
+
         {!isDairy && (
           <section className="break-inside-avoid">
             <h4 className="text-[15px] font-black mb-3 border-b-2 border-black pb-1 text-black uppercase">
-              ४. ब्रँड निवड व गुणवत्ता विश्लेषण
+              ४. गुणवत्ता व परिणाम विश्लेषण
             </h4>
             <Table className="border-2 border-black">
               <TableBody>
@@ -229,47 +263,18 @@ export default function SurveysList() {
           </section>
         )}
 
-        {isDairy && d.brandsInfo && d.brandsInfo.length > 0 && (
-          <section className="break-inside-avoid">
-            <h4 className="text-[15px] font-black mb-3 border-b-2 border-black pb-1 text-black uppercase">
-              ४. ब्रँड व पोषण विश्लेषण तक्ता
-            </h4>
-            <div className="border-2 border-black overflow-hidden mb-4">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-100 border-b border-black">
-                    <TableHead className="font-black text-black border-r border-black h-11 text-[12px] uppercase">ब्रँड</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-11 text-[12px] uppercase">किंमत</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-11 text-[12px] uppercase">प्रोटीन</TableHead>
-                    <TableHead className="font-black text-black h-11 text-[12px] uppercase">फॅट</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {d.brandsInfo.map((b: any, i: number) => (
-                    <TableRow key={i} className="border-b border-black last:border-0">
-                      <TableCell className="font-black border-r border-black py-2 text-[12px]">{b.name}</TableCell>
-                      <TableCell className="border-r border-black py-2 text-[12px] font-bold">₹{b.price}</TableCell>
-                      <TableCell className="border-r border-black py-2 text-[12px] font-bold">{b.protein}%</TableCell>
-                      <TableCell className="py-2 text-[12px] font-bold">{b.fat}%</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </section>
-        )}
-
         <section className="break-inside-avoid">
           <h4 className="text-[15px] font-black mb-3 border-b-2 border-black pb-1 text-black uppercase">
-            ५. खरेदी व खर्च माहिती (Purchasing)
+            ५. खरेदी व पुरवठा माहिती (Supplier Info)
           </h4>
           <Table className="border-2 border-black">
             <TableBody>
               {isDairy ? (
                 <>
                   <DataRow label="खरेदी पद्धत" value={d.purchaseMethod} />
-                  <DataRow label="पशुखाद्य कुठून खरेदी करता?" value={d.supplySource} />
-                  <DataRow label="पुरवठादाराचे नाव" value={d.supplierName} />
+                  {d.suppliers && d.suppliers.map((s: any, idx: number) => (
+                    <DataRow key={idx} label={`पुरवठादार ${idx + 1} (स्त्रोत व नाव)`} value={`${s.source ? (s.source + ' - ') : ''}${s.name}`} />
+                  ))}
                   <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
                   <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
                   <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
@@ -280,7 +285,9 @@ export default function SurveysList() {
                   <DataRow label="पोत्याचे वजन (किग्रॅ)" value={d.bagWeight} />
                   <DataRow label="महिन्याला किती पोती लागतात?" value={d.monthlyBags} />
                   <DataRow label="हा ब्रँड कुठून खरेदी करता?" value={d.purchaseSource} />
-                  <DataRow label="पुरवठादाराचे नाव" value={d.supplierName} />
+                  {d.suppliers && d.suppliers.map((s: any, idx: number) => (
+                    <DataRow key={idx} label={`पुरवठादार ${idx + 1}`} value={s.name} />
+                  ))}
                   <DataRow label="उधारी मिळते का?" value={d.hasCredit} />
                 </>
               )}
@@ -303,7 +310,7 @@ export default function SurveysList() {
                 <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
                 <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
                 <TableRow className="border-b border-black">
-                  <TableHead className="w-[55%] font-black bg-gray-50 py-3 px-3 text-[13px] border-r border-black text-black print:bg-gray-100">
+                  <TableHead className="w-[50%] font-black bg-gray-50 py-3 px-3 text-[13px] border-r border-black text-black print:bg-gray-100">
                     पॅकवर दिलेले पोषण घटक (%)
                   </TableHead>
                   <TableCell className="py-3 px-3 text-[13px] text-black font-bold">

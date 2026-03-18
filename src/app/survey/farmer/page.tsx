@@ -16,7 +16,7 @@ import { LocationSelector } from "@/components/forms/LocationSelector";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Save, Printer, ArrowLeft, Star, MapPin, Loader2, PlusCircle, Trash2, Search, Store } from "lucide-react";
+import { Save, Printer, ArrowLeft, Star, MapPin, Loader2, PlusCircle, Trash2, Search, Store, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import {
@@ -56,6 +56,10 @@ const farmerSchema = z.object({
   bagWeight: z.string(),
   monthlyBags: z.string(),
   purchaseSource: z.string().optional(),
+  suppliers: z.array(z.object({
+    name: z.string(),
+    source: z.string().optional(),
+  })).default([{ name: "" }]),
   hasCredit: z.string().optional(),
   previousBrands: z.string(),
   betterBrand: z.string(),
@@ -84,7 +88,6 @@ const farmerSchema = z.object({
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
   surveyorId: z.string().min(1, "ID आवश्यक आहे"),
   surveyDate: z.string().optional(),
-  supplierName: z.string().optional(),
 });
 
 type FarmerFormValues = z.infer<typeof farmerSchema>;
@@ -109,12 +112,17 @@ function FarmerSurveyForm() {
       selectionReason: [],
       switchReason: [],
       problems: [],
+      suppliers: [{ name: "" }],
       customPoints: [],
       packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "" },
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
-      supplierName: "",
     }
+  });
+
+  const { fields: supplierFields, append: appendSupplier, remove: removeSupplier } = useFieldArray({
+    control: form.control,
+    name: "suppliers",
   });
 
   const { fields: pointFields, append: appendPoint, remove: removePoint, replace: replacePoints } = useFieldArray({
@@ -457,34 +465,50 @@ function FarmerSurveyForm() {
                 </RadioGroup>
               </div>
 
-              <div className="space-y-2">
-                <div className="flex items-center justify-between mb-1">
-                  <Label className="text-sm">पुरवठादार निवडा (मास्टर लिस्ट मधून)</Label>
-                  <Store className="h-4 w-4 text-accent" />
+              <div className="col-span-1 md:col-span-2 space-y-4 pt-4 border-t">
+                <div className="flex justify-between items-center mb-1">
+                  <Label className="text-sm font-bold text-accent">पुरवठादार निवडा (मल्टिपल पुरवठादार माहिती)</Label>
+                  <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "" })} className="gap-1 h-8 text-xs">
+                    <Plus className="h-3 w-3" /> पुरवठादार जोडा
+                  </Button>
                 </div>
-                <Select onValueChange={(v) => form.setValue("supplierName", v)} value={form.watch("supplierName")}>
-                  <SelectTrigger className="h-10 text-xs">
-                    <SelectValue placeholder="पुरवठादार निवडा" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {masterSuppliers.length === 0 ? (
-                      <SelectItem value="none" disabled>प्रथम पुरवठादार मास्टरमध्ये जोडा</SelectItem>
-                    ) : (
-                      masterSuppliers.map(s => (
-                        <SelectItem key={s.id} value={`${s.shopName} (${s.name})`}>
-                          {s.shopName} - {s.name}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectContent>
-                </Select>
-                <div className="mt-2">
-                  <Label className="text-[10px] text-muted-foreground">इतर पुरवठादार असल्यास लिहा:</Label>
-                  <Input {...form.register("supplierName")} placeholder="पुरवठादाराचे नाव" className="h-8 text-xs" />
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {supplierFields.map((field, index) => (
+                    <div key={field.id} className="p-3 border rounded-lg bg-muted/5 relative group">
+                      <Button 
+                        type="button" 
+                        variant="ghost" 
+                        size="icon" 
+                        className="absolute top-1 right-1 text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => removeSupplier(index)}
+                        disabled={supplierFields.length === 1}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                      <Label className="text-[10px] uppercase text-muted-foreground">पुरवठादार {index + 1}</Label>
+                      <Select onValueChange={(v) => form.setValue(`suppliers.${index}.name`, v)} value={form.watch(`suppliers.${index}.name`)}>
+                        <SelectTrigger className="h-9 text-xs mt-1">
+                          <SelectValue placeholder="पुरवठादार निवडा" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {masterSuppliers.length === 0 ? (
+                            <SelectItem value="none" disabled>प्रथम पुरवठादार मास्टरमध्ये जोडा</SelectItem>
+                          ) : (
+                            masterSuppliers.map(s => (
+                              <SelectItem key={s.id} value={`${s.shopName} (${s.name})`}>
+                                {s.shopName} - {s.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <Input {...form.register(`suppliers.${index}.name`)} placeholder="किंवा इतर नाव लिहा..." className="h-8 text-xs mt-2" />
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <div className="space-y-2">
+              <div className="space-y-2 pt-2">
                 <Label className="form-label-mr">उधारी मिळते का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("hasCredit", v)} className="flex gap-4 mt-2" value={form.watch("hasCredit")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="hc1" /><Label htmlFor="hc1">होय</Label></div>

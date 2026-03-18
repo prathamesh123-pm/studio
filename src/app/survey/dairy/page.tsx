@@ -31,7 +31,7 @@ import {
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle, Check, Store } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle, Check, Store, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -76,9 +76,11 @@ const dairySchema = z.object({
   })).default([]),
   purchaseMethod: z.string().optional(),
   creditDays: z.string().optional(),
-  supplySource: z.string().optional(),
-  otherSupplySource: z.string().optional(),
-  supplierName: z.string(),
+  suppliers: z.array(z.object({
+    source: z.string(),
+    name: z.string(),
+    otherSource: z.string().optional(),
+  })).default([{ source: "", name: "" }]),
   timelySupply: z.enum(["Yes", "No"]).optional(),
   monthlyExp: z.string(),
   monthlyBags: z.string(),
@@ -121,6 +123,7 @@ function DairySurveyForm() {
       district: "",
       taluka: "",
       brandsInfo: [],
+      suppliers: [{ source: "", name: "" }],
       customPoints: [],
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
@@ -130,6 +133,11 @@ function DairySurveyForm() {
   const { fields: brandFields, append: appendBrand, remove: removeBrand, replace: replaceBrands } = useFieldArray({
     control: form.control,
     name: "brandsInfo",
+  });
+
+  const { fields: supplierFields, append: appendSupplier, remove: removeSupplier } = useFieldArray({
+    control: form.control,
+    name: "suppliers",
   });
 
   const { fields: pointFields, append: appendPoint, remove: removePoint, replace: replacePoints } = useFieldArray({
@@ -559,53 +567,69 @@ function DairySurveyForm() {
             </section>
 
             <section className="form-section">
-              <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">६. पुरवठा माहिती</h3>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm">पशुखाद्य कुठून खरेदी करता?</Label>
-                  <Select 
-                    onValueChange={(v) => form.setValue("supplySource", v)}
-                    value={form.watch("supplySource")}
-                  >
-                    <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
-                      <SelectItem value="Dealer">कंपनी डीलर</SelectItem>
-                      <SelectItem value="Dairy">डेअरी / संकलन केंद्र</SelectItem>
-                      <SelectItem value="Other">इतर</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {form.watch("supplySource") === "Other" && <Input {...form.register("otherSupplySource")} placeholder="इतर स्त्रोताचे नाव" />}
-                </div>
-                
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between mb-1">
-                    <Label className="text-sm">पुरवठादार निवडा (मास्टर लिस्ट मधून)</Label>
-                    <Store className="h-4 w-4 text-primary" />
+              <div className="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 className="text-lg font-bold text-primary">६. पुरवठा माहिती (मल्टिपल पुरवठादार)</h3>
+                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "" })} className="gap-1 h-8 text-xs">
+                  <Plus className="h-3 w-3" /> पुरवठादार जोडा
+                </Button>
+              </div>
+              <div className="space-y-6">
+                {supplierFields.map((field, index) => (
+                  <div key={field.id} className="p-4 border rounded-lg bg-muted/5 relative space-y-4 group">
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="icon" 
+                      className="absolute top-1 right-1 text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeSupplier(index)}
+                      disabled={supplierFields.length === 1}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                    <div className="space-y-2">
+                      <Label className="text-xs">पशुखाद्य कुठून खरेदी करता? (स्त्रोत {index + 1})</Label>
+                      <Select 
+                        onValueChange={(v) => form.setValue(`suppliers.${index}.source`, v)}
+                        value={form.watch(`suppliers.${index}.source`)}
+                      >
+                        <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
+                          <SelectItem value="Dealer">कंपनी डीलर</SelectItem>
+                          <SelectItem value="Dairy">डेअरी / संकलन केंद्र</SelectItem>
+                          <SelectItem value="Other">इतर</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {form.watch(`suppliers.${index}.source`) === "Other" && <Input {...form.register(`suppliers.${index}.otherSource`)} placeholder="इतर स्त्रोताचे नाव" className="mt-1" />}
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label className="text-xs">पुरवठादार निवडा (मास्टर लिस्ट मधून)</Label>
+                      <Select onValueChange={(v) => form.setValue(`suppliers.${index}.name`, v)} value={form.watch(`suppliers.${index}.name`)}>
+                        <SelectTrigger className="h-10 text-xs">
+                          <SelectValue placeholder="पुरवठादार निवडा" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {masterSuppliers.length === 0 ? (
+                            <SelectItem value="none" disabled>प्रथम पुरवठादार मास्टरमध्ये जोडा</SelectItem>
+                          ) : (
+                            masterSuppliers.map(s => (
+                              <SelectItem key={s.id} value={`${s.shopName} (${s.name})`}>
+                                {s.shopName} - {s.name}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <div className="mt-2">
+                        <Label className="text-[10px] text-muted-foreground">किंवा इतर नाव असल्यास येथे लिहा:</Label>
+                        <Input {...form.register(`suppliers.${index}.name`)} placeholder="एजन्सी किंवा दुकानदाराचे नाव" className="h-8 text-xs" />
+                      </div>
+                    </div>
                   </div>
-                  <Select onValueChange={(v) => form.setValue("supplierName", v)} value={form.watch("supplierName")}>
-                    <SelectTrigger className="h-10 text-xs">
-                      <SelectValue placeholder="पुरवठादार निवडा" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {masterSuppliers.length === 0 ? (
-                        <SelectItem value="none" disabled>प्रथम पुरवठादार मास्टरमध्ये जोडा</SelectItem>
-                      ) : (
-                        masterSuppliers.map(s => (
-                          <SelectItem key={s.id} value={`${s.shopName} (${s.name})`}>
-                            {s.shopName} - {s.name}
-                          </SelectItem>
-                        ))
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <div className="mt-2">
-                    <Label className="text-[10px] text-muted-foreground">इतर नाव असल्यास येथे लिहा:</Label>
-                    <Input {...form.register("supplierName")} placeholder="एजन्सी किंवा दुकानदाराचे नाव" className="h-8 text-xs" />
-                  </div>
-                </div>
+                ))}
 
-                <div className="space-y-2">
+                <div className="space-y-2 pt-2">
                   <Label className="text-sm">पुरवठा वेळेवर मिळतो का?</Label>
                   <RadioGroup 
                     onValueChange={(v) => form.setValue("timelySupply", v as any)} 
