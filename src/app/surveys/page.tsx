@@ -144,8 +144,8 @@ export default function SurveysList() {
             {isDairy ? "पशुखाद्य सर्वेक्षण अहवाल: दूध संकलन केंद्र / डेअरी" : "पशुखाद्य सर्वेक्षण अहवाल: शेतकरी ब्रँड सर्वेक्षण"}
           </h2>
           <div className="flex justify-between text-[8pt] font-black px-1 mt-1">
-            <span className="flex items-center gap-1"><User className="h-3 w-3" /> सर्वेक्षक: {survey.surveyorName} ({survey.surveyorId})</span>
-            <span>तारीख: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
+            <span className="flex items-center gap-1 font-black"><User className="h-3 w-3" /> सर्वेक्षक: {d.surveyorName || survey.surveyorName} ({d.surveyorId || survey.surveyorId})</span>
+            <span className="font-black">तारीख: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
           </div>
         </div>
 
@@ -163,15 +163,20 @@ export default function SurveysList() {
                   <Table className="border-0 table-fixed">
                     <TableBody>
                       <TableRow>
-                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-bold">गाव: {d.village}</TableCell>
-                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-bold">तालुका: {d.taluka}</TableCell>
-                        <TableCell className="text-[8pt] py-1 px-2 font-bold">जिल्हा: {d.district}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-black">गाव: {d.village}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-black">तालुका: {d.taluka}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 font-black">जिल्हा: {d.district}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
                 </TableCell>
               </TableRow>
-              <DataRow label="संपूर्ण पत्ता" value={d.address} />
+              <TableRow className="border-b border-black">
+                <TableHead className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[9pt] h-auto border-r border-black leading-tight text-black">संपूर्ण पत्ता</TableHead>
+                <TableCell className="py-2 px-2 text-[9pt] h-auto leading-tight text-black font-medium min-h-[40px] align-top">
+                  {d.address || '-'}
+                </TableCell>
+              </TableRow>
               <DataRow label="जीपीएस लोकेशन" value={d.location} />
             </TableBody>
           </Table>
@@ -189,10 +194,10 @@ export default function SurveysList() {
                   <Table className="border-0 table-fixed">
                     <TableBody>
                       <TableRow>
-                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-bold">एकूण: {isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || 0) + parseInt(d.animalCount?.buffaloes || 0) + parseInt(d.animalCount?.calves || 0))}</TableCell>
-                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-bold">गायी: {isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
-                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-bold">म्हशी: {isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
-                        <TableCell className="text-[8pt] py-1 px-2 font-bold">वासरे: {isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-black">एकूण: {isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-black">गायी: {isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-black">म्हशी: {isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
+                        <TableCell className="text-[8pt] py-1 px-2 font-black">वासरे: {isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -200,8 +205,8 @@ export default function SurveysList() {
               </TableRow>
               {isDairy && (
                 <TableRow>
-                  <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-bold">दूध देणारी जनावरे: {d.livestock?.milkingAnimals}</TableCell>
-                  <TableCell className="text-[8pt] py-1 px-2 font-bold" colSpan={2}>सरासरी दूध उत्पादन: {d.livestock?.avgMilkPerAnimal} लि./दिवस</TableCell>
+                  <TableCell className="text-[8pt] py-1 px-2 border-r border-black font-black">दूध देणारी जनावरे: {d.livestock?.milkingAnimals}</TableCell>
+                  <TableCell className="text-[8pt] py-1 px-2 font-black" colSpan={2}>सरासरी दूध उत्पादन: {d.livestock?.avgMilkPerAnimal} लि./दिवस</TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -245,8 +250,8 @@ export default function SurveysList() {
                 d.brandsInfo?.length > 0 ? (
                   d.brandsInfo.map((b: any, i: number) => (
                     <TableRow key={i} className="border-b border-black last:border-0">
-                      <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-bold truncate">{b.name}</TableCell>
-                      <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-bold">₹{b.price}</TableCell>
+                      <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-black truncate">{b.name}</TableCell>
+                      <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-black">₹{b.price}</TableCell>
                       <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black">{b.protein}%</TableCell>
                       <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black">{b.fat}%</TableCell>
                       <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black">{b.fiber}%</TableCell>
@@ -258,8 +263,8 @@ export default function SurveysList() {
                 )
               ) : (
                 <TableRow>
-                  <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-bold truncate">{d.currentBrand}</TableCell>
-                  <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-bold">₹{d.bagPrice}</TableCell>
+                  <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-black truncate">{d.currentBrand}</TableCell>
+                  <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black font-black">₹{d.bagPrice}</TableCell>
                   <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black">{d.packNutrition?.protein}%</TableCell>
                   <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black">{d.packNutrition?.fat}%</TableCell>
                   <TableCell className="text-[7.5pt] py-0.5 px-1 border-r border-black">{d.packNutrition?.fiber}%</TableCell>
@@ -313,12 +318,12 @@ export default function SurveysList() {
           <Table className="border border-black table-fixed">
             <TableBody>
               <TableRow>
-                <TableCell className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[9pt] border-r border-black text-black">सर्वेक्षकाचे नाव</TableCell>
-                <TableCell className="py-1 px-2 text-[9pt] font-black text-black uppercase">{survey.surveyorName}</TableCell>
+                <TableCell className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[9pt] border-r border-black text-black">सर्वेक्षकाचे नाव व आयडी</TableCell>
+                <TableCell className="py-1 px-2 text-[9pt] font-black text-black uppercase">{d.surveyorName || survey.surveyorName} ({d.surveyorId || survey.surveyorId})</TableCell>
               </TableRow>
               <TableRow>
-                <TableCell className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[9pt] border-r border-black text-black">आयडी नंबर</TableCell>
-                <TableCell className="py-1 px-2 text-[9pt] font-black text-black">{survey.surveyorId}</TableCell>
+                <TableCell className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[9pt] border-r border-black text-black">नोंदणी दिनांक</TableCell>
+                <TableCell className="py-1 px-2 text-[9pt] font-black text-black">{d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
