@@ -1,23 +1,22 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 40% 99%; /* Clean White with a hint of Blue */
+    --background: 210 40% 99%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%; /* Professional Royal Blue */
+    --primary: 221.2 83.2% 53.3%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217.2 91.2% 59.8%; /* Brighter Blue for Accents */
+    --accent: 217.2 91.2% 59.8%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -46,17 +45,16 @@
 }
 
 @media print {
-  .no-print, nav, button, .tabs-list, .search-bar {
+  .no-print, nav, button, .tabs-list, .search-bar, [role="tablist"] {
     display: none !important;
-  }
-  .print-only {
-    display: block !important;
   }
   body {
     background-color: white !important;
     padding: 0 !important;
     margin: 0 !important;
     color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
   .container {
     max-width: 100% !important;
@@ -64,47 +62,48 @@
     padding: 0 !important;
     margin: 0 !important;
   }
-  .form-section {
-    box-shadow: none !important;
-    border: 2px solid #000 !important;
-    break-inside: avoid;
-    margin-bottom: 15px !important;
-    padding: 15px !important;
-  }
   table {
     width: 100% !important;
-    table-layout: auto !important;
     border-collapse: collapse !important;
     border: 2px solid #000 !important;
+    table-layout: fixed !important;
   }
-  td, th {
-    padding: 6px 10px !important;
-    font-size: 12px !important;
+  th, td {
     border: 1.5px solid #000 !important;
+    padding: 8px 12px !important;
     color: black !important;
+    font-size: 13px !important;
     word-wrap: break-word !important;
+    overflow-wrap: break-word !important;
     vertical-align: middle !important;
   }
   th {
-    background-color: #e5e5e5 !important;
+    background-color: #f3f4f6 !important;
     font-weight: 900 !important;
+    text-align: left !important;
   }
   h1, h2, h3, h4 {
     color: black !important;
     font-weight: 900 !important;
+    border-bottom: 2px solid #000 !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 4px !important;
     text-transform: uppercase !important;
-    border-bottom: 3px solid #000 !important;
-    margin-bottom: 12px !important;
-    padding-bottom: 6px !important;
   }
-  .text-primary, .text-accent {
+  .print-only-report {
+    display: block !important;
+    width: 210mm !important; /* A4 Width */
+    margin: 0 auto !important;
+  }
+  .break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+  .bg-primary, .bg-accent {
+    background-color: transparent !important;
     color: black !important;
   }
-  .bg-muted, .bg-primary\/5, .bg-accent\/5, .bg-gray-50 {
-    background-color: transparent !important;
-  }
-  .badge {
-    border: 1px solid black !important;
+  .text-primary, .text-accent {
     color: black !important;
   }
 }
