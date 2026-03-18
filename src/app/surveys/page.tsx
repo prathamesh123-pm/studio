@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -15,13 +14,12 @@ import {
   Clock, 
   MapPin, 
   ClipboardList, 
-  LayoutDashboard,
   Eye,
   Trash2,
   Edit2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -38,11 +36,6 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-
-const Tabs = TabsPrimitive.Root
-const TabsList = TabsPrimitive.List
-const TabsTrigger = TabsPrimitive.Trigger
-const TabsContent = TabsPrimitive.Content
 
 export default function SurveysList() {
   const router = useRouter();
@@ -132,10 +125,10 @@ export default function SurveysList() {
     if (value === undefined || value === null || value === "") return null;
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[55%] font-black bg-gray-100/50 py-1 px-2 text-[9px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50">
+        <TableHead className="w-[55%] font-black bg-gray-100/50 py-0.5 px-2 text-[8pt] h-auto border-r border-black leading-tight text-black print:font-black">
           {label}
         </TableHead>
-        <TableCell className="py-1 px-2 text-[9px] h-auto leading-tight text-black font-black">
+        <TableCell className="py-0.5 px-2 text-[8pt] h-auto leading-tight text-black font-black">
           {translate(value)}
         </TableCell>
       </TableRow>
@@ -149,10 +142,10 @@ export default function SurveysList() {
     return (
       <div className="space-y-0.5 py-1 print:text-black w-full text-black print:m-0 print:p-0">
         <div className="text-center border-b-2 border-black pb-0.5 mb-1">
-          <h2 className="text-xs font-black uppercase tracking-tight text-black">
+          <h2 className="text-sm font-black uppercase tracking-tight text-black">
             {isDairy ? "पशुखाद्य सर्वेक्षण अहवाल: दूध संकलन केंद्र / डेअरी" : "पशुखाद्य सर्वेक्षण अहवाल: शेतकरी ब्रँड सर्वेक्षण"}
           </h2>
-          <div className="flex justify-between text-[8px] font-black px-1">
+          <div className="flex justify-between text-[7pt] font-black px-1">
             <span>सर्वेक्षक: {survey.surveyorName} ({survey.surveyorId})</span>
             <span>अहवाल दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
           </div>
@@ -160,7 +153,7 @@ export default function SurveysList() {
 
         {/* १. सामान्य माहिती व लोकेशन */}
         <section className="break-inside-avoid">
-          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+          <h4 className="text-[8pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
             १. सामान्य व लोकेशन माहिती
           </h4>
           <Table className="border border-black">
@@ -172,18 +165,18 @@ export default function SurveysList() {
                   <Table className="border-0">
                     <TableHeader>
                       <TableRow className="bg-gray-100 border-b border-black">
-                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">गाव</TableHead>
-                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">तालुका</TableHead>
-                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">जिल्हा</TableHead>
-                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black">लोकेशन</TableHead>
+                        <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">गाव</TableHead>
+                        <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">तालुका</TableHead>
+                        <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">जिल्हा</TableHead>
+                        <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black">लोकेशन</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       <TableRow>
-                        <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.village}</TableCell>
-                        <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.taluka}</TableCell>
-                        <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.district}</TableCell>
-                        <TableCell className="text-[9px] py-1 px-2 font-black">{d.location || '-'}</TableCell>
+                        <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.village}</TableCell>
+                        <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.taluka}</TableCell>
+                        <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.district}</TableCell>
+                        <TableCell className="text-[8pt] py-0.5 px-2 font-black">{d.location || '-'}</TableCell>
                       </TableRow>
                     </TableBody>
                   </Table>
@@ -194,30 +187,30 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* २. पशुधन माहिती (Horizontal Table like photo) */}
+        {/* २. पशुधन माहिती (Horizontal Table) */}
         <section className="break-inside-avoid">
-          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+          <h4 className="text-[8pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
             २. पशुधन माहिती
           </h4>
           <Table className="border border-black">
             <TableHeader>
               <TableRow className="bg-gray-100 border-b border-black">
-                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">एकूण जनावरे</TableHead>
-                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">गायी</TableHead>
-                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">म्हशी</TableHead>
-                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">वासरे</TableHead>
-                {isDairy && <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black">दूध देणारी</TableHead>}
+                <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">एकूण जनावरे</TableHead>
+                <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">गायी</TableHead>
+                <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">म्हशी</TableHead>
+                <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">वासरे</TableHead>
+                {isDairy && <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black">दूध देणारी</TableHead>}
               </TableRow>
             </TableHeader>
             <TableBody>
               <TableRow>
-                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">
+                <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">
                   {isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || 0) + parseInt(d.animalCount?.buffaloes || 0) + parseInt(d.animalCount?.calves || 0))}
                 </TableCell>
-                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
-                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
-                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
-                {isDairy && <TableCell className="text-[9px] py-1 px-2 font-black">{d.livestock?.milkingAnimals}</TableCell>}
+                <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
+                <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
+                <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
+                {isDairy && <TableCell className="text-[8pt] py-0.5 px-2 font-black">{d.livestock?.milkingAnimals}</TableCell>}
               </TableRow>
             </TableBody>
           </Table>
@@ -225,7 +218,7 @@ export default function SurveysList() {
 
         {/* ३. पशुखाद्य वापर */}
         <section className="break-inside-avoid">
-          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+          <h4 className="text-[8pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
             ३. पशुखाद्य वापर माहिती
           </h4>
           <Table className="border border-black">
@@ -238,41 +231,41 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* ४. ब्रँड व पोषण विश्लेषण (Table format like photo) */}
+        {/* ४. ब्रँड व पोषण विश्लेषण */}
         {((isDairy && d.brandsInfo && d.brandsInfo.length > 0) || (!isDairy)) && (
           <section className="break-inside-avoid">
-            <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            <h4 className="text-[8pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
               ४. ब्रँड व पोषण विश्लेषण
             </h4>
             <Table className="border border-black">
               <TableHeader>
                 <TableRow className="bg-gray-100 border-b border-black">
-                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">ब्रँड नाव</TableHead>
-                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">किंमत</TableHead>
-                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">प्रोटीन</TableHead>
-                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">फॅट</TableHead>
-                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">फायबर</TableHead>
-                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black">कॅल्शियम</TableHead>
+                  <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">ब्रँड नाव</TableHead>
+                  <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">किंमत</TableHead>
+                  <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">प्रोटीन</TableHead>
+                  <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">फॅट</TableHead>
+                  <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black border-r border-black">फायबर</TableHead>
+                  <TableHead className="text-[7pt] h-5 py-0 px-2 font-black text-black">कॅल्शियम</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isDairy ? d.brandsInfo.map((b: any, i: number) => (
                   <TableRow key={i} className="border-b border-black last:border-0">
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.name}</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">₹{b.price}</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.protein}%</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.fat}%</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.fiber}%</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 font-black">{b.calcium}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{b.name}</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">₹{b.price}</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{b.protein}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{b.fat}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{b.fiber}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 font-black">{b.calcium}%</TableCell>
                   </TableRow>
                 )) : (
                   <TableRow>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.currentBrand}</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">₹{d.bagPrice}</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.packNutrition?.protein}%</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.packNutrition?.fat}%</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.packNutrition?.fiber}%</TableCell>
-                    <TableCell className="text-[9px] py-1 px-2 font-black">{d.packNutrition?.calcium}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.currentBrand}</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">₹{d.bagPrice}</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.packNutrition?.protein}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.packNutrition?.fat}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 border-r border-black font-black">{d.packNutrition?.fiber}%</TableCell>
+                    <TableCell className="text-[8pt] py-0.5 px-2 font-black">{d.packNutrition?.calcium}%</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -282,7 +275,7 @@ export default function SurveysList() {
 
         {/* ५-९. खरेदी, गुणवत्ता व साठवणूक */}
         <section className="break-inside-avoid">
-          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+          <h4 className="text-[8pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
             ५-९. खरेदी व गुणवत्ता माहिती
           </h4>
           <Table className="border border-black">
@@ -299,7 +292,7 @@ export default function SurveysList() {
 
         {/* १०-११. समस्या व अतिरिक्त मुद्दे */}
         <section className="break-inside-avoid">
-          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+          <h4 className="text-[8pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
             १०-११. समस्या व अभिप्राय
           </h4>
           <Table className="border border-black">
