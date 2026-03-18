@@ -36,6 +36,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 export default function SurveysList() {
   const router = useRouter();
@@ -89,7 +90,7 @@ export default function SurveysList() {
       'No': 'नाही',
       'ReadyMade': 'रेडीमेड पशुखाद्य (Ready Made)',
       'HomeMade': 'घरगुती मिश्रण',
-      'Both': 'दोन्ही (रेडीमेड व घरगुती)',
+      'Both': 'दोनोंही (रेडीमेड व घरगुती)',
       'DryFodder': 'सुका चारा',
       'GreenFodder': 'हिरवा चारा',
       'Khala': 'खळ',
@@ -131,11 +132,11 @@ export default function SurveysList() {
     }
 
     return (
-      <TableRow className="hover:bg-transparent border-b border-black print:border-black">
-        <TableHead className="w-[50%] font-black bg-gray-100/50 py-1.5 px-2 text-[11px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50 print:font-black print:text-black">
+      <TableRow className="hover:bg-transparent border-b border-black">
+        <TableHead className="w-[50%] font-black bg-gray-100/50 py-1.5 px-2 text-[11px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50">
           {label}
         </TableHead>
-        <TableCell className="py-1.5 px-2 text-[11px] h-auto leading-tight text-black font-black print:text-black print:font-black">
+        <TableCell className="py-1.5 px-2 text-[11px] h-auto leading-tight text-black font-black">
           {displayValue}
         </TableCell>
       </TableRow>
@@ -147,8 +148,8 @@ export default function SurveysList() {
     const isDairy = survey.type === 'dairy';
 
     return (
-      <div className="space-y-3 py-1 print:space-y-3 print:text-black w-full text-black">
-        <div className="text-center border-b-4 border-black pb-2 mb-3">
+      <div className="space-y-4 py-1 print:space-y-3 print:text-black w-full text-black pb-8">
+        <div className="text-center border-b-4 border-black pb-2 mb-4">
           <h2 className="text-lg font-black uppercase tracking-tight text-black">
             {isDairy ? "पशुखाद्य सर्वेक्षण अहवाल: दूध संकलन केंद्र / डेअरी" : "पशुखाद्य सर्वेक्षण अहवाल: शेतकरी ब्रँड सर्वेक्षण"}
           </h2>
@@ -280,7 +281,7 @@ export default function SurveysList() {
                 <>
                   <DataRow label="खरेदी पद्धत" value={d.purchaseMethod} />
                   {d.suppliers && d.suppliers.map((s: any, idx: number) => (
-                    <DataRow key={idx} label={`पुरवठादार ${idx + 1} (स्त्रोत व नाव)`} value={`${s.source ? (translations[s.source] || s.source) + ' - ' : ''}${s.name}`} />
+                    <DataRow key={idx} label={`पुरवठादार ${idx + 1} (स्त्रोत व नाव)`} value={`${s.source ? s.source + ' - ' : ''}${s.name}`} />
                   ))}
                   <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
                   <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
@@ -317,7 +318,7 @@ export default function SurveysList() {
                 <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
                 <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
                 <TableRow className="border-b border-black">
-                  <TableHead className="w-[50%] font-black bg-gray-100/50 py-1.5 px-2 text-[11px] border-r border-black text-black print:bg-gray-200/50">
+                  <TableHead className="w-[50%] font-black bg-gray-100/50 py-1.5 px-2 text-[11px] border-r border-black text-black">
                     पॅकवर दिलेले मुख्य घटक (%)
                   </TableHead>
                   <TableCell className="py-1.5 px-2 text-[10px] text-black font-black">
@@ -384,7 +385,7 @@ export default function SurveysList() {
           </section>
         )}
 
-        <div className="mt-3 border-t-4 border-black pt-1.5 grid grid-cols-2 text-[10px] font-black uppercase tracking-tight">
+        <div className="mt-6 border-t-4 border-black pt-2 grid grid-cols-2 text-[10px] font-black uppercase tracking-tight break-inside-avoid">
           <div>सर्वेक्षक: {survey.surveyorName} ({survey.surveyorId})</div>
           <div className="text-right">नोंदणी दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</div>
         </div>
@@ -488,7 +489,7 @@ export default function SurveysList() {
         </Tabs>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-[95vw] md:max-w-[210mm] max-h-[90vh] overflow-y-auto p-0 border-2">
+          <DialogContent className="max-w-[95vw] md:max-w-[210mm] max-h-[90vh] overflow-y-auto p-0 border-2 dialog-content-print">
             <DialogHeader className="p-4 border-b bg-muted/30 no-print">
               <div className="flex justify-between items-center">
                 <DialogTitle className="text-lg font-bold flex items-center gap-2">अहवाल पाहणे</DialogTitle>
@@ -506,7 +507,7 @@ export default function SurveysList() {
         <div className="hidden print:block">
           <div className="print-only-report">
             {selectedSurvey ? renderDetailedReport(selectedSurvey) : surveys.map(s => (
-              <div key={s.id} className="mb-10 break-inside-avoid border-t-2 border-black pt-4">
+              <div key={s.id} className="mb-10 border-t-2 border-black pt-4">
                 {renderDetailedReport(s)}
               </div>
             ))}
