@@ -21,7 +21,7 @@ import {
   Edit2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/tabs";
 import {
   Dialog,
   DialogContent,
@@ -38,6 +38,11 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+
+const Tabs = TabsPrimitive.Root
+const TabsList = TabsPrimitive.List
+const TabsTrigger = TabsPrimitive.Trigger
+const TabsContent = TabsPrimitive.Content
 
 export default function SurveysList() {
   const router = useRouter();
@@ -82,63 +87,56 @@ export default function SurveysList() {
     });
   };
 
+  const translations: Record<string, string> = {
+    'Yes': 'होय',
+    'No': 'नाही',
+    'ReadyMade': 'रेडीमेड पशुखाद्य',
+    'HomeMade': 'घरगुती मिश्रण',
+    'Both': 'दोन्ही',
+    'DryFodder': 'सुका चारा',
+    'GreenFodder': 'हिरवा चारा',
+    'Khala': 'खळ',
+    'Maize': 'मका',
+    'MineralMix': 'खनिज मिश्रण',
+    'Cash': 'रोखीने',
+    'Credit': 'उधारीने',
+    'Weekly': 'साप्ताहिक',
+    'Fortnightly': 'पंधरवड्याने',
+    'Monthly': 'मासिक',
+    'LocalShop': 'स्थानिक दुकान',
+    'Dealer': 'कंपनी डीलर',
+    'Dairy': 'डेअरी / संकलन केंद्र',
+    'Local': 'स्थानिक दुकान',
+    'VeryGood': 'खूप चांगले',
+    'Okay': 'ठीक आहे',
+    'NotSatisfied': 'समाधानी नाही',
+    'Bad': 'खराब',
+    '6m': '६ महिने',
+    '1y': '१ वर्ष',
+    '2y+': '२ वर्षांपेक्षा जास्त',
+    'Retailer': 'Retailer',
+    'Wholesaler': 'Wholesaler',
+    'Distributor': 'Distributor',
+    'Shop': 'दुकानदार',
+    'CompanyRep': 'कंपनी प्रतिनिधी',
+    'Friend': 'मित्र / शेतकरी',
+    'Ad': 'जाहिरात',
+  };
+
+  const translate = (val: any) => {
+    if (Array.isArray(val)) return val.map(v => translations[v] || v).join(", ");
+    return translations[val] || val;
+  };
+
   const DataRow = ({ label, value }: { label: string, value: any }) => {
     if (value === undefined || value === null || value === "") return null;
-    let displayValue = value;
-    
-    const translations: Record<string, string> = {
-      'Yes': 'होय',
-      'No': 'नाही',
-      'ReadyMade': 'रेडीमेड पशुखाद्य (Ready Made)',
-      'HomeMade': 'घरगुती मिश्रण',
-      'Both': 'दोनोंही (रेडीमेड व घरगुती)',
-      'DryFodder': 'सुका चारा',
-      'GreenFodder': 'हिरवा चारा',
-      'Khala': 'खळ',
-      'Maize': 'मका',
-      'MineralMix': 'खनिज मिश्रण (Mineral Mix)',
-      'Cash': 'रोखीने (Cash)',
-      'Credit': 'उधारीने (Credit)',
-      'Weekly': 'साप्ताहिक',
-      'Fortnightly': 'पंधरवड्याने',
-      'Monthly': 'मासिक',
-      'LocalShop': 'स्थानिक दुकान',
-      'Dealer': 'कंपनी डीलर',
-      'Dairy': 'डेअरी / संकलन केंद्र',
-      'Local': 'स्थानिक दुकान',
-      'VeryGood': 'खूप चांगले / उत्कृष्ट',
-      'Okay': 'ठीक आहे / समाधानकारक',
-      'NotSatisfied': 'समाधानी नाही',
-      'Bad': 'खराब / निकृष्ट',
-      '6m': '६ महिने',
-      '1y': '१ वर्ष',
-      '2y+': '२ वर्षांपेक्षा जास्त',
-      'Retailer': 'किरकोळ विक्रेता (Retailer)',
-      'Wholesaler': 'घाऊक विक्रेता (Wholesaler)',
-      'Distributor': 'वितरक (Distributor)',
-      'Shop': 'दुकानदार',
-      'CompanyRep': 'कंपनी प्रतिनिधी',
-      'Friend': 'मित्र / शेतकरी',
-      'Ad': 'जाहिरात',
-      'Pellet': 'पेलेट (Pellet)',
-      'Mesh': 'मेश (Mesh)',
-      'Crumb': 'क्रंब (Crumb)',
-      'Cubes': 'क्यूब्स (Cubes)'
-    };
-
-    if (Array.isArray(value)) {
-      displayValue = value.map(v => (typeof v === 'string' ? translations[v] || v : JSON.stringify(v))).join(", ");
-    } else if (typeof value === 'string') {
-      displayValue = translations[value] || value;
-    }
-
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[60%] font-black bg-gray-100/50 py-1 px-2 text-[10px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50">
+        <TableHead className="w-[55%] font-black bg-gray-100/50 py-1 px-2 text-[9px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50">
           {label}
         </TableHead>
-        <TableCell className="py-1 px-2 text-[10px] h-auto leading-tight text-black font-black">
-          {displayValue}
+        <TableCell className="py-1 px-2 text-[9px] h-auto leading-tight text-black font-black">
+          {translate(value)}
         </TableCell>
       </TableRow>
     );
@@ -149,131 +147,172 @@ export default function SurveysList() {
     const isDairy = survey.type === 'dairy';
 
     return (
-      <div className="space-y-1 py-1 print:text-black w-full text-black print:m-0 print:p-0">
-        <div className="text-center border-b-2 border-black pb-1 mb-2">
-          <h2 className="text-sm font-black uppercase tracking-tight text-black">
+      <div className="space-y-0.5 py-1 print:text-black w-full text-black print:m-0 print:p-0">
+        <div className="text-center border-b-2 border-black pb-0.5 mb-1">
+          <h2 className="text-xs font-black uppercase tracking-tight text-black">
             {isDairy ? "पशुखाद्य सर्वेक्षण अहवाल: दूध संकलन केंद्र / डेअरी" : "पशुखाद्य सर्वेक्षण अहवाल: शेतकरी ब्रँड सर्वेक्षण"}
           </h2>
-          <p className="text-[9px] font-bold text-black">अहवाल दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</p>
+          <div className="flex justify-between text-[8px] font-black px-1">
+            <span>सर्वेक्षक: {survey.surveyorName} ({survey.surveyorId})</span>
+            <span>अहवाल दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
+          </div>
         </div>
 
-        {/* १. सामान्य माहिती */}
+        {/* १. सामान्य माहिती व लोकेशन */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
-            १. सामान्य माहिती
+          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            १. सामान्य व लोकेशन माहिती
           </h4>
           <Table className="border border-black">
             <TableBody>
-              <DataRow label="लोकेशन टॅगिंग (GPS Location)" value={d.location} />
-              <DataRow label={isDairy ? "दूध संकलन केंद्र / डेअरीचे नाव" : "शेतकऱ्याचे नाव"} value={isDairy ? d.dairyName : d.farmerName} />
-              <DataRow label={isDairy ? "मालकाचे नाव" : "मोबाईल नंबर"} value={isDairy ? d.ownerName : d.mobile} />
-              <TableRow className="hover:bg-transparent border-b border-black">
-                <TableHead className="w-[60%] font-black bg-gray-100/50 py-1 px-2 text-[10px] border-r border-black text-black">गाव, तालुका व जिल्हा</TableHead>
-                <TableCell className="py-1 px-2 text-[10px] font-black text-black">{d.village}, {d.taluka}, {d.district}</TableCell>
-              </TableRow>
-              <DataRow label="संपूर्ण पत्ता (Address)" value={d.address} />
-            </TableBody>
-          </Table>
-        </section>
-
-        {/* २. पशुधन व वापर माहिती */}
-        <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
-            २-३. पशुधन व वापर माहिती
-          </h4>
-          <Table className="border border-black">
-            <TableBody>
-              <TableRow className="hover:bg-transparent border-b border-black">
-                <TableHead className="w-[60%] font-black bg-gray-100/50 py-1 px-2 text-[10px] border-r border-black text-black">एकूण जनावरे (गायी / म्हशी / वासरे)</TableHead>
-                <TableCell className="py-1 px-2 text-[10px] font-black text-black">
-                  {isDairy 
-                    ? `${d.livestock?.totalAnimals} (${d.livestock?.cows}/${d.livestock?.buffaloes}/${d.livestock?.calves})`
-                    : `${parseInt(d.animalCount?.cows || 0) + parseInt(d.animalCount?.buffaloes || 0) + parseInt(d.animalCount?.calves || 0)} (${d.animalCount?.cows}/${d.animalCount?.buffaloes}/${d.animalCount?.calves})`
-                  }
+              <DataRow label={isDairy ? "डेअरीचे नाव" : "शेतकऱ्याचे नाव"} value={isDairy ? d.dairyName : d.farmerName} />
+              <DataRow label={isDairy ? "मालकाचे नाव / संपर्क" : "मोबाईल नंबर"} value={isDairy ? `${d.ownerName} (${d.contact})` : d.mobile} />
+              <TableRow className="border-b border-black">
+                <TableCell className="p-0" colSpan={2}>
+                  <Table className="border-0">
+                    <TableHeader>
+                      <TableRow className="bg-gray-100 border-b border-black">
+                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">गाव</TableHead>
+                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">तालुका</TableHead>
+                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">जिल्हा</TableHead>
+                        <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black">लोकेशन</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.village}</TableCell>
+                        <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.taluka}</TableCell>
+                        <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.district}</TableCell>
+                        <TableCell className="text-[9px] py-1 px-2 font-black">{d.location || '-'}</TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
                 </TableCell>
               </TableRow>
-              <DataRow label={isDairy ? "कोणत्या प्रकारचे पशुखाद्य वापरता?" : "सध्या कोणत्या पशुखाद्य ब्रँडचा वापर करता?"} value={isDairy ? d.feedType : d.currentBrand} />
-              <DataRow label={isDairy ? "पशुखाद्य दिवसातून किती वेळा देता?" : "दिवसातून किती वेळा देता?"} value={isDairy ? d.feedFrequency : d.frequency} />
-              <DataRow label={isDairy ? "प्रति जनावर दररोज पशुखाद्य (किग्रॅ)" : "तुम्ही दिवसाला प्रति जनावर किती पशुखाद्य देता? (किलो)"} value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
-              <DataRow label="पशुखाद्य सोबत इतर खाद्य देता का?" value={isDairy ? d.supplements : d.otherFeeds} />
+              <DataRow label="संपूर्ण पत्ता" value={d.address} />
             </TableBody>
           </Table>
         </section>
 
-        {/* ४. ब्रँड व पोषण विश्लेषण */}
-        {isDairy && d.brandsInfo && d.brandsInfo.length > 0 && (
+        {/* २. पशुधन माहिती (Horizontal Table like photo) */}
+        <section className="break-inside-avoid">
+          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            २. पशुधन माहिती
+          </h4>
+          <Table className="border border-black">
+            <TableHeader>
+              <TableRow className="bg-gray-100 border-b border-black">
+                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">एकूण जनावरे</TableHead>
+                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">गायी</TableHead>
+                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">म्हशी</TableHead>
+                <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">वासरे</TableHead>
+                {isDairy && <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black">दूध देणारी</TableHead>}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">
+                  {isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || 0) + parseInt(d.animalCount?.buffaloes || 0) + parseInt(d.animalCount?.calves || 0))}
+                </TableCell>
+                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
+                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
+                <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
+                {isDairy && <TableCell className="text-[9px] py-1 px-2 font-black">{d.livestock?.milkingAnimals}</TableCell>}
+              </TableRow>
+            </TableBody>
+          </Table>
+        </section>
+
+        {/* ३. पशुखाद्य वापर */}
+        <section className="break-inside-avoid">
+          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            ३. पशुखाद्य वापर माहिती
+          </h4>
+          <Table className="border border-black">
+            <TableBody>
+              <DataRow label={isDairy ? "पशुखाद्य प्रकार" : "सध्याचा ब्रँड"} value={isDairy ? d.feedType : d.currentBrand} />
+              <DataRow label="दिवसातून किती वेळा पशुखाद्य देता?" value={isDairy ? d.feedFrequency : d.frequency} />
+              <DataRow label="प्रति जनावर दररोज पशुखाद्य (किग्रॅ)" value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
+              <DataRow label="इतर पूरक खाद्य" value={isDairy ? d.supplements : d.otherFeeds} />
+            </TableBody>
+          </Table>
+        </section>
+
+        {/* ४. ब्रँड व पोषण विश्लेषण (Table format like photo) */}
+        {((isDairy && d.brandsInfo && d.brandsInfo.length > 0) || (!isDairy)) && (
           <section className="break-inside-avoid">
-            <h4 className="text-[10px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
               ४. ब्रँड व पोषण विश्लेषण
             </h4>
-            <div className="border border-black overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-200 border-b border-black">
-                    <TableHead className="font-black text-black border-r border-black h-5 text-[9px] py-0 px-1">ब्रँड नाव</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-5 text-[9px] py-0 px-1">किंमत</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-5 text-[9px] py-0 px-1">प्रोटीन</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-5 text-[9px] py-0 px-1">फॅट</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-5 text-[9px] py-0 px-1">फायबर</TableHead>
-                    <TableHead className="font-black text-black h-5 text-[9px] py-0 px-1">कॅल्शियम</TableHead>
+            <Table className="border border-black">
+              <TableHeader>
+                <TableRow className="bg-gray-100 border-b border-black">
+                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">ब्रँड नाव</TableHead>
+                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">किंमत</TableHead>
+                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">प्रोटीन</TableHead>
+                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">फॅट</TableHead>
+                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black border-r border-black">फायबर</TableHead>
+                  <TableHead className="text-[8px] h-5 py-0 px-2 font-black text-black">कॅल्शियम</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isDairy ? d.brandsInfo.map((b: any, i: number) => (
+                  <TableRow key={i} className="border-b border-black last:border-0">
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.name}</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">₹{b.price}</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.protein}%</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.fat}%</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{b.fiber}%</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 font-black">{b.calcium}%</TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {d.brandsInfo.map((b: any, i: number) => (
-                    <TableRow key={i} className="border-b border-black last:border-0">
-                      <TableCell className="font-black border-r border-black py-0.5 px-1 text-[9px]">{b.name}</TableCell>
-                      <TableCell className="border-r border-black py-0.5 px-1 text-[9px] font-black">₹{b.price}</TableCell>
-                      <TableCell className="border-r border-black py-0.5 px-1 text-[9px] font-black">{b.protein}%</TableCell>
-                      <TableCell className="border-r border-black py-0.5 px-1 text-[9px] font-black">{b.fat}%</TableCell>
-                      <TableCell className="border-r border-black py-0.5 px-1 text-[9px] font-black">{b.fiber}%</TableCell>
-                      <TableCell className="py-0.5 px-1 text-[9px] font-black">{b.calcium}%</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
+                )) : (
+                  <TableRow>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.currentBrand}</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">₹{d.bagPrice}</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.packNutrition?.protein}%</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.packNutrition?.fat}%</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 border-r border-black font-black">{d.packNutrition?.fiber}%</TableCell>
+                    <TableCell className="text-[9px] py-1 px-2 font-black">{d.packNutrition?.calcium}%</TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
           </section>
         )}
 
-        {/* गुणवत्ता व खरेदी पद्धत */}
+        {/* ५-९. खरेदी, गुणवत्ता व साठवणूक */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
-            ५-९. खरेदी, गुणवत्ता व साठवणूक
+          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            ५-९. खरेदी व गुणवत्ता माहिती
           </h4>
           <Table className="border border-black">
             <TableBody>
-              <DataRow label="हा ब्रँड कुठून / कोणत्या पद्धतीने खरेदी करता?" value={isDairy ? d.purchaseMethod : d.purchaseSource} />
-              <DataRow label="खरेदी केलेले सर्व पुरवठादार" value={d.suppliers?.map((s: any) => s.name).join(", ")} />
-              <DataRow label="उधारी मिळते का? / वेळेवर पुरवठा?" value={isDairy ? d.timelySupply : d.hasCredit} />
+              <DataRow label="खरेदी स्त्रोत / पद्धत" value={isDairy ? d.purchaseMethod : d.purchaseSource} />
+              <DataRow label="पुरवठादार" value={d.suppliers?.map((s: any) => s.name).join(", ")} />
               <DataRow label="महिन्याला किती पोती लागतात?" value={d.monthlyBags} />
-              <DataRow label="या फीडमुळे दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
-              <DataRow label="सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का? (रेटिंग)" value={isDairy ? d.satisfaction : `${d.rating}/५ स्टार`} />
-              {!isDairy && <DataRow label="पॅकवर दिलेले मुख्य घटक (%)" value={`प्रोटीन:${d.packNutrition?.protein}% / फॅट:${d.packNutrition?.fat}% / फायबर:${d.packNutrition?.fiber}% / कॅल्शियम:${d.packNutrition?.calcium}%`} />}
+              <DataRow label="दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
+              <DataRow label="समाधान रेटिंग / फीड आवडतो का?" value={isDairy ? d.satisfaction : `${d.rating}/५ स्टार (${translate(d.likesFeed)})`} />
+              <DataRow label="उधारी / वेळेवर पुरवठा?" value={isDairy ? d.timelySupply : d.hasCredit} />
             </TableBody>
           </Table>
         </section>
 
-        {/* १०. समस्या व सूचना */}
+        {/* १०-११. समस्या व अतिरिक्त मुद्दे */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
-            १०-११. समस्या, सूचना व अतिरिक्त मुद्दे
+          <h4 className="text-[9px] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            १०-११. समस्या व अभिप्राय
           </h4>
           <Table className="border border-black">
             <TableBody>
-              <DataRow label="पशुखाद्याबाबत मुख्य समस्या काय आहे?" value={d.mainProblem || d.problems} />
-              <DataRow label="नवीन ब्रँडचे सॅम्पल मिळाले तर वापरून पाहाल का?" value={d.sampleTrial || d.switchIfCheaper} />
-              <DataRow label="तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={d.goodFeedOpinion || d.idealFeedQualities} />
+              <DataRow label="पशुखाद्याबाबत मुख्य समस्या?" value={d.mainProblem || d.problems} />
+              <DataRow label="नवीन सॅम्पल वापरून पाहाल का?" value={d.sampleTrial || d.switchIfCheaper} />
+              <DataRow label="आदर्श पशुखाद्याबाबत मते" value={d.goodFeedOpinion || d.idealFeedQualities} />
               {d.customPoints && d.customPoints.length > 0 && (
-                <DataRow label="इतर नोंदवलेले अतिरिक्त मुद्दे" value={d.customPoints.map((p: any) => p.point).join(", ")} />
+                <DataRow label="इतर मुद्दे" value={d.customPoints.map((p: any) => p.point).join(", ")} />
               )}
             </TableBody>
           </Table>
         </section>
-
-        <div className="mt-2 border-t-2 border-black pt-1 grid grid-cols-2 text-[9px] font-black uppercase tracking-tight break-inside-avoid">
-          <div>सर्वेक्षक: {survey.surveyorName} ({survey.surveyorId})</div>
-          <div className="text-right">नोंदणी दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</div>
-        </div>
       </div>
     );
   };
@@ -374,7 +413,7 @@ export default function SurveysList() {
         </Tabs>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-[95vw] md:max-w-[210mm] max-h-[90vh] overflow-y-auto p-0 border-2 dialog-content-print">
+          <DialogContent className="max-w-[95vw] md:max-w-[210mm] max-h-[95vh] overflow-y-auto p-0 border-2 dialog-content-print">
             <DialogHeader className="p-4 border-b bg-muted/30 no-print">
               <div className="flex justify-between items-center">
                 <DialogTitle className="text-lg font-bold flex items-center gap-2">अहवाल पाहणे</DialogTitle>
@@ -383,7 +422,7 @@ export default function SurveysList() {
                 </Button>
               </div>
             </DialogHeader>
-            <div className="p-4 md:p-8 print:p-0">
+            <div className="p-4 md:p-6 print:p-0">
               {selectedSurvey && renderDetailedReport(selectedSurvey)}
             </div>
           </DialogContent>
