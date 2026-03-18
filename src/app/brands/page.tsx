@@ -159,7 +159,7 @@ export default function BrandManagement() {
 
   const BrandDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+      <TableHead className="w-[50%] font-black bg-gray-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
       <TableCell className="py-1 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
     </TableRow>
   );
@@ -170,10 +170,10 @@ export default function BrandManagement() {
         <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">१. सामान्य माहिती</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <BrandDataRow label="ब्रँड / कंपनी" value={brand.name} />
+            <BrandDataRow label="ब्रँड / कंपनीचे नाव" value={brand.name} />
             <BrandDataRow label="खाद्य प्रकार" value={brand.feedType} />
-            <BrandDataRow label="वजन (किग्रॅ)" value={brand.bagWeight} />
-            <BrandDataRow label="किंमत (₹)" value={brand.price} />
+            <BrandDataRow label="बेस वजन (किग्रॅ)" value={brand.bagWeight} />
+            <BrandDataRow label="बेस किंमत (₹)" value={brand.price} />
             <BrandDataRow label="उपलब्ध पॅकिंग" value={brand.availableWeights} />
           </TableBody>
         </Table>
@@ -183,13 +183,14 @@ export default function BrandManagement() {
         <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. पोषण मूल्ये (%)</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <BrandDataRow label="प्रोटीन" value={brand.nutrition.protein ? `${brand.nutrition.protein}%` : '-'} />
-            <BrandDataRow label="फॅट" value={brand.nutrition.fat ? `${brand.nutrition.fat}%` : '-'} />
-            <BrandDataRow label="फायबर" value={brand.nutrition.fiber ? `${brand.nutrition.fiber}%` : '-'} />
-            <BrandDataRow label="कॅल्शियम" value={brand.nutrition.calcium ? `${brand.nutrition.calcium}%` : '-'} />
-            <BrandDataRow label="फॉस्फरस" value={brand.nutrition.phosphorus ? `${brand.nutrition.phosphorus}%` : '-'} />
-            <BrandDataRow label="मीठ" value={brand.nutrition.salt ? `${brand.nutrition.salt}%` : '-'} />
-            <BrandDataRow label="मिनरल" value={brand.nutrition.mineralMix ? `${brand.nutrition.mineralMix}%` : '-'} />
+            <BrandDataRow label="प्रोटीन (%)" value={brand.nutrition.protein ? `${brand.nutrition.protein}%` : '-'} />
+            <BrandDataRow label="फॅट (%)" value={brand.nutrition.fat ? `${brand.nutrition.fat}%` : '-'} />
+            <BrandDataRow label="फायबर (%)" value={brand.nutrition.fiber ? `${brand.nutrition.fiber}%` : '-'} />
+            <BrandDataRow label="कॅल्शियम (%)" value={brand.nutrition.calcium ? `${brand.nutrition.calcium}%` : '-'} />
+            <BrandDataRow label="फॉस्फरस (%)" value={brand.nutrition.phosphorus ? `${brand.nutrition.phosphorus}%` : '-'} />
+            <BrandDataRow label="मीठ (%)" value={brand.nutrition.salt ? `${brand.nutrition.salt}%` : '-'} />
+            <BrandDataRow label="मिनरल (%)" value={brand.nutrition.mineralMix ? `${brand.nutrition.mineralMix}%` : '-'} />
+            <BrandDataRow label="इतर पोषण मूल्ये" value={brand.nutrition.others} />
           </TableBody>
         </Table>
       </section>
@@ -197,7 +198,7 @@ export default function BrandManagement() {
       {brand.ingredients && brand.ingredients.length > 0 && (
         <section className="break-inside-avoid">
           <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. मुख्य घटक</h4>
-          <p className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 bg-white">
+          <p className="text-[10.5pt] font-black text-black leading-tight p-2 border border-black border-t-0 bg-white">
             {brand.ingredients.map(ing => `${ing.ingredient} (${ing.percentage}%)`).join(", ")}
           </p>
         </section>
@@ -205,10 +206,10 @@ export default function BrandManagement() {
 
       {brand.customPoints && brand.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">४. इतर माहिती</h4>
-          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[30px] bg-white">
+          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">४. ॲड पॉइंट्स (इतर)</h4>
+          <div className="text-[10.5pt] font-black text-black leading-tight p-2 border border-black border-t-0 min-h-[40px] bg-white">
             {brand.customPoints.map((pt, idx) => (
-              <div key={idx} className="mb-0.5">• {pt.point}</div>
+              <div key={idx} className="mb-1">• {pt.point}</div>
             ))}
           </div>
         </section>
