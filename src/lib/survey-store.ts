@@ -17,6 +17,11 @@ export const useSurveyStore = () => {
     return data ? JSON.parse(data) : [];
   };
 
+  const getSurveyById = (id: string): SurveyRecord | undefined => {
+    const surveys = getSurveys();
+    return surveys.find(s => s.id === id);
+  };
+
   const addSurvey = (survey: Omit<SurveyRecord, 'id' | 'timestamp'>) => {
     const surveys = getSurveys();
     const newSurvey = {
@@ -28,11 +33,19 @@ export const useSurveyStore = () => {
     return newSurvey;
   };
 
+  const updateSurvey = (id: string, updatedData: Omit<SurveyRecord, 'id' | 'timestamp'>) => {
+    const surveys = getSurveys();
+    const updatedSurveys = surveys.map(s => 
+      s.id === id ? { ...updatedData, id, timestamp: s.timestamp } : s
+    );
+    localStorage.setItem('pashudhan_surveys', JSON.stringify(updatedSurveys));
+  };
+
   const deleteSurvey = (id: string) => {
     const surveys = getSurveys();
     const filtered = surveys.filter(s => s.id !== id);
     localStorage.setItem('pashudhan_surveys', JSON.stringify(filtered));
   };
 
-  return { getSurveys, addSurvey, deleteSurvey };
+  return { getSurveys, getSurveyById, addSurvey, updateSurvey, deleteSurvey };
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +17,7 @@ import {
   LayoutDashboard,
   Eye,
   Trash2,
+  Edit2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,6 +38,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 
 export default function SurveysList() {
+  const router = useRouter();
   const { getSurveys, deleteSurvey } = useSurveyStore();
   const [surveys, setSurveys] = useState<SurveyRecord[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,6 +62,11 @@ export default function SurveysList() {
       loadSurveys();
       toast({ title: "यशस्वी", description: "रिपोर्ट हटवण्यात आला आहे." });
     }
+  };
+
+  const handleEdit = (survey: SurveyRecord) => {
+    const path = survey.type === 'dairy' ? '/survey/dairy' : '/survey/farmer';
+    router.push(`${path}?id=${survey.id}`);
   };
 
   const filterSurveys = (type?: 'dairy' | 'farmer') => {
@@ -261,7 +269,7 @@ export default function SurveysList() {
                 <>
                   <DataRow label="खरेदी पद्धत" value={d.purchaseMethod} />
                   <DataRow label="पशुखाद्य कुठून खरेदी करता?" value={d.supplySource} />
-                  <DataRow label="पुरवठादाराचे नाव (मास्टर निवडीसह)" value={d.supplierName} />
+                  <DataRow label="पुरवठादाराचे नाव" value={d.supplierName} />
                   <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
                   <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
                   <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
@@ -402,6 +410,14 @@ export default function SurveysList() {
               }}
             >
               <Eye className="h-3.5 w-3.5" /> पहा
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
+              onClick={() => handleEdit(survey)}
+            >
+              <Edit2 className="h-3.5 w-3.5" /> अपडेट
             </Button>
             <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(survey.id)}>
               <Trash2 className="h-3.5 w-3.5" /> हटवा

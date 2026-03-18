@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -101,9 +101,11 @@ const dairySchema = z.object({
 
 type DairyFormValues = z.infer<typeof dairySchema>;
 
-export default function DairySurvey() {
+function DairySurveyForm() {
   const router = useRouter();
-  const { addSurvey } = useSurveyStore();
+  const searchParams = useSearchParams();
+  const surveyId = searchParams.get('id');
+  const { addSurvey, updateSurvey, getSurveyById } = useSurveyStore();
   const { getBrands } = useBrandStore();
   const { getSuppliers } = useSupplierStore();
   const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
@@ -125,12 +127,12 @@ export default function DairySurvey() {
     }
   });
 
-  const { fields: brandFields, append: appendBrand, remove: removeBrand } = useFieldArray({
+  const { fields: brandFields, append: appendBrand, remove: removeBrand, replace: replaceBrands } = useFieldArray({
     control: form.control,
     name: "brandsInfo",
   });
 
-  const { fields: pointFields, append: appendPoint, remove: removePoint } = useFieldArray({
+  const { fields: pointFields, append: appendPoint, remove: removePoint, replace: replacePoints } = useFieldArray({
     control: form.control,
     name: "customPoints",
   });
@@ -138,7 +140,16 @@ export default function DairySurvey() {
   useEffect(() => {
     setMasterBrands(getBrands());
     setMasterSuppliers(getSuppliers());
-  }, []);
+
+    if (surveyId) {
+      const existing = getSurveyById(surveyId);
+      if (existing && existing.type === 'dairy') {
+        form.reset(existing.data);
+        if (existing.data.brandsInfo) replaceBrands(existing.data.brandsInfo);
+        if (existing.data.customPoints) replacePoints(existing.data.customPoints);
+      }
+    }
+  }, [surveyId]);
 
   const handleGetLocation = () => {
     setLocating(true);
@@ -199,13 +210,23 @@ export default function DairySurvey() {
 
   const onSubmit = async (data: DairyFormValues) => {
     try {
-      addSurvey({
-        type: "dairy",
-        surveyorName: data.surveyorName,
-        surveyorId: data.surveyorId,
-        data: data
-      });
-      toast({ title: "यशस्वी", description: "डेअरी सर्वेक्षण यशस्वीरित्या जतन झाले!" });
+      if (surveyId) {
+        updateSurvey(surveyId, {
+          type: "dairy",
+          surveyorName: data.surveyorName,
+          surveyorId: data.surveyorId,
+          data: data
+        });
+        toast({ title: "यशस्वी", description: "डेअरी सर्वेक्षण अपडेट झाले!" });
+      } else {
+        addSurvey({
+          type: "dairy",
+          surveyorName: data.surveyorName,
+          surveyorId: data.surveyorId,
+          data: data
+        });
+        toast({ title: "यशस्वी", description: "डेअरी सर्वेक्षण यशस्वीरित्या जतन झाले!" });
+      }
       router.push("/surveys");
     } catch (e) {
       toast({ variant: "destructive", title: "त्रुटी", description: "माहिती जतन करताना काहीतरी चूक झाली." });
@@ -228,7 +249,9 @@ export default function DairySurvey() {
           <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold font-headline text-primary">डेअरी सर्वेक्षण फॉर्म (Dairy Survey)</h1>
+          <h1 className="text-2xl font-bold font-headline text-primary">
+            {surveyId ? "डेअरी सर्वेक्षण अपडेट (Update Dairy Survey)" : "डेअरी सर्वेक्षण फॉर्म (Dairy Survey)"}
+          </h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -281,6 +304,8 @@ export default function DairySurvey() {
                   form.setValue("district", d);
                   form.setValue("taluka", t);
                 }}
+                defaultDistrict={form.getValues("district")}
+                defaultTaluka={form.getValues("taluka")}
               />
             </div>
             <div className="grid grid-cols-1 gap-4 mt-4">
@@ -390,7 +415,7 @@ export default function DairySurvey() {
                         id={opt.value} 
                         checked={form.watch("supplements").includes(opt.value)}
                         onCheckedChange={(checked) => {
-                          const current = form.getValues("supplements");
+                          const current = form.getValues("supplements") || [];
                           if (checked) form.setValue("supplements", [...current, opt.value]);
                           else form.setValue("supplements", current.filter(v => v !== opt.value));
                         }}
@@ -773,11 +798,19 @@ export default function DairySurvey() {
               <Printer className="h-4 w-4" /> PDF प्रिंट करा
             </Button>
             <Button type="submit" className="gap-2 bg-primary hover:bg-primary/90">
-              <Save className="h-4 w-4" /> डेटा जतन करा
+              <Save className="h-4 w-4" /> {surveyId ? "डेटा अपडेट करा" : "डेटा जतन करा"}
             </Button>
           </div>
         </form>
       </div>
     </div>
+  );
+}
+
+export default function DairySurvey() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>}>
+      <DairySurveyForm />
+    </Suspense>
   );
 }

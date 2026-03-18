@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -89,9 +89,11 @@ const farmerSchema = z.object({
 
 type FarmerFormValues = z.infer<typeof farmerSchema>;
 
-export default function FarmerSurvey() {
+function FarmerSurveyForm() {
   const router = useRouter();
-  const { addSurvey } = useSurveyStore();
+  const searchParams = useSearchParams();
+  const surveyId = searchParams.get('id');
+  const { addSurvey, updateSurvey, getSurveyById } = useSurveyStore();
   const { getBrands } = useBrandStore();
   const { getSuppliers } = useSupplierStore();
   const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
@@ -115,7 +117,7 @@ export default function FarmerSurvey() {
     }
   });
 
-  const { fields: pointFields, append: appendPoint, remove: removePoint } = useFieldArray({
+  const { fields: pointFields, append: appendPoint, remove: removePoint, replace: replacePoints } = useFieldArray({
     control: form.control,
     name: "customPoints",
   });
@@ -123,7 +125,15 @@ export default function FarmerSurvey() {
   useEffect(() => {
     setMasterBrands(getBrands());
     setMasterSuppliers(getSuppliers());
-  }, []);
+
+    if (surveyId) {
+      const existing = getSurveyById(surveyId);
+      if (existing && existing.type === 'farmer') {
+        form.reset(existing.data);
+        if (existing.data.customPoints) replacePoints(existing.data.customPoints);
+      }
+    }
+  }, [surveyId]);
 
   const handleMasterBrandSelect = (brandId: string) => {
     const selected = masterBrands.find(b => b.id === brandId);
@@ -172,13 +182,23 @@ export default function FarmerSurvey() {
 
   const onSubmit = async (data: FarmerFormValues) => {
     try {
-      addSurvey({
-        type: "farmer",
-        surveyorName: data.surveyorName,
-        surveyorId: data.surveyorId,
-        data: data
-      });
-      toast({ title: "यशस्वी", description: "शेतकरी रिव्ह्यू यशस्वीरित्या जतन झाला!" });
+      if (surveyId) {
+        updateSurvey(surveyId, {
+          type: "farmer",
+          surveyorName: data.surveyorName,
+          surveyorId: data.surveyorId,
+          data: data
+        });
+        toast({ title: "यशस्वी", description: "शेतकरी रिव्ह्यू अपडेट झाला!" });
+      } else {
+        addSurvey({
+          type: "farmer",
+          surveyorName: data.surveyorName,
+          surveyorId: data.surveyorId,
+          data: data
+        });
+        toast({ title: "यशस्वी", description: "शेतकरी रिव्ह्यू यशस्वीरित्या जतन झाला!" });
+      }
       router.push("/surveys");
     } catch (e) {
       toast({ variant: "destructive", title: "त्रुटी", description: "काहीतरी चूक झाली." });
@@ -193,7 +213,9 @@ export default function FarmerSurvey() {
           <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="h-5 w-5" />
           </Button>
-          <h1 className="text-2xl font-bold font-headline text-accent">शेतकरी ब्रँड सर्वेक्षण प्रश्नावली</h1>
+          <h1 className="text-2xl font-bold font-headline text-accent">
+            {surveyId ? "शेतकरी सर्वेक्षण अपडेट (Update Farmer Survey)" : "शेतकरी ब्रँड सर्वेक्षण प्रश्नावली"}
+          </h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -242,6 +264,8 @@ export default function FarmerSurvey() {
                   form.setValue("district", d);
                   form.setValue("taluka", t);
                 }}
+                defaultDistrict={form.getValues("district")}
+                defaultTaluka={form.getValues("taluka")}
               />
             </div>
             <div className="grid grid-cols-3 gap-4 mt-4">
@@ -291,7 +315,7 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">हा ब्रँड तुम्ही किती काळापासून वापरत आहात?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("usageDuration", v)} className="flex flex-wrap gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("usageDuration", v)} className="flex flex-wrap gap-4 mt-2" value={form.watch("usageDuration")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="6m" id="ud1" /><Label htmlFor="ud1">६ महिने</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="1y" id="ud2" /><Label htmlFor="ud2">१ वर्ष</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="2y+" id="ud3" /><Label htmlFor="ud3">२ वर्षांपेक्षा जास्त</Label></div>
@@ -303,7 +327,7 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">दिवसातून किती वेळा देता?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("frequency", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("frequency", v)} className="flex gap-4 mt-2" value={form.watch("frequency")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="1" id="f1" /><Label htmlFor="f1">१ वेळ</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="2" id="f2" /><Label htmlFor="f2">२ वेळा</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="3" id="f3" /><Label htmlFor="f3">३ वेळा</Label></div>
@@ -317,8 +341,9 @@ export default function FarmerSurvey() {
                   <div key={feed} className="flex items-center space-x-2">
                     <Checkbox 
                       id={feed} 
+                      checked={(form.watch("otherFeeds") || []).includes(feed)}
                       onCheckedChange={(checked) => {
-                        const current = form.getValues("otherFeeds");
+                        const current = form.getValues("otherFeeds") || [];
                         if (checked) form.setValue("otherFeeds", [...current, feed]);
                         else form.setValue("otherFeeds", current.filter(f => f !== feed));
                       }}
@@ -341,8 +366,9 @@ export default function FarmerSurvey() {
                     <div key={r} className="flex items-center space-x-2">
                       <Checkbox 
                         id={`reason-${r}`} 
+                        checked={(form.watch("selectionReason") || []).includes(r)}
                         onCheckedChange={(checked) => {
-                          const current = form.getValues("selectionReason");
+                          const current = form.getValues("selectionReason") || [];
                           if (checked) form.setValue("selectionReason", [...current, r]);
                           else form.setValue("selectionReason", current.filter(v => v !== r));
                         }}
@@ -354,7 +380,7 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">हा ब्रँड वापरायला सुरुवात कशी झाली?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("startMethod", v)} className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("startMethod", v)} className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2" value={form.watch("startMethod")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Shop" id="sm1" /><Label htmlFor="sm1">दुकानदार</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="CompanyRep" id="sm2" /><Label htmlFor="sm2">कंपनी प्रतिनिधी</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Friend" id="sm3" /><Label htmlFor="sm3">मित्र / शेतकरी</Label></div>
@@ -369,7 +395,7 @@ export default function FarmerSurvey() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="form-label-mr">या पशुखाद्याची गुणवत्ता कशी वाटते?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("quality", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("quality", v)} className="flex gap-4 mt-2" value={form.watch("quality")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="VeryGood" id="q1" /><Label htmlFor="q1">खूप चांगली</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Okay" id="q2" /><Label htmlFor="q2">ठीक</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Bad" id="q3" /><Label htmlFor="q3">खराब</Label></div>
@@ -377,28 +403,28 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">या फीडमुळे दूध उत्पादन वाढले का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("milkIncrease", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("milkIncrease", v)} className="flex gap-4 mt-2" value={form.watch("milkIncrease")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="mi1" /><Label htmlFor="mi1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="mi2" /><Label htmlFor="mi2">नाही</Label></div>
                 </RadioGroup>
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">जनावरांचे आरोग्य सुधारले का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("healthImprovement", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("healthImprovement", v)} className="flex gap-4 mt-2" value={form.watch("healthImprovement")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="hi1" /><Label htmlFor="hi1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="hi2" /><Label htmlFor="hi2">नाही</Label></div>
                 </RadioGroup>
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">जनावरांना हा फीड खायला आवडतो का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("likesFeed", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("likesFeed", v)} className="flex gap-4 mt-2" value={form.watch("likesFeed")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="lf1" /><Label htmlFor="lf1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="lf2" /><Label htmlFor="lf2">नाही</Label></div>
                 </RadioGroup>
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">दूधातील फॅट किंवा SNF मध्ये फरक जाणवला का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("fatDiff", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("fatDiff", v)} className="flex gap-4 mt-2" value={form.watch("fatDiff")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="fd1" /><Label htmlFor="fd1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="fd2" /><Label htmlFor="fd2">नाही</Label></div>
                 </RadioGroup>
@@ -423,7 +449,7 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">हा ब्रँड कुठून खरेदी करता?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("purchaseSource", v)} className="grid grid-cols-2 gap-2 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("purchaseSource", v)} className="grid grid-cols-2 gap-2 mt-2" value={form.watch("purchaseSource")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Local" id="ps1" /><Label htmlFor="ps1">स्थानिक दुकान</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Dealer" id="ps2" /><Label htmlFor="ps2">कंपनी डीलर</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Dairy" id="ps3" /><Label htmlFor="ps3">डेअरी</Label></div>
@@ -460,7 +486,7 @@ export default function FarmerSurvey() {
 
               <div className="space-y-2">
                 <Label className="form-label-mr">उधारी मिळते का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("hasCredit", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("hasCredit", v)} className="flex gap-4 mt-2" value={form.watch("hasCredit")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="hc1" /><Label htmlFor="hc1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="hc2" /><Label htmlFor="hc2">नाही</Label></div>
                 </RadioGroup>
@@ -486,8 +512,9 @@ export default function FarmerSurvey() {
                     <div key={reason} className="flex items-center space-x-2">
                       <Checkbox 
                         id={`switch-${reason}`} 
+                        checked={(form.watch("switchReason") || []).includes(reason)}
                         onCheckedChange={(checked) => {
-                          const current = form.getValues("switchReason");
+                          const current = form.getValues("switchReason") || [];
                           if (checked) form.setValue("switchReason", [...current, reason]);
                           else form.setValue("switchReason", current.filter(v => v !== reason));
                         }}
@@ -505,21 +532,21 @@ export default function FarmerSurvey() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <Label className="form-label-mr">बाजारात हा ब्रँड सहज मिळतो का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("easyAvailability", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("easyAvailability", v)} className="flex gap-4 mt-2" value={form.watch("easyAvailability")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="av1" /><Label htmlFor="av1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="av2" /><Label htmlFor="av2">नाही</Label></div>
                 </RadioGroup>
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">कंपनी प्रतिनिधी गावात भेट देतात का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("repVisit", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("repVisit", v)} className="flex gap-4 mt-2" value={form.watch("repVisit")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="rv1" /><Label htmlFor="rv1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="rv2" /><Label htmlFor="rv2">नाही</Label></div>
                 </RadioGroup>
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">कंपनीकडून सॅम्पल किंवा माहिती मिळते का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("samplesInfo", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("samplesInfo", v)} className="flex gap-4 mt-2" value={form.watch("samplesInfo")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="si1" /><Label htmlFor="si1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="si2" /><Label htmlFor="si2">नाही</Label></div>
                 </RadioGroup>
@@ -532,7 +559,7 @@ export default function FarmerSurvey() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("knowsIngredients", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("knowsIngredients", v)} className="flex gap-4 mt-2" value={form.watch("knowsIngredients")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="ki1" /><Label htmlFor="ki1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ki2" /><Label htmlFor="ki2">नाही</Label></div>
                 </RadioGroup>
@@ -601,8 +628,9 @@ export default function FarmerSurvey() {
                     <div key={p} className="flex items-center space-x-2">
                       <Checkbox 
                         id={`prob-${p}`} 
+                        checked={(form.watch("problems") || []).includes(p)}
                         onCheckedChange={(checked) => {
-                          const current = form.getValues("problems");
+                          const current = form.getValues("problems") || [];
                           if (checked) form.setValue("problems", [...current, p]);
                           else form.setValue("problems", current.filter(v => v !== p));
                         }}
@@ -618,7 +646,7 @@ export default function FarmerSurvey() {
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">जर दुसऱ्या कंपनीचे स्वस्त आणि चांगले फीड मिळाले तर ब्रँड बदलाल का?</Label>
-                <RadioGroup onValueChange={(v) => form.setValue("switchIfCheaper", v)} className="flex gap-4 mt-2">
+                <RadioGroup onValueChange={(v) => form.setValue("switchIfCheaper", v)} className="flex gap-4 mt-2" value={form.watch("switchIfCheaper")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="swc1" /><Label htmlFor="swc1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="swc2" /><Label htmlFor="swc2">नाही</Label></div>
                 </RadioGroup>
@@ -693,11 +721,19 @@ export default function FarmerSurvey() {
               <Printer className="h-4 w-4" /> PDF प्रिंट
             </Button>
             <Button type="submit" className="gap-2 bg-accent hover:bg-accent/90">
-              <Save className="h-4 w-4" /> रिव्ह्यू जतन करा
+              <Save className="h-4 w-4" /> {surveyId ? "रिव्ह्यू अपडेट करा" : "रिव्ह्यू जतन करा"}
             </Button>
           </div>
         </form>
       </div>
     </div>
+  );
+}
+
+export default function FarmerSurvey() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><Loader2 className="h-8 w-8 animate-spin text-accent" /></div>}>
+      <FarmerSurveyForm />
+    </Suspense>
   );
 }
