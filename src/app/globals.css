@@ -50,27 +50,34 @@
     margin: 5mm;
   }
 
-  /* Hide everything by default for a clean print */
   body {
-    visibility: hidden;
     background: white !important;
   }
 
-  /* Show only the items we want to print */
-  .dialog-content-print, 
-  .dialog-content-print *,
-  .print-only,
-  .print-only * {
-    visibility: visible !important;
+  /* Hide everything except print targets */
+  .no-print, 
+  nav, 
+  button, 
+  header, 
+  footer, 
+  .search-bar,
+  [role="tablist"],
+  [aria-label="Close"],
+  .dialog-header-print {
+    display: none !important;
   }
 
-  /* Target specifically the hidden sections intended for print */
+  /* Ensure the content is visible and properly positioned */
   .hidden.print\:block {
     display: block !important;
     visibility: visible !important;
   }
 
-  /* Reset layout for print target */
+  /* Specific handling for Radix Dialogs in print */
+  [data-radix-portal] {
+    position: static !important;
+  }
+
   .dialog-content-print {
     position: absolute !important;
     left: 0 !important;
@@ -85,20 +92,11 @@
     box-shadow: none !important;
     transform: none !important;
     display: block !important;
+    visibility: visible !important;
   }
 
-  /* Hide UI components */
-  .no-print, 
-  nav, 
-  button, 
-  [role="tablist"], 
-  .search-bar, 
-  header,
-  footer,
-  [data-radix-collection-item],
-  button[aria-label="Close"],
-  .dialog-header-print {
-    display: none !important;
+  .dialog-content-print * {
+    visibility: visible !important;
   }
 
   table {
@@ -123,11 +121,11 @@
     overflow-wrap: break-word !important;
     vertical-align: middle !important;
     line-height: 1.1 !important;
+    font-weight: 900 !important;
   }
 
   th {
     background-color: #f3f4f6 !important;
-    font-weight: 900 !important;
     text-align: left !important;
   }
 
