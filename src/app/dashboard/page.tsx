@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,10 +7,20 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { Button } from "@/components/ui/button";
 import { generateRegionalFeedSummary } from "@/ai/flows/generate-regional-feed-summary";
-import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock } from "lucide-react";
+import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock, PieChart } from "lucide-react";
 import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { useBrandStore } from "@/lib/brand-store";
 import { useSupplierStore } from "@/lib/supplier-store";
+import { 
+  BarChart, 
+  Bar, 
+  XAxis, 
+  YAxis, 
+  CartesianGrid, 
+  Tooltip as RechartsTooltip, 
+  ResponsiveContainer,
+  Cell
+} from 'recharts';
 
 export default function Dashboard() {
   const { getSurveys } = useSurveyStore();
@@ -28,6 +39,7 @@ export default function Dashboard() {
     totalSuppliers: 0
   });
   const [recentSurveys, setRecentSurveys] = useState<SurveyRecord[]>([]);
+  const [chartData, setChartData] = useState<{name: string, count: number}[]>([]);
 
   useEffect(() => {
     const surveys = getSurveys();
@@ -40,13 +52,18 @@ export default function Dashboard() {
     
     const brandCounts: Record<string, number> = {};
     surveys.forEach(s => {
-      const brand = s.data.currentBrand || s.data.bestBrand;
+      const brand = s.data.currentBrand || s.data.bestBrand || (s.data.brandsInfo?.[0]?.name);
       if (brand && typeof brand === 'string') {
         brandCounts[brand] = (brandCounts[brand] || 0) + 1;
       }
     });
     
-    const topBrand = Object.entries(brandCounts).sort((a, b) => b[1] - a[1])[0]?.[0] || "माहिती नाही";
+    const sortedBrands = Object.entries(brandCounts)
+      .sort((a, b) => b[1] - a[1]);
+    
+    const topBrand = sortedBrands[0]?.[0] || "माहिती नाही";
+    
+    setChartData(sortedBrands.slice(0, 5).map(([name, count]) => ({ name, count })));
 
     setStats({
       total: surveys.length,
@@ -70,6 +87,8 @@ export default function Dashboard() {
       setLoading(false);
     }
   };
+
+  const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   return (
     <div className="min-h-screen bg-background">
@@ -133,43 +152,84 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-7 space-y-8">
-            <Card className="bg-white border-primary/20 shadow-md">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-primary font-headline">
-                  <BrainCircuit className="h-5 w-5" />
-                  क्षेत्रीय AI विश्लेषण (Regional Insights)
-                </CardTitle>
-                <CardDescription>निवडलेल्या भागातील पशुखाद्य वापराचे सविस्तर AI विश्लेषण मिळवा.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <LocationSelector 
-                  onLocationChange={(d, t) => {
-                    setDistrict(d);
-                    setTaluka(t);
-                  }}
-                />
-                <Button 
-                  onClick={getAiSummary} 
-                  className="w-full bg-primary mt-4 shadow-md" 
-                  disabled={!district || !taluka || loading}
-                >
-                  {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "AI विश्लेषण तयार करा"}
-                </Button>
+          <div className="lg:col-span-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <Card className="bg-white border-primary/20 shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-primary font-headline">
+                    <BrainCircuit className="h-5 w-5" />
+                    क्षेत्रीय AI विश्लेषण (Regional Insights)
+                  </CardTitle>
+                  <CardDescription>निवडलेल्या भागातील पशुखाद्य वापराचे सविस्तर AI विश्लेषण मिळवा.</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <LocationSelector 
+                    onLocationChange={(d, t) => {
+                      setDistrict(d);
+                      setTaluka(t);
+                    }}
+                  />
+                  <Button 
+                    onClick={getAiSummary} 
+                    className="w-full bg-primary mt-4 shadow-md" 
+                    disabled={!district || !taluka || loading}
+                  >
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "AI विश्लेषण तयार करा"}
+                  </Button>
 
-                {aiSummary && (
-                  <div className="mt-6 p-5 bg-primary/5 rounded-xl border border-primary/10 text-sm leading-relaxed whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-500 shadow-inner">
-                    <div className="font-bold text-primary mb-2 flex items-center gap-2">
-                      <TrendingUp className="h-4 w-4" /> विश्लेषण परिणाम ({taluka}, {district}):
+                  {aiSummary && (
+                    <div className="mt-6 p-5 bg-primary/5 rounded-xl border border-primary/10 text-sm leading-relaxed whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-500 shadow-inner">
+                      <div className="font-bold text-primary mb-2 flex items-center gap-2">
+                        <TrendingUp className="h-4 w-4" /> विश्लेषण परिणाम ({taluka}, {district}):
+                      </div>
+                      {aiSummary}
                     </div>
-                    {aiSummary}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border-primary/20 shadow-md">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-primary font-headline">
+                    <PieChart className="h-5 w-5" />
+                    ब्रँड लोकप्रियता (Top 5 Brands)
+                  </CardTitle>
+                  <CardDescription>सर्वेक्षणानुसार सर्वात जास्त वापरले जाणारे ब्रँड्स.</CardDescription>
+                </CardHeader>
+                <CardContent className="h-[300px]">
+                  {chartData.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={chartData} layout="vertical" margin={{ left: 40, right: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                        <XAxis type="number" hide />
+                        <YAxis 
+                          dataKey="name" 
+                          type="category" 
+                          width={80} 
+                          tick={{ fontSize: 10, fontWeight: 'bold' }} 
+                        />
+                        <RechartsTooltip 
+                          contentStyle={{ fontSize: '12px', borderRadius: '8px' }}
+                          cursor={{ fill: '#f1f5f9' }}
+                        />
+                        <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                          {chartData.map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm italic">
+                      चार्टसाठी पुरेशी माहिती उपलब्ध नाही.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
 
-          <div className="lg:col-span-5">
+          <div className="lg:col-span-4">
             <Card className="bg-white border-primary/20 shadow-md h-full">
               <CardHeader>
                 <CardTitle className="text-primary font-headline flex items-center gap-2">
@@ -187,11 +247,11 @@ export default function Dashboard() {
                   ) : (
                     recentSurveys.map((survey, i) => (
                       <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-transparent hover:border-primary/20 transition-all hover:bg-white hover:shadow-sm">
-                        <div>
-                          <p className="font-bold text-sm text-primary">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-bold text-sm text-primary truncate">
                             {survey.type === 'dairy' ? survey.data.dairyName : survey.data.farmerName}
                           </p>
-                          <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                          <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5 truncate">
                             <MapPin className="h-3 w-3 text-primary" /> {survey.data.village}, {survey.data.taluka}
                           </p>
                           <div className="mt-1">
