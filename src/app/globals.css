@@ -50,30 +50,27 @@
     margin: 5mm;
   }
 
-  html, body {
-    height: auto !important;
-    overflow: visible !important;
+  /* Hide everything by default for a clean print */
+  body {
+    visibility: hidden;
     background: white !important;
-    color: black !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 8.5pt !important;
-  }
-  
-  /* Hide all UI elements including the dialog overlays and buttons */
-  .no-print, 
-  nav, 
-  button, 
-  [role="tablist"], 
-  .search-bar, 
-  header,
-  footer,
-  [data-radix-collection-item],
-  button[aria-label="Close"] {
-    display: none !important;
   }
 
-  /* Force the dialog content to occupy the whole page and remove constraints */
+  /* Show only the items we want to print */
+  .dialog-content-print, 
+  .dialog-content-print *,
+  .print-only,
+  .print-only * {
+    visibility: visible !important;
+  }
+
+  /* Target specifically the hidden sections intended for print */
+  .hidden.print\:block {
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  /* Reset layout for print target */
   .dialog-content-print {
     position: absolute !important;
     left: 0 !important;
@@ -87,11 +84,20 @@
     border: none !important;
     box-shadow: none !important;
     transform: none !important;
-    visibility: visible !important;
+    display: block !important;
   }
 
-  /* Hide the actual underlying page content while printing the dialog */
-  body > *:not([role="dialog"]) {
+  /* Hide UI components */
+  .no-print, 
+  nav, 
+  button, 
+  [role="tablist"], 
+  .search-bar, 
+  header,
+  footer,
+  [data-radix-collection-item],
+  button[aria-label="Close"],
+  .dialog-header-print {
     display: none !important;
   }
 
