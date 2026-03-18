@@ -123,7 +123,7 @@ export default function SurveysList() {
     if (value === undefined || value === null || value === "") return null;
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[55%] font-black bg-gray-50 py-1 px-2 text-[8.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
+        <TableHead className="w-[50%] font-black bg-gray-50 py-1 px-2 text-[8.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
           {label}
         </TableHead>
         <TableCell className="py-1 px-2 text-[8.5pt] h-auto leading-tight text-black font-black print:font-black">
@@ -172,7 +172,7 @@ export default function SurveysList() {
                 </TableCell>
               </TableRow>
               <TableRow className="border-b border-black">
-                <TableHead className="w-[55%] font-black bg-gray-50 py-1 px-2 text-[8.5pt] h-auto border-r border-black leading-tight text-black print:font-black">संपूर्ण पत्ता (अधिकृत जागा)</TableHead>
+                <TableHead className="w-[50%] font-black bg-gray-50 py-1 px-2 text-[8.5pt] h-auto border-r border-black leading-tight text-black print:font-black">संपूर्ण पत्ता (अधिकृत जागा)</TableHead>
                 <TableCell className="py-2 px-2 text-[8.5pt] h-auto leading-tight text-black font-black min-h-[40px] align-top print:font-black">
                   {d.address || '-'}
                 </TableCell>
@@ -189,14 +189,14 @@ export default function SurveysList() {
           <h4 className="text-[9pt] font-black mb-0 border-b border-black pb-0.5 uppercase bg-gray-100 px-1">
             २. पशुधन माहिती
           </h4>
-          <Table className="border border-black table-fixed">
+          <Table className="border border-black table-fixed w-full">
             <TableBody>
               <TableRow className="border-b border-black">
                 <TableCell className="p-0" colSpan={2}>
-                  <Table className="border-0 table-fixed">
+                  <Table className="border-0 table-fixed w-full">
                     <TableBody>
                       <TableRow>
-                        <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black">एकूण जनावरे: {isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</TableCell>
+                        <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black w-[30%]">एकूण जनावरे: <span className="text-[10pt] font-black">{isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span></TableCell>
                         <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black">गायी: {isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
                         <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black">म्हशी: {isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
                         <TableCell className="text-[8.5pt] py-1 px-2 font-black">वासरे: {isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
@@ -207,8 +207,8 @@ export default function SurveysList() {
               </TableRow>
               {isDairy && (
                 <TableRow>
-                  <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black">दूध देणारी जनावरे: {d.livestock?.milkingAnimals}</TableCell>
-                  <TableCell className="text-[8.5pt] py-1 px-2 font-black" colSpan={2}>सरासरी दूध उत्पादन: {d.livestock?.avgMilkPerAnimal} लिटर/दिवस</TableCell>
+                  <TableHead className="w-[50%] font-black bg-gray-50 py-1 px-2 text-[8.5pt] border-r border-black text-black">दूध देणारी जनावरे</TableHead>
+                  <TableCell className="text-[8.5pt] py-1 px-2 font-black">{d.livestock?.milkingAnimals} (सरासरी: {d.livestock?.avgMilkPerAnimal} लिटर/दिवस)</TableCell>
                 </TableRow>
               )}
             </TableBody>
