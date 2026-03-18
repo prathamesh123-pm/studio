@@ -159,15 +159,19 @@ export default function BrandManagement() {
 
   const BrandDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[55%] font-black bg-gray-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
-      <TableCell className="py-1 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
+      <TableHead className="w-[50%] font-black bg-slate-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
+        {label}
+      </TableHead>
+      <TableCell className="py-1 px-2 text-[11pt] h-auto leading-tight text-black font-black">
+        {value || '-'}
+      </TableCell>
     </TableRow>
   );
 
   const DetailedBrandTable = ({ brand, isPrint = false }: { brand: MasterBrand, isPrint?: boolean }) => (
     <div className={`space-y-0.5 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">१. सामान्य माहिती</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">१. सामान्य माहिती</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
             <BrandDataRow label="ब्रँड / कंपनीचे नाव" value={brand.name} />
@@ -180,7 +184,7 @@ export default function BrandManagement() {
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. पोषण मूल्ये (%)</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">२. पोषण मूल्ये (%)</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
             <BrandDataRow label="प्रोटीन (%)" value={brand.nutrition.protein ? `${brand.nutrition.protein}%` : '-'} />
@@ -197,7 +201,7 @@ export default function BrandManagement() {
 
       {brand.ingredients && brand.ingredients.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. मुख्य घटक</h4>
+          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">३. मुख्य घटक</h4>
           <p className="text-[10.5pt] font-black text-black leading-tight p-2 border border-black border-t-0 bg-white">
             {brand.ingredients.map(ing => `${ing.ingredient} (${ing.percentage}%)`).join(", ")}
           </p>
@@ -206,7 +210,7 @@ export default function BrandManagement() {
 
       {brand.customPoints && brand.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">४. ॲड पॉइंट्स (इतर)</h4>
+          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">४. ॲड पॉइंट्स (इतर)</h4>
           <div className="text-[10.5pt] font-black text-black leading-tight p-2 border border-black border-t-0 min-h-[40px] bg-white">
             {brand.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-1">• {pt.point}</div>
@@ -464,7 +468,7 @@ export default function BrandManagement() {
           <div className="grid grid-cols-1 print:grid-cols-2 gap-4 print:gap-x-4 print:gap-y-6">
             {filteredBrands.map((brand, index) => (
               <div key={brand.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid print:mt-1">
-                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-gray-100 px-1">
+                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-slate-100 px-1">
                   {index + 1}. {brand.name}
                 </h3>
                 <DetailedBrandTable brand={brand} isPrint={true} />
