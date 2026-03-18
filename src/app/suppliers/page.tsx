@@ -181,8 +181,8 @@ export default function SupplierManagement() {
 
   const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[45%] font-black bg-gray-50 py-0.5 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
-      <TableCell className="py-0.5 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
+      <TableHead className="w-[45%] font-black bg-gray-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+      <TableCell className="py-1 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
     </TableRow>
   );
 
@@ -194,23 +194,20 @@ export default function SupplierManagement() {
           <TableBody>
             <SupplierDataRow label="दुकान / कंपनी" value={supplier.shopName} />
             <SupplierDataRow label="मालक / संपर्क" value={`${supplier.name} / ${supplier.contact}`} />
-            <SupplierDataRow label="पत्ता / तालुका" value={`${supplier.address}, ${supplier.taluka}`} />
+            <SupplierDataRow label="पत्ता" value={supplier.address} />
+            <SupplierDataRow label="तालुका" value={supplier.taluka} />
+            <SupplierDataRow label="जिल्हा" value={supplier.district} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. ब्रँड्स व सेवा</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. प्रकार व सेवा</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <TableRow className="hover:bg-transparent border-b border-black">
-              <TableCell className="w-1/2 p-1 text-[11pt] border-r border-black text-black font-black">प्रकार: {supplier.supplierType}</TableCell>
-              <TableCell className="p-1 text-[11pt] text-black font-black">डिलिव्हरी: {supplier.providesDelivery ? 'होय' : 'नाही'}</TableCell>
-            </TableRow>
-            <TableRow className="hover:bg-transparent border-b border-black">
-              <TableCell className="w-1/2 p-1 text-[11pt] border-r border-black text-black font-black">उधारी: {supplier.providesCredit ? 'होय' : 'नाही'}</TableCell>
-              <TableCell className="p-1 text-[11pt] text-black font-black">जिल्हा: {supplier.district}</TableCell>
-            </TableRow>
+            <SupplierDataRow label="पुरवठादार प्रकार" value={supplier.supplierType} />
+            <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery ? 'होय' : 'नाही'} />
+            <SupplierDataRow label="उधारी सुविधा" value={supplier.providesCredit ? 'होय' : 'नाही'} />
           </TableBody>
         </Table>
       </section>
@@ -218,7 +215,7 @@ export default function SupplierManagement() {
       {supplier.suppliedBrands && supplier.suppliedBrands.length > 0 && (
         <section className="break-inside-avoid">
           <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. मुख्य ब्रँड्स</h4>
-          <p className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0">
+          <p className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 bg-white min-h-[40px]">
             {supplier.suppliedBrands.join(", ")} {supplier.mainBrands && `, ${supplier.mainBrands}`}
           </p>
         </section>
@@ -227,7 +224,7 @@ export default function SupplierManagement() {
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
           <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">४. इतर माहिती</h4>
-          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[30px]">
+          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[40px] bg-white">
             {supplier.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-0.5">• {pt.point}</div>
             ))}
