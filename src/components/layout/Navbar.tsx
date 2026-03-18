@@ -26,7 +26,7 @@ const CowIcon = ({ className }: { className?: string }) => (
 
 export function Navbar() {
   return (
-    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 no-print">
       <div className="container mx-auto px-2 md:px-4 flex h-16 items-center justify-between gap-1 md:gap-2">
         <Link href="/" className="flex items-center gap-1 md:gap-2 font-bold text-primary shrink-0">
           <div className="bg-primary/10 p-1 rounded-lg shrink-0">

@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -45,7 +46,7 @@
 }
 
 @media print {
-  .no-print {
+  .no-print, nav, button, .tabs-list, .search-bar {
     display: none !important;
   }
   .print-only {
@@ -65,40 +66,45 @@
   }
   .form-section {
     box-shadow: none !important;
-    border: 1.5px solid #000 !important;
+    border: 2px solid #000 !important;
     break-inside: avoid;
     margin-bottom: 15px !important;
-    padding: 12px !important;
+    padding: 15px !important;
   }
   table {
     width: 100% !important;
-    table-layout: auto;
+    table-layout: auto !important;
     border-collapse: collapse !important;
-    border: 1.5px solid #000 !important;
+    border: 2px solid #000 !important;
   }
   td, th {
-    padding: 4px 6px !important;
-    font-size: 11px !important;
-    border: 1px solid #000 !important;
+    padding: 6px 10px !important;
+    font-size: 12px !important;
+    border: 1.5px solid #000 !important;
     color: black !important;
     word-wrap: break-word !important;
+    vertical-align: middle !important;
   }
   th {
-    background-color: #f0f0f0 !important;
-    font-weight: 800 !important;
+    background-color: #e5e5e5 !important;
+    font-weight: 900 !important;
   }
   h1, h2, h3, h4 {
     color: black !important;
-    font-weight: 800 !important;
+    font-weight: 900 !important;
     text-transform: uppercase !important;
-    border-bottom: 2px solid #000 !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 4px !important;
+    border-bottom: 3px solid #000 !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 6px !important;
   }
   .text-primary, .text-accent {
     color: black !important;
   }
-  .bg-muted, .bg-primary\/5, .bg-accent\/5 {
+  .bg-muted, .bg-primary\/5, .bg-accent\/5, .bg-gray-50 {
     background-color: transparent !important;
+  }
+  .badge {
+    border: 1px solid black !important;
+    color: black !important;
   }
 }
