@@ -1,13 +1,13 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { Button } from "@/components/ui/button";
 import { generateRegionalFeedSummary } from "@/ai/flows/generate-regional-feed-summary";
-import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock, PieChart } from "lucide-react";
+import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock, PieChart, Filter } from "lucide-react";
 import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { useBrandStore } from "@/lib/brand-store";
 import { useSupplierStore } from "@/lib/supplier-store";
@@ -31,6 +31,11 @@ export default function Dashboard() {
   const [taluka, setTaluka] = useState("");
   const [aiSummary, setAiSummary] = useState("");
   const [loading, setLoading] = useState(false);
+  
+  // Chart location filters
+  const [chartDistrict, setChartDistrict] = useState("");
+  const [chartTaluka, setChartTaluka] = useState("");
+
   const [stats, setStats] = useState({ 
     total: 0, 
     districts: 0, 
@@ -38,14 +43,16 @@ export default function Dashboard() {
     totalBrands: 0,
     totalSuppliers: 0
   });
+  
+  const [allSurveys, setAllSurveys] = useState<SurveyRecord[]>([]);
   const [recentSurveys, setRecentSurveys] = useState<SurveyRecord[]>([]);
-  const [chartData, setChartData] = useState<{name: string, count: number}[]>([]);
 
   useEffect(() => {
     const surveys = getSurveys();
     const brands = getBrands();
     const suppliers = getSuppliers();
     
+    setAllSurveys(surveys);
     setRecentSurveys(surveys.slice(0, 6));
 
     const uniqueDistricts = new Set(surveys.map(s => s.data.district).filter(Boolean));
@@ -63,8 +70,6 @@ export default function Dashboard() {
     
     const topBrand = sortedBrands[0]?.[0] || "माहिती नाही";
     
-    setChartData(sortedBrands.slice(0, 5).map(([name, count]) => ({ name, count })));
-
     setStats({
       total: surveys.length,
       districts: uniqueDistricts.size,
@@ -73,6 +78,27 @@ export default function Dashboard() {
       totalSuppliers: suppliers.length
     });
   }, []);
+
+  const filteredChartData = useMemo(() => {
+    const filtered = allSurveys.filter(s => {
+      const matchDistrict = !chartDistrict || s.data.district === chartDistrict;
+      const matchTaluka = !chartTaluka || s.data.taluka === chartTaluka;
+      return matchDistrict && matchTaluka;
+    });
+
+    const brandCounts: Record<string, number> = {};
+    filtered.forEach(s => {
+      const brand = s.data.currentBrand || s.data.bestBrand || (s.data.brandsInfo?.[0]?.name);
+      if (brand && typeof brand === 'string') {
+        brandCounts[brand] = (brandCounts[brand] || 0) + 1;
+      }
+    });
+    
+    return Object.entries(brandCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, count]) => ({ name, count }));
+  }, [allSurveys, chartDistrict, chartTaluka]);
 
   const getAiSummary = async () => {
     if (!district || !taluka) return;
@@ -194,36 +220,53 @@ export default function Dashboard() {
                     <PieChart className="h-5 w-5" />
                     ब्रँड लोकप्रियता (Top 5 Brands)
                   </CardTitle>
-                  <CardDescription>सर्वेक्षणानुसार सर्वात जास्त वापरले जाणारे ब्रँड्स.</CardDescription>
+                  <CardDescription>निवडलेल्या जिल्हा व तालुक्यातील टॉप ५ ब्रँड्स.</CardDescription>
                 </CardHeader>
-                <CardContent className="h-[300px]">
-                  {chartData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} layout="vertical" margin={{ left: 40, right: 20 }}>
-                        <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                        <XAxis type="number" hide />
-                        <YAxis 
-                          dataKey="name" 
-                          type="category" 
-                          width={80} 
-                          tick={{ fontSize: 10, fontWeight: 'bold' }} 
-                        />
-                        <RechartsTooltip 
-                          contentStyle={{ fontSize: '12px', borderRadius: '8px' }}
-                          cursor={{ fill: '#f1f5f9' }}
-                        />
-                        <Bar dataKey="count" radius={[0, 4, 4, 0]}>
-                          {chartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                    </ResponsiveContainer>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm italic">
-                      चार्टसाठी पुरेशी माहिती उपलब्ध नाही.
+                <CardContent className="space-y-4">
+                  <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 mb-2">
+                    <div className="flex items-center gap-2 mb-2 text-primary font-bold text-xs uppercase">
+                      <Filter className="h-3 w-3" /> चार्ट फिल्टर करा
                     </div>
-                  )}
+                    <LocationSelector 
+                      onLocationChange={(d, t) => {
+                        setChartDistrict(d);
+                        setChartTaluka(t);
+                      }}
+                      defaultDistrict={chartDistrict}
+                      defaultTaluka={chartTaluka}
+                    />
+                  </div>
+                  
+                  <div className="h-[250px]">
+                    {filteredChartData.length > 0 ? (
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={filteredChartData} layout="vertical" margin={{ left: 40, right: 20 }}>
+                          <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                          <XAxis type="number" hide />
+                          <YAxis 
+                            dataKey="name" 
+                            type="category" 
+                            width={80} 
+                            tick={{ fontSize: 10, fontWeight: 'bold' }} 
+                          />
+                          <RechartsTooltip 
+                            contentStyle={{ fontSize: '12px', borderRadius: '8px' }}
+                            cursor={{ fill: '#f1f5f9' }}
+                          />
+                          <Bar dataKey="count" radius={[0, 4, 4, 0]}>
+                            {filteredChartData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                      </ResponsiveContainer>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm italic p-4 text-center">
+                        <FileText className="h-8 w-8 mb-2 opacity-20" />
+                        निवडलेल्या भागात अद्याप कोणतेही सर्वेक्षण झालेले नाही.
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
