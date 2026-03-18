@@ -61,7 +61,7 @@
   .dialog-content-print {
     position: absolute;
     left: 0;
-    top: 0;
+    top: 5mm !important;
     width: 100%;
     display: block !important;
     background: white !important;
@@ -97,7 +97,7 @@
   th {
     background-color: #f8f9fa !important;
     text-align: left !important;
-    width: 45% !important;
+    width: 55% !important;
   }
 
   h1, h2, h3, h4 {

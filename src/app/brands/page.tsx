@@ -159,7 +159,7 @@ export default function BrandManagement() {
 
   const BrandDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[50%] font-black bg-gray-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+      <TableHead className="w-[55%] font-black bg-gray-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
       <TableCell className="py-1 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
     </TableRow>
   );

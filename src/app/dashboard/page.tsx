@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -267,7 +266,8 @@ export default function Dashboard() {
                     className="w-full bg-primary mt-4 shadow-md" 
                     disabled={!district || !taluka || loading}
                   >
-                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "AI विश्लेषण तयार करा"}
+                    {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
+                    AI विश्लेषण तयार करा
                   </Button>
 
                   {aiSummary && (
