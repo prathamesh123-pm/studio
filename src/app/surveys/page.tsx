@@ -132,6 +132,67 @@ export default function SurveysList() {
     );
   };
 
+  const renderSurveyList = (filtered: SurveyRecord[]) => {
+    if (filtered.length === 0) {
+      return (
+        <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
+          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
+          <p className="text-muted-foreground text-sm font-medium">कोणतेही सर्वेक्षण उपलब्ध नाही.</p>
+        </div>
+      );
+    }
+
+    return filtered.map(s => (
+      <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
+        <CardContent className="p-0">
+          <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+            <div className="flex gap-3 items-center">
+              <div className={`p-2 rounded-full shrink-0 ${s.type === 'dairy' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
+                {s.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
+              </div>
+              <div>
+                <h3 className="font-bold text-base leading-tight">
+                  {s.data.dairyName || s.data.farmerName}
+                </h3>
+                <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}, {s.data.taluka}</span>
+                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                  <Badge variant={s.type === 'dairy' ? 'default' : 'secondary'} className={`${s.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
+                    {s.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
+                onClick={() => {
+                  setSelectedSurvey(s);
+                  setIsDialogOpen(true);
+                }}
+              >
+                <Eye className="h-3.5 w-3.5" /> पहा
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
+                onClick={() => handleEdit(s)}
+              >
+                <Edit2 className="h-3.5 w-3.5" /> अपडेट
+              </Button>
+              <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
+                <Trash2 className="h-3.5 w-3.5" /> हटवा
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    ));
+  };
+
   const renderDetailedReport = (survey: SurveyRecord) => {
     const d = survey.data;
     const isDairy = survey.type === 'dairy';
@@ -171,7 +232,7 @@ export default function SurveysList() {
               </TableRow>
               <TableRow className="border-b border-black">
                 <TableHead className="w-[50%] font-black bg-gray-50 py-1 px-2 text-[8.5pt] h-auto border-r border-black leading-tight text-black">संपूर्ण पत्ता</TableHead>
-                <TableCell className="py-2 px-2 text-[8.5pt] h-auto leading-tight text-black font-black min-h-[40px] align-top">
+                <TableCell className="py-2 px-2 text-[8.5pt] h-auto leading-tight text-black font-black min-h-[60px] align-top">
                   {d.address || '-'}
                 </TableCell>
               </TableRow>
@@ -193,7 +254,7 @@ export default function SurveysList() {
                   <Table className="border-0 table-fixed w-full">
                     <TableBody>
                       <TableRow>
-                        <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black w-[40%]">एकूण जनावरे: <span className="text-[10pt] font-black">{isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span></TableCell>
+                        <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black w-[45%]">एकूण जनावरे: <span className="text-[10pt] font-black">{isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span></TableCell>
                         <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black">गायी: {isDairy ? d.livestock?.cows : d.animalCount?.cows}</TableCell>
                         <TableCell className="text-[8.5pt] py-1 px-2 border-r border-black font-black">म्हशी: {isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</TableCell>
                         <TableCell className="text-[8.5pt] py-1 px-2 font-black">वासरे: {isDairy ? d.livestock?.calves : d.animalCount?.calves}</TableCell>
@@ -344,61 +405,14 @@ export default function SurveysList() {
             <TabsTrigger value="farmer" className="text-xs gap-1.5">शेतकरी ब्रँड</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="all" className="space-y-1">
-            {filterSurveys().length === 0 ? (
-              <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
-                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
-                <p className="text-muted-foreground text-sm font-medium">कोणतेही सर्वेक्षण उपलब्ध नाही.</p>
-              </div>
-            ) : filterSurveys().map(s => (
-              <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
-                <CardContent className="p-0">
-                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                    <div className="flex gap-3 items-center">
-                      <div className={`p-2 rounded-full shrink-0 ${s.type === 'dairy' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
-                        {s.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-base leading-tight">
-                          {s.data.dairyName || s.data.farmerName}
-                        </h3>
-                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
-                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}, {s.data.taluka}</span>
-                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
-                          <Badge variant={s.type === 'dairy' ? 'default' : 'secondary'} className={`${s.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
-                            {s.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
-                          </Badge>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
-                        onClick={() => {
-                          setSelectedSurvey(s);
-                          setIsDialogOpen(true);
-                        }}
-                      >
-                        <Eye className="h-3.5 w-3.5" /> पहा
-                      </Button>
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
-                        onClick={() => handleEdit(s)}
-                      >
-                        <Edit2 className="h-3.5 w-3.5" /> अपडेट
-                      </Button>
-                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
-                        <Trash2 className="h-3.5 w-3.5" /> हटवा
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+          <TabsContent value="all" className="space-y-1 mt-0">
+            {renderSurveyList(filterSurveys())}
+          </TabsContent>
+          <TabsContent value="dairy" className="space-y-1 mt-0">
+            {renderSurveyList(filterSurveys('dairy'))}
+          </TabsContent>
+          <TabsContent value="farmer" className="space-y-1 mt-0">
+            {renderSurveyList(filterSurveys('farmer'))}
           </TabsContent>
         </Tabs>
 
