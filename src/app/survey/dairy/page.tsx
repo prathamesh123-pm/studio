@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -127,8 +128,8 @@ function DairySurveyForm() {
       customPoints: [],
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
-      surveyorName: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_name') || "" : "",
-      surveyorId: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_id') || "" : "",
+      surveyorName: "",
+      surveyorId: "",
     }
   });
 
@@ -151,6 +152,9 @@ function DairySurveyForm() {
     setMasterBrands(getBrands());
     setMasterSuppliers(getSuppliers());
 
+    const savedName = localStorage.getItem('last_surveyor_name') || "";
+    const savedId = localStorage.getItem('last_surveyor_id') || "";
+    
     if (surveyId) {
       const existing = getSurveyById(surveyId);
       if (existing && existing.type === 'dairy') {
@@ -158,6 +162,10 @@ function DairySurveyForm() {
         if (existing.data.brandsInfo) replaceBrands(existing.data.brandsInfo);
         if (existing.data.customPoints) replacePoints(existing.data.customPoints);
       }
+    } else {
+      // Set defaults from profile
+      form.setValue("surveyorName", savedName);
+      form.setValue("surveyorId", savedId);
     }
   }, [surveyId]);
 
@@ -220,7 +228,6 @@ function DairySurveyForm() {
 
   const onSubmit = async (data: DairyFormValues) => {
     try {
-      // सर्वेक्षण तपशील सेव्ह करा जेणेकरून पुढच्या वेळी ऑटो-फिल होईल
       localStorage.setItem('last_surveyor_name', data.surveyorName);
       localStorage.setItem('last_surveyor_id', data.surveyorId);
 

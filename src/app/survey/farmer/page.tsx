@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -117,8 +118,8 @@ function FarmerSurveyForm() {
       packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "" },
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
-      surveyorName: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_name') || "" : "",
-      surveyorId: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_id') || "" : "",
+      surveyorName: "",
+      surveyorId: "",
     }
   });
 
@@ -136,12 +137,19 @@ function FarmerSurveyForm() {
     setMasterBrands(getBrands());
     setMasterSuppliers(getSuppliers());
 
+    const savedName = localStorage.getItem('last_surveyor_name') || "";
+    const savedId = localStorage.getItem('last_surveyor_id') || "";
+
     if (surveyId) {
       const existing = getSurveyById(surveyId);
       if (existing && existing.type === 'farmer') {
         form.reset(existing.data);
         if (existing.data.customPoints) replacePoints(existing.data.customPoints);
       }
+    } else {
+      // Set defaults from profile
+      form.setValue("surveyorName", savedName);
+      form.setValue("surveyorId", savedId);
     }
   }, [surveyId]);
 
