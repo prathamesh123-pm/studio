@@ -261,7 +261,7 @@ export default function SurveysList() {
                 <>
                   <DataRow label="खरेदी पद्धत" value={d.purchaseMethod} />
                   <DataRow label="पशुखाद्य कुठून खरेदी करता?" value={d.supplySource} />
-                  <DataRow label="पुरवठादाराचे नाव" value={d.supplierName} />
+                  <DataRow label="पुरवठादाराचे नाव (मास्टर निवडीसह)" value={d.supplierName} />
                   <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
                   <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
                   <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
@@ -272,6 +272,7 @@ export default function SurveysList() {
                   <DataRow label="पोत्याचे वजन (किग्रॅ)" value={d.bagWeight} />
                   <DataRow label="महिन्याला किती पोती लागतात?" value={d.monthlyBags} />
                   <DataRow label="हा ब्रँड कुठून खरेदी करता?" value={d.purchaseSource} />
+                  <DataRow label="पुरवठादाराचे नाव" value={d.supplierName} />
                   <DataRow label="उधारी मिळते का?" value={d.hasCredit} />
                 </>
               )}
@@ -293,7 +294,22 @@ export default function SurveysList() {
                 <DataRow label="कंपनी प्रतिनिधी गावात भेट देतात का?" value={d.repVisit} />
                 <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
                 <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
-                <DataRow label="पॅकवर दिलेले मुख्य घटक (प्रोटीन, फॅट, फायबर...)" value={`P: ${d.packNutrition?.protein}%, F: ${d.packNutrition?.fat}%, Fiber: ${d.packNutrition?.fiber}%, Ca: ${d.packNutrition?.calcium}%, P: ${d.packNutrition?.phosphorus}%`} />
+                <TableRow className="border-b border-black">
+                  <TableHead className="w-[55%] font-black bg-gray-50 py-3 px-3 text-[13px] border-r border-black text-black print:bg-gray-100">
+                    पॅकवर दिलेले पोषण घटक (%)
+                  </TableHead>
+                  <TableCell className="py-3 px-3 text-[13px] text-black font-bold">
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1">
+                      {d.packNutrition?.protein && <span>प्रोटीन: {d.packNutrition.protein}%</span>}
+                      {d.packNutrition?.fat && <span>फॅट: {d.packNutrition.fat}%</span>}
+                      {d.packNutrition?.fiber && <span>फायबर: {d.packNutrition.fiber}%</span>}
+                      {d.packNutrition?.calcium && <span>कॅल्शियम: {d.packNutrition.calcium}%</span>}
+                      {d.packNutrition?.phosphorus && <span>फॉस्फरस: {d.packNutrition.phosphorus}%</span>}
+                      {d.packNutrition?.salt && <span>मीठ: {d.packNutrition.salt}%</span>}
+                      {d.packNutrition?.mineralMix && <span>मिनरल: {d.packNutrition.mineralMix}%</span>}
+                    </div>
+                  </TableCell>
+                </TableRow>
                 <DataRow label="समाधान रेटिंग" value={`${d.rating}/५ स्टार`} />
               </TableBody>
             </Table>

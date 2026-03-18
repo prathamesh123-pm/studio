@@ -30,7 +30,8 @@ import {
 } from "@/components/ui/table";
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
-import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle, Check } from "lucide-react";
+import { useSupplierStore, Supplier } from "@/lib/supplier-store";
+import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle, Check, Store } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -104,7 +105,9 @@ export default function DairySurvey() {
   const router = useRouter();
   const { addSurvey } = useSurveyStore();
   const { getBrands } = useBrandStore();
+  const { getSuppliers } = useSupplierStore();
   const [masterBrands, setMasterBrands] = useState<MasterBrand[]>([]);
+  const [masterSuppliers, setMasterSuppliers] = useState<Supplier[]>([]);
   const [locating, setLocating] = useState(false);
   const [selectedBrandIds, setSelectedBrandIds] = useState<string[]>([]);
   
@@ -134,6 +137,7 @@ export default function DairySurvey() {
 
   useEffect(() => {
     setMasterBrands(getBrands());
+    setMasterSuppliers(getSuppliers());
   }, []);
 
   const handleGetLocation = () => {
@@ -548,10 +552,34 @@ export default function DairySurvey() {
                   </Select>
                   {form.watch("supplySource") === "Other" && <Input {...form.register("otherSupplySource")} placeholder="इतर स्त्रोताचे नाव" />}
                 </div>
+                
                 <div className="space-y-2">
-                  <Label className="text-sm">पुरवठादाराचे नाव</Label>
-                  <Input {...form.register("supplierName")} placeholder="एजन्सी किंवा दुकानदाराचे नाव" />
+                  <div className="flex items-center justify-between mb-1">
+                    <Label className="text-sm">पुरवठादार निवडा (मास्टर लिस्ट मधून)</Label>
+                    <Store className="h-4 w-4 text-primary" />
+                  </div>
+                  <Select onValueChange={(v) => form.setValue("supplierName", v)} value={form.watch("supplierName")}>
+                    <SelectTrigger className="h-10 text-xs">
+                      <SelectValue placeholder="पुरवठादार निवडा" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {masterSuppliers.length === 0 ? (
+                        <SelectItem value="none" disabled>प्रथम पुरवठादार मास्टरमध्ये जोडा</SelectItem>
+                      ) : (
+                        masterSuppliers.map(s => (
+                          <SelectItem key={s.id} value={`${s.shopName} (${s.name})`}>
+                            {s.shopName} - {s.name}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <div className="mt-2">
+                    <Label className="text-[10px] text-muted-foreground">इतर नाव असल्यास येथे लिहा:</Label>
+                    <Input {...form.register("supplierName")} placeholder="एजन्सी किंवा दुकानदाराचे नाव" className="h-8 text-xs" />
+                  </div>
                 </div>
+
                 <div className="space-y-2">
                   <Label className="text-sm">पुरवठा वेळेवर मिळतो का?</Label>
                   <RadioGroup 
