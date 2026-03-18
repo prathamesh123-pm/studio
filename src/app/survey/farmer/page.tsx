@@ -86,7 +86,7 @@ const farmerSchema = z.object({
     point: z.string(),
   })).default([]),
   surveyorName: z.string().min(1, "सर्वे करणाऱ्याचे नाव आवश्यक आहे"),
-  surveyorId: z.string().min(1, "ID आवश्यक आहे"),
+  surveyorId: z.string().min(1, "आयडी आवश्यक आहे"),
   surveyDate: z.string().optional(),
 });
 
@@ -117,6 +117,8 @@ function FarmerSurveyForm() {
       packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "" },
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
+      surveyorName: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_name') || "" : "",
+      surveyorId: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_id') || "" : "",
     }
   });
 
@@ -167,7 +169,7 @@ function FarmerSurveyForm() {
   const handleGetLocation = () => {
     setLocating(true);
     if (!navigator.geolocation) {
-      toast({ variant: "destructive", title: "त्रुटी", description: "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही." });
+      toast({ variant: "destructive", title: "त्रुटी", description: "तुमच्या ब्राउझरमध्ये जीपीएस सपोर्ट नाही." });
       setLocating(false);
       return;
     }
@@ -190,6 +192,9 @@ function FarmerSurveyForm() {
 
   const onSubmit = async (data: FarmerFormValues) => {
     try {
+      localStorage.setItem('last_surveyor_name', data.surveyorName);
+      localStorage.setItem('last_surveyor_id', data.surveyorId);
+
       if (surveyId) {
         updateSurvey(surveyId, {
           type: "farmer",
@@ -222,14 +227,14 @@ function FarmerSurveyForm() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-bold font-headline text-accent">
-            {surveyId ? "शेतकरी सर्वेक्षण अपडेट (Update Farmer Survey)" : "शेतकरी ब्रँड सर्वेक्षण प्रश्नावली"}
+            {surveyId ? "शेतकरी सर्वेक्षण अपडेट" : "शेतकरी ब्रँड सर्वेक्षण प्रश्नावली"}
           </h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <section className="form-section bg-accent/5">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center gap-2">
-              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (Location Tagging)
+              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग
             </h3>
             <div className="flex flex-col md:flex-row items-center gap-4">
               <Button 
@@ -239,7 +244,7 @@ function FarmerSurveyForm() {
                 className="bg-accent hover:bg-accent/90 text-white"
               >
                 {locating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                लोकेशन मिळवा (Get Location)
+                लोकेशन मिळवा
               </Button>
               {form.watch("location") && (
                 <div className="text-sm font-medium text-green-700 bg-green-50 px-3 py-2 rounded-md border border-green-200">
@@ -345,7 +350,7 @@ function FarmerSurveyForm() {
             <div className="space-y-2 mt-6">
               <Label className="form-label-mr">पशुखाद्य सोबत इतर खाद्य देता का?</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {["हिरवा चारा", "सुका चारा", "खळ", "मका", "खनिज मिश्रण (Mineral Mix)"].map((feed) => (
+                {["हिरवा चारा", "सुका चारा", "खळ", "मका", "खनिज मिश्रण"].map((feed) => (
                   <div key={feed} className="flex items-center space-x-2">
                     <Checkbox 
                       id={feed} 
@@ -390,8 +395,8 @@ function FarmerSurveyForm() {
                 <Label className="form-label-mr">हा ब्रँड वापरायला सुरुवात कशी झाली?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("startMethod", v)} className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-2" value={form.watch("startMethod")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Shop" id="sm1" /><Label htmlFor="sm1">दुकानदार</Label></div>
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="CompanyRep" id="sm2" /><Label htmlFor="sm2">कंपनी प्रतिनिधी</Label></div>
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="Friend" id="sm3" /><Label htmlFor="sm3">मित्र / शेतकरी</Label></div>
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="CompanyRep" id="sm2" /><Label htmlFor="sm2">प्रतिनिधी</Label></div>
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="Friend" id="sm3" /><Label htmlFor="sm3">मित्र</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Ad" id="sm4" /><Label htmlFor="sm4">जाहिरात</Label></div>
                 </RadioGroup>
               </div>
@@ -431,7 +436,7 @@ function FarmerSurveyForm() {
                 </RadioGroup>
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">दूधातील फॅट किंवा SNF मध्ये फरक जाणवला का?</Label>
+                <Label className="form-label-mr">दूधातील फॅट मध्ये फरक जाणवला का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("fatDiff", v)} className="flex gap-4 mt-2" value={form.watch("fatDiff")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="fd1" /><Label htmlFor="fd1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="fd2" /><Label htmlFor="fd2">नाही</Label></div>
@@ -459,7 +464,7 @@ function FarmerSurveyForm() {
                 <Label className="form-label-mr">हा ब्रँड कुठून खरेदी करता?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("purchaseSource", v)} className="grid grid-cols-2 gap-2 mt-2" value={form.watch("purchaseSource")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Local" id="ps1" /><Label htmlFor="ps1">स्थानिक दुकान</Label></div>
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="Dealer" id="ps2" /><Label htmlFor="ps2">कंपनी डीलर</Label></div>
+                  <div className="flex items-center space-x-2"><RadioGroupItem value="Dealer" id="ps2" /><Label htmlFor="ps2">डीलर</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Dairy" id="ps3" /><Label htmlFor="ps3">डेअरी</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Other" id="ps4" /><Label htmlFor="ps4">इतर</Label></div>
                 </RadioGroup>
@@ -467,7 +472,7 @@ function FarmerSurveyForm() {
 
               <div className="col-span-1 md:col-span-2 space-y-4 pt-4 border-t">
                 <div className="flex justify-between items-center mb-1">
-                  <Label className="text-sm font-bold text-accent">पुरवठादार निवडा (मल्टिपल पुरवठादार माहिती)</Label>
+                  <Label className="text-sm font-bold text-accent">पुरवठादार निवडा</Label>
                   <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "" })} className="gap-1 h-8 text-xs">
                     <Plus className="h-3 w-3" /> पुरवठादार जोडा
                   </Button>
@@ -669,7 +674,7 @@ function FarmerSurveyForm() {
                 <Textarea {...form.register("improvements")} placeholder="सूचना लिहा..." />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">जर दुसऱ्या कंपनीचे स्वस्त आणि चांगले फीड मिळाले तर ब्रँड बदलाल का?</Label>
+                <Label className="form-label-mr">जर स्वस्त आणि चांगले फीड मिळाले तर ब्रँड बदलाल का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("switchIfCheaper", v)} className="flex gap-4 mt-2" value={form.watch("switchIfCheaper")}>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="swc1" /><Label htmlFor="swc1">होय</Label></div>
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="swc2" /><Label htmlFor="swc2">नाही</Label></div>
@@ -684,7 +689,7 @@ function FarmerSurveyForm() {
 
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-accent border-b pb-2 flex items-center justify-between">
-              ११. ॲड पॉइंट्स (इतर मुद्दे)
+              ११. ॲड पॉइंट्स
               <Button 
                 type="button" 
                 variant="outline" 
@@ -730,8 +735,8 @@ function FarmerSurveyForm() {
                 <Input {...form.register("surveyorName")} placeholder="तुमचे नाव" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">ID नंबर</Label>
-                <Input {...form.register("surveyorId")} placeholder="तुमचा ID" />
+                <Label className="form-label-mr">आयडी नंबर</Label>
+                <Input {...form.register("surveyorId")} placeholder="तुमचा आयडी" />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">दिनांक</Label>
@@ -742,7 +747,7 @@ function FarmerSurveyForm() {
 
           <div className="flex justify-end gap-4 no-print">
             <Button type="button" variant="outline" onClick={() => window.print()} className="gap-2">
-              <Printer className="h-4 w-4" /> PDF प्रिंट
+              <Printer className="h-4 w-4" /> पीडीएफ प्रिंट
             </Button>
             <Button type="submit" className="gap-2 bg-accent hover:bg-accent/90">
               <Save className="h-4 w-4" /> {surveyId ? "रिव्ह्यू अपडेट करा" : "रिव्ह्यू जतन करा"}

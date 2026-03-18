@@ -97,7 +97,7 @@ const dairySchema = z.object({
     point: z.string(),
   })).default([]),
   surveyorName: z.string().min(1, "सर्वेक्षकाचे नाव आवश्यक आहे"),
-  surveyorId: z.string().min(1, "ID आवश्यक आहे"),
+  surveyorId: z.string().min(1, "आयडी आवश्यक आहे"),
   surveyDate: z.string().optional(),
 });
 
@@ -127,6 +127,8 @@ function DairySurveyForm() {
       customPoints: [],
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
+      surveyorName: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_name') || "" : "",
+      surveyorId: typeof window !== 'undefined' ? localStorage.getItem('last_surveyor_id') || "" : "",
     }
   });
 
@@ -162,7 +164,7 @@ function DairySurveyForm() {
   const handleGetLocation = () => {
     setLocating(true);
     if (!navigator.geolocation) {
-      toast({ variant: "destructive", title: "त्रुटी", description: "तुमच्या ब्राउझरमध्ये GPS सपोर्ट नाही." });
+      toast({ variant: "destructive", title: "त्रुटी", description: "तुमच्या ब्राउझरमध्ये जीपीएस सपोर्ट नाही." });
       setLocating(false);
       return;
     }
@@ -218,6 +220,10 @@ function DairySurveyForm() {
 
   const onSubmit = async (data: DairyFormValues) => {
     try {
+      // सर्वेक्षण तपशील सेव्ह करा जेणेकरून पुढच्या वेळी ऑटो-फिल होईल
+      localStorage.setItem('last_surveyor_name', data.surveyorName);
+      localStorage.setItem('last_surveyor_id', data.surveyorId);
+
       if (surveyId) {
         updateSurvey(surveyId, {
           type: "dairy",
@@ -246,7 +252,7 @@ function DairySurveyForm() {
     { label: "मका", value: "Maize" },
     { label: "हिरवा चारा", value: "GreenFodder" },
     { label: "सुका चारा", value: "DryFodder" },
-    { label: "खनिज मिश्रण (Mineral Mix)", value: "MineralMix" },
+    { label: "खनिज मिश्रण", value: "MineralMix" },
   ];
 
   return (
@@ -258,14 +264,14 @@ function DairySurveyForm() {
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <h1 className="text-2xl font-bold font-headline text-primary">
-            {surveyId ? "डेअरी सर्वेक्षण अपडेट (Update Dairy Survey)" : "डेअरी सर्वेक्षण फॉर्म (Dairy Survey)"}
+            {surveyId ? "डेअरी सर्वेक्षण अपडेट" : "डेअरी सर्वेक्षण फॉर्म"}
           </h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center gap-2">
-              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (GPS Location)
+              <MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (जीपीएस लोकेशन)
             </h3>
             <div className="flex flex-col md:flex-row items-center gap-4">
               <Button 
@@ -275,7 +281,7 @@ function DairySurveyForm() {
                 className="bg-primary hover:bg-primary/90"
               >
                 {locating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
-                लोकेशन मिळवा (Get Location)
+                लोकेशन मिळवा
               </Button>
               {form.watch("location") && (
                 <div className="text-sm font-medium text-green-700 bg-green-50 px-3 py-2 rounded-md border border-green-200">
@@ -302,7 +308,7 @@ function DairySurveyForm() {
                 <Input {...form.register("contact")} placeholder="१० अंकी मोबाईल नंबर" maxLength={10} />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">गाव (Village)</Label>
+                <Label className="form-label-mr">गाव</Label>
                 <Input {...form.register("village")} placeholder="गावाचे नाव" />
               </div>
             </div>
@@ -319,7 +325,7 @@ function DairySurveyForm() {
             <div className="grid grid-cols-1 gap-4 mt-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">संपूर्ण पत्ता</Label>
-                <Textarea {...form.register("address")} placeholder="रस्ता, गल्ली, खुणा इ." />
+                <Textarea {...form.register("address")} placeholder="रस्ता, गल्ली, खुणा इ. (मोठ्या पत्त्यासाठी पुरेशी जागा)" />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -378,7 +384,7 @@ function DairySurveyForm() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="ReadyMade" id="rd1" />
-                    <Label htmlFor="rd1">रेडीमेड पशुखाद्य (Ready Made)</Label>
+                    <Label htmlFor="rd1">रेडीमेड पशुखाद्य</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="HomeMade" id="rd2" />
@@ -409,7 +415,7 @@ function DairySurveyForm() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="form-label-mr">प्रति जनावर दररोज पशुखाद्य (किग्रॅ)</Label>
+                  <Label className="form-label-mr">प्रति जनावर दररोज पशुखाद्य (किलो)</Label>
                   <Input {...form.register("dailyFeedPerAnimal")} type="number" />
                 </div>
               </div>
@@ -441,7 +447,7 @@ function DairySurveyForm() {
 
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
-              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती (मास्टर ब्रँड मल्टिपल सिलेक्शन)</h3>
+              <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती</h3>
               <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
                 <Search className="h-4 w-4 text-primary" />
                 <div className="flex flex-col">
@@ -554,8 +560,8 @@ function DairySurveyForm() {
                 className="space-y-2"
                 value={form.watch("purchaseMethod")}
               >
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने (Cash)</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने (Credit)</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने</Label></div>
+                <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने</Label></div>
                 <div className="flex items-center space-x-2 ml-6">
                   <Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-20" />
                   <span className="text-xs">दिवसांची उधारी</span>
@@ -800,15 +806,15 @@ function DairySurveyForm() {
           </section>
 
           <section className="form-section bg-primary/5">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील (Surveyor Details)</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">सर्वे करणाऱ्याचे नाव</Label>
                 <Input {...form.register("surveyorName")} placeholder="तुमचे पूर्ण नाव" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">ID नंबर / कर्मचारी क्रमांक</Label>
-                <Input {...form.register("surveyorId")} placeholder="तुमचा अधिकृत ID" />
+                <Label className="form-label-mr">आयडी नंबर / कर्मचारी क्रमांक</Label>
+                <Input {...form.register("surveyorId")} placeholder="तुमचा अधिकृत आयडी" />
               </div>
               <div className="space-y-2">
                 <Label className="form-label-mr">दिनांक</Label>
@@ -819,7 +825,7 @@ function DairySurveyForm() {
 
           <div className="flex justify-end gap-4 no-print">
             <Button type="button" variant="outline" onClick={() => window.print()} className="gap-2">
-              <Printer className="h-4 w-4" /> PDF प्रिंट करा
+              <Printer className="h-4 w-4" /> पीडीएफ प्रिंट करा
             </Button>
             <Button type="submit" className="gap-2 bg-primary hover:bg-primary/90">
               <Save className="h-4 w-4" /> {surveyId ? "डेटा अपडेट करा" : "डेटा जतन करा"}
