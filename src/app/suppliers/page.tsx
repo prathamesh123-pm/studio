@@ -186,8 +186,8 @@ export default function SupplierManagement() {
 
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[45%] font-bold bg-gray-50 py-2 px-2 text-[11px] md:text-xs h-auto border-r border-black leading-tight text-black print:font-extrabold">{label}</TableHead>
-        <TableCell className="py-2 px-2 text-[11px] md:text-xs h-auto leading-tight text-black font-medium">
+        <TableHead className="w-[45%] font-black bg-gray-50 py-0.5 px-2 text-[10pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+        <TableCell className="py-0.5 px-2 text-[10pt] h-auto leading-tight text-black font-black">
           {displayValue || '-'}
         </TableCell>
       </TableRow>
@@ -195,52 +195,46 @@ export default function SupplierManagement() {
   };
 
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
-    <div className={`space-y-3 py-1 ${isPrint ? 'space-y-2' : ''}`}>
+    <div className={`space-y-2 py-0.5 ${isPrint ? 'space-y-1' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">१. सामान्य माहिती</h4>
-        <Table className="border-2 border-black rounded-sm overflow-hidden">
+        <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">१. व्यावसायिक माहिती</h4>
+        <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="दुकानाचे नाव" value={supplier.shopName} />
-            <SupplierDataRow label="पुरवठादाराचे नाव (मालक)" value={supplier.name} />
-            <SupplierDataRow label="संपर्क क्रमांक" value={supplier.contact} />
-            <SupplierDataRow label="पुरवठादार प्रकार" value={supplier.supplierType} />
+            <SupplierDataRow label="दुकान" value={supplier.shopName} />
+            <SupplierDataRow label="मालक" value={supplier.name} />
+            <SupplierDataRow label="संपर्क" value={supplier.contact} />
+            <SupplierDataRow label="प्रकार" value={supplier.supplierType} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">२. लोकेशन व पत्ता</h4>
-        <Table className="border-2 border-black rounded-sm overflow-hidden">
+        <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">२. ठिकाण</h4>
+        <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="जिल्हा" value={supplier.district} />
-            <SupplierDataRow label="तालुका" value={supplier.taluka} />
-            <SupplierDataRow label="संपूर्ण पत्ता (Address)" value={supplier.address} />
+            <SupplierDataRow label="गाव/पत्ता" value={`${supplier.address}, ${supplier.taluka}, ${supplier.district}`} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">३. व्यवसाय तपशील</h4>
-        <Table className="border-2 border-black rounded-sm overflow-hidden">
+        <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">३. व्यवसाय</h4>
+        <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="उपलब्ध ब्रँड्स (मास्टर लिस्ट)" value={supplier.suppliedBrands} />
-            <SupplierDataRow label="इतर ब्रँड्स माहिती" value={supplier.mainBrands} />
-            <SupplierDataRow label="डिलिव्हरी सुविधा?" value={supplier.providesDelivery} />
-            <SupplierDataRow label="उधारी सुविधा?" value={supplier.providesCredit} />
+            <SupplierDataRow label="ब्रँड्स" value={supplier.suppliedBrands} />
+            <SupplierDataRow label="सुविधा" value={`${supplier.providesDelivery ? 'डिलिव्हरी ' : ''}${supplier.providesCredit ? 'उधारी' : ''}`} />
           </TableBody>
         </Table>
       </section>
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">४. अतिरिक्त मुद्दे</h4>
-          <Table className="border-2 border-black rounded-sm overflow-hidden">
-            <TableBody>
-              {supplier.customPoints.map((pt, idx) => (
-                <SupplierDataRow key={idx} label={`मुद्दा क्रमांक ${idx + 1}`} value={pt.point} />
-              ))}
-            </TableBody>
-          </Table>
+          <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">४. इतर</h4>
+          <div className="text-[10pt] font-black text-black leading-tight">
+            {supplier.customPoints.map((pt, idx) => (
+              <div key={idx} className="mb-0.5">• {pt.point}</div>
+            ))}
+          </div>
         </section>
       )}
     </div>
@@ -268,7 +262,7 @@ export default function SupplierManagement() {
         <Card className="mb-8 border-primary/10 shadow-sm bg-primary/5">
           <CardHeader className="py-3 px-4 flex flex-row items-center gap-2">
             <Filter className="h-4 w-4 text-primary" />
-            <CardTitle className="text-sm font-bold uppercase">फिल्टर निवडा (Filter Suppliers)</CardTitle>
+            <CardTitle className="text-sm font-bold uppercase">फिल्टर निवडा</CardTitle>
           </CardHeader>
           <CardContent className="py-4 px-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -355,10 +349,10 @@ export default function SupplierManagement() {
                 </div>
 
                 <div className="pt-2 border-t">
-                  <Label className="text-xs font-bold text-primary mb-2 block">पुरवठा करत असलेले ब्रँड्स (मास्टर लिस्ट मधून निवडा)</Label>
+                  <Label className="text-xs font-bold text-primary mb-2 block">पुरवठा करत असलेले ब्रँड्स</Label>
                   <Select onValueChange={handleBrandSelect}>
                     <SelectTrigger className="h-9 text-xs">
-                      <SelectValue placeholder="ब्रँड निवडा (ड्रॉप-डाउन)" />
+                      <SelectValue placeholder="ब्रँड निवडा" />
                     </SelectTrigger>
                     <SelectContent>
                       {masterBrands.length === 0 ? (
@@ -373,7 +367,7 @@ export default function SupplierManagement() {
                   
                   <div className="flex flex-wrap gap-1 mt-2 min-h-[32px] p-1 border rounded-md bg-muted/5">
                     {suppliedBrands.length === 0 ? (
-                      <span className="text-[10px] text-muted-foreground p-1 italic">निवडलेले ब्रँड्स येथे दिसतील...</span>
+                      <span className="text-[10px] text-muted-foreground p-1 italic">निवडलेले ब्रँड्स...</span>
                     ) : (
                       suppliedBrands.map((brandName) => (
                         <Badge key={brandName} variant="secondary" className="text-[10px] h-6 px-2 flex items-center gap-1 group">
@@ -456,9 +450,6 @@ export default function SupplierManagement() {
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between">
                 <CardTitle className="text-lg">पुरवठादारांची यादी ({filteredSuppliers.length})</CardTitle>
-                {(filterDistrict !== "all" || filterTaluka !== "all" || filterBrand !== "all") && (
-                  <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary">फिल्टर लागू आहे</Badge>
-                )}
               </CardHeader>
               <CardContent>
                 {filteredSuppliers.length === 0 ? (
@@ -481,7 +472,6 @@ export default function SupplierManagement() {
                           {s.suppliedBrands?.slice(0, 3).map((b, i) => (
                             <Badge key={i} variant="secondary" className="text-[8px] h-4 px-1">{b}</Badge>
                           ))}
-                          {s.suppliedBrands?.length > 3 && <span className="text-[8px] text-muted-foreground">+{s.suppliedBrands.length - 3} अधिक</span>}
                         </div>
                         <div className="mt-4 pt-3 border-t flex flex-col gap-1.5">
                           <div className="flex items-center gap-2 text-xs font-bold"><Phone className="h-3.5 w-3.5 text-primary" /> {s.contact}</div>
@@ -494,21 +484,6 @@ export default function SupplierManagement() {
               </CardContent>
             </Card>
           </div>
-        </div>
-      </div>
-
-      <div className="hidden print:block p-8 text-black bg-white">
-        <div className="text-center border-b-4 border-black pb-2 mb-6">
-          <h1 className="text-2xl font-black uppercase">पुरवठादार मास्टर अहवाल</h1>
-          <p className="text-[12px] font-bold">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
-        </div>
-        <div className="grid grid-cols-2 gap-6">
-          {filteredSuppliers.map((s, index) => (
-            <div key={s.id} className="border-2 border-black p-4 rounded-sm break-inside-avoid shadow-none">
-              <h2 className="text-[14px] font-black border-b-2 border-black mb-3 pb-1 text-black">{index + 1}. {s.shopName} ({s.supplierType})</h2>
-              <DetailedSupplierTable supplier={s} isPrint={true} />
-            </div>
-          ))}
         </div>
       </div>
 
@@ -536,16 +511,16 @@ export default function SupplierManagement() {
             </div>
           </DialogHeader>
 
-          <div className="hidden print:block text-center border-b-4 border-black pb-2 mb-6">
-            <h1 className="text-2xl font-black uppercase">पुरवठादार मास्टर अहवाल</h1>
-            <p className="text-[12px] font-bold">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+          <div className="hidden print:block text-center border-b-2 border-black pb-1 mb-4">
+            <h1 className="text-[14pt] font-black uppercase">पुरवठादार मास्टर अहवाल</h1>
+            <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {filteredSuppliers.map((s, index) => (
-              <div key={s.id} className="border-2 border-black p-4 rounded-lg bg-white shadow-sm break-inside-avoid">
-                <h3 className="text-md font-black text-black border-b-2 border-black mb-3 pb-1">
-                  {index + 1}. {s.shopName} ({s.supplierType})
+              <div key={s.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid">
+                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5">
+                  {index + 1}. {s.shopName}
                 </h3>
                 <DetailedSupplierTable supplier={s} isPrint={true} />
               </div>
