@@ -464,7 +464,7 @@ export default function BrandManagement() {
           <div className="grid grid-cols-1 print:grid-cols-2 gap-4 print:gap-x-4 print:gap-y-6">
             {filteredBrands.map((brand, index) => (
               <div key={brand.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid print:mt-1">
-                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-gray-50 px-1">
+                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-gray-100 px-1">
                   {index + 1}. {brand.name}
                 </h3>
                 <DetailedBrandTable brand={brand} isPrint={true} />
