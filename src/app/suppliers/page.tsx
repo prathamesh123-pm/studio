@@ -186,7 +186,7 @@ export default function SupplierManagement() {
 
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[40%] font-black bg-gray-50 py-0 px-2 text-[10pt] h-7 border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+        <TableHead className="w-[40%] font-black bg-gray-50 py-0 px-2 text-[10.5pt] h-7 border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
         <TableCell className="py-0 px-2 text-[11pt] h-7 leading-tight text-black font-black">
           {displayValue || '-'}
         </TableCell>
@@ -220,7 +220,7 @@ export default function SupplierManagement() {
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
           <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. इतर माहिती</h4>
-          <div className="text-[10pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[40px]">
+          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[40px]">
             {supplier.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-0.5">• {pt.point}</div>
             ))}
@@ -506,9 +506,9 @@ export default function SupplierManagement() {
             <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           </div>
 
-          <div className="grid grid-cols-1 print:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 print:grid-cols-2 gap-4 print:gap-x-4 print:gap-y-6">
             {filteredSuppliers.map((s, index) => (
-              <div key={s.id} className="border border-black p-1 rounded-none bg-white shadow-none break-inside-avoid">
+              <div key={s.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid print:mt-1">
                 <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-gray-50 px-1">
                   {index + 1}. {s.shopName}
                 </h3>
