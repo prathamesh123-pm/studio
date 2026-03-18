@@ -179,48 +179,55 @@ export default function SupplierManagement() {
     setEditingId(null);
   };
 
-  const SupplierDataRow = ({ label, value }: { label: string, value: any }) => {
-    let displayValue = value;
-    if (typeof value === 'boolean') displayValue = value ? 'होय' : 'नाही';
-    if (Array.isArray(value)) displayValue = value.join(", ");
-
-    return (
-      <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[40%] font-black bg-gray-50 py-0 px-2 text-[10.5pt] h-7 border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
-        <TableCell className="py-0 px-2 text-[11pt] h-7 leading-tight text-black font-black">
-          {displayValue || '-'}
-        </TableCell>
-      </TableRow>
-    );
-  };
+  const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
+    <TableRow className="hover:bg-transparent border-b border-black">
+      <TableHead className="w-[45%] font-black bg-gray-50 py-0.5 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+      <TableCell className="py-0.5 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
+    </TableRow>
+  );
 
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
-    <div className={`space-y-1 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
+    <div className={`space-y-0.5 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
       <section className="break-inside-avoid">
         <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">१. व्यावसायिक माहिती</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="दुकान/मालक" value={`${supplier.shopName} (${supplier.name})`} />
-            <SupplierDataRow label="संपर्क/प्रकार" value={`${supplier.contact} (${supplier.supplierType})`} />
-            <SupplierDataRow label="पत्ता" value={`${supplier.address}, ${supplier.taluka}, ${supplier.district}`} />
+            <SupplierDataRow label="दुकान / कंपनी" value={supplier.shopName} />
+            <SupplierDataRow label="मालक / संपर्क" value={`${supplier.name} / ${supplier.contact}`} />
+            <SupplierDataRow label="पत्ता / तालुका" value={`${supplier.address}, ${supplier.taluka}`} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. ब्रँड्स व सुविधा</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. ब्रँड्स व सेवा</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="उपलब्ध ब्रँड्स" value={supplier.suppliedBrands} />
-            <SupplierDataRow label="डिलिव्हरी/उधारी" value={`${supplier.providesDelivery ? 'होय' : 'नाही'} / ${supplier.providesCredit ? 'होय' : 'नाही'}`} />
+            <TableRow className="hover:bg-transparent border-b border-black">
+              <TableCell className="w-1/2 p-1 text-[11pt] border-r border-black text-black font-black">प्रकार: {supplier.supplierType}</TableCell>
+              <TableCell className="p-1 text-[11pt] text-black font-black">डिलिव्हरी: {supplier.providesDelivery ? 'होय' : 'नाही'}</TableCell>
+            </TableRow>
+            <TableRow className="hover:bg-transparent border-b border-black">
+              <TableCell className="w-1/2 p-1 text-[11pt] border-r border-black text-black font-black">उधारी: {supplier.providesCredit ? 'होय' : 'नाही'}</TableCell>
+              <TableCell className="p-1 text-[11pt] text-black font-black">जिल्हा: {supplier.district}</TableCell>
+            </TableRow>
           </TableBody>
         </Table>
       </section>
 
+      {supplier.suppliedBrands && supplier.suppliedBrands.length > 0 && (
+        <section className="break-inside-avoid">
+          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. मुख्य ब्रँड्स</h4>
+          <p className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0">
+            {supplier.suppliedBrands.join(", ")} {supplier.mainBrands && `, ${supplier.mainBrands}`}
+          </p>
+        </section>
+      )}
+
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. इतर माहिती</h4>
-          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[40px]">
+          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">४. इतर माहिती</h4>
+          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[30px]">
             {supplier.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-0.5">• {pt.point}</div>
             ))}

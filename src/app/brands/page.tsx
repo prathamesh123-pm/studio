@@ -159,13 +159,13 @@ export default function BrandManagement() {
 
   const BrandDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[45%] font-black bg-gray-50 py-0 px-2 text-[10.5pt] h-7 border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
-      <TableCell className="py-0 px-2 text-[11pt] h-7 leading-tight text-black font-black">{value || '-'}</TableCell>
+      <TableHead className="w-[45%] font-black bg-gray-50 py-0.5 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+      <TableCell className="py-0.5 px-2 text-[11pt] h-auto leading-tight text-black font-black">{value || '-'}</TableCell>
     </TableRow>
   );
 
   const DetailedBrandTable = ({ brand, isPrint = false }: { brand: MasterBrand, isPrint?: boolean }) => (
-    <div className={`space-y-1 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
+    <div className={`space-y-0.5 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
       <section className="break-inside-avoid">
         <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">१. सामान्य माहिती</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
@@ -189,7 +189,7 @@ export default function BrandManagement() {
               <TableCell className="w-1/2 p-1 text-[11pt] border-r border-black text-black font-black">फायबर: {brand.nutrition.fiber}%</TableCell>
               <TableCell className="p-1 text-[11pt] text-black font-black">कॅल्शियम: {brand.nutrition.calcium}%</TableCell>
             </TableRow>
-            <TableRow className="hover:bg-transparent text-black h-7">
+            <TableRow className="hover:bg-transparent h-7">
               <TableCell className="w-1/2 p-1 text-[11pt] border-r border-black font-black">मीठ: {brand.nutrition.salt}%</TableCell>
               <TableCell className="p-1 text-[11pt] font-black">मिनरल: {brand.nutrition.mineralMix}%</TableCell>
             </TableRow>
@@ -209,7 +209,7 @@ export default function BrandManagement() {
       {brand.customPoints && brand.customPoints.length > 0 && (
         <section className="break-inside-avoid">
           <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">४. इतर माहिती</h4>
-          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[40px]">
+          <div className="text-[10.5pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[30px]">
             {brand.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-0.5">• {pt.point}</div>
             ))}
