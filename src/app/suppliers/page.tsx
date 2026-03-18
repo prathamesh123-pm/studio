@@ -501,13 +501,6 @@ export default function SupplierManagement() {
         <div className="text-center border-b-4 border-black pb-2 mb-6">
           <h1 className="text-2xl font-black uppercase">पुरवठादार मास्टर अहवाल</h1>
           <p className="text-[12px] font-bold">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
-          {(filterDistrict !== "all" || filterTaluka !== "all" || filterBrand !== "all") && (
-            <p className="text-[11px] mt-1 italic font-bold">
-              फिल्टर: {filterDistrict !== "all" ? `जिल्हा: ${filterDistrict}` : ''} 
-              {filterTaluka !== "all" ? `, तालुका: ${filterTaluka}` : ''}
-              {filterBrand !== "all" ? `, ब्रँड: ${filterBrand}` : ''}
-            </p>
-          )}
         </div>
         <div className="grid grid-cols-2 gap-6">
           {filteredSuppliers.map((s, index) => (
@@ -531,24 +524,30 @@ export default function SupplierManagement() {
       </Dialog>
 
       <Dialog open={showFullReport} onOpenChange={setShowFullReport}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto p-4">
-          <DialogHeader className="border-b pb-2 mb-4">
+        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto p-4 dialog-content-print shadow-none border-2">
+          <DialogHeader className="border-b pb-2 mb-4 no-print">
             <div className="flex justify-between items-center">
               <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
                 <FileText className="h-6 w-6" /> संपूर्ण पुरवठादार रिपोर्ट
               </DialogTitle>
-              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs border-black">
+              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs border-black bg-black text-white hover:bg-black/90">
                 <Printer className="h-4 w-4" /> प्रिंट अहवाल
               </Button>
             </div>
           </DialogHeader>
+
+          <div className="hidden print:block text-center border-b-4 border-black pb-2 mb-6">
+            <h1 className="text-2xl font-black uppercase">पुरवठादार मास्टर अहवाल</h1>
+            <p className="text-[12px] font-bold">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredSuppliers.map((s, index) => (
               <div key={s.id} className="border-2 border-black p-4 rounded-lg bg-white shadow-sm break-inside-avoid">
                 <h3 className="text-md font-black text-black border-b-2 border-black mb-3 pb-1">
                   {index + 1}. {s.shopName} ({s.supplierType})
                 </h3>
-                <DetailedSupplierTable supplier={s} />
+                <DetailedSupplierTable supplier={s} isPrint={true} />
               </div>
             ))}
           </div>

@@ -52,6 +52,7 @@
 
   body {
     background: white !important;
+    overflow: visible !important;
   }
 
   /* Hide everything except print targets */
@@ -63,7 +64,8 @@
   .search-bar,
   [role="tablist"],
   [aria-label="Close"],
-  .dialog-header-print {
+  .dialog-header-print button,
+  .no-print-content {
     display: none !important;
   }
 
@@ -93,10 +95,16 @@
     transform: none !important;
     display: block !important;
     visibility: visible !important;
+    background: white !important;
   }
 
   .dialog-content-print * {
     visibility: visible !important;
+  }
+
+  /* Hide the close button in the dialog during print */
+  .dialog-content-print button[aria-label="Close"] {
+    display: none !important;
   }
 
   table {
