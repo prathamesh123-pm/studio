@@ -60,13 +60,24 @@
     font-size: 8.5pt !important;
   }
   
-  .no-print, nav, button, .tabs-list, .search-bar, [role="tablist"], .dialog-close, header.no-print, [data-state="open"] > div:first-child {
+  /* Hide all UI elements including the dialog overlays and buttons */
+  .no-print, 
+  nav, 
+  button, 
+  [role="tablist"], 
+  .search-bar, 
+  header,
+  footer,
+  [data-radix-collection-item],
+  button[aria-label="Close"] {
     display: none !important;
   }
 
+  /* Force the dialog content to occupy the whole page and remove constraints */
   .dialog-content-print {
-    position: static !important;
-    transform: none !important;
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
     max-width: none !important;
     max-height: none !important;
@@ -75,13 +86,13 @@
     padding: 0 !important;
     border: none !important;
     box-shadow: none !important;
+    transform: none !important;
+    visibility: visible !important;
   }
 
-  .container {
-    max-width: 100% !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
+  /* Hide the actual underlying page content while printing the dialog */
+  body > *:not([role="dialog"]) {
+    display: none !important;
   }
 
   table {
@@ -99,7 +110,7 @@
 
   th, td {
     border: 1px solid #000 !important;
-    padding: 1px 4px !important;
+    padding: 2px 4px !important;
     color: black !important;
     font-size: 8.5pt !important;
     word-wrap: break-word !important;
@@ -122,12 +133,6 @@
     padding-bottom: 0px !important;
     text-transform: uppercase !important;
     font-size: 10pt !important;
-  }
-
-  .print-only-report {
-    display: block !important;
-    width: 100% !important;
-    background: white !important;
   }
 
   .break-inside-avoid {

@@ -36,7 +36,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 
 export default function SurveysList() {
   const router = useRouter();
@@ -325,63 +324,6 @@ export default function SurveysList() {
     );
   };
 
-  const EmptyState = ({ message = "कोणतेही सर्वेक्षण उपलब्ध नाही." }: { message?: string }) => (
-    <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
-      <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
-      <p className="text-muted-foreground text-sm font-medium">{message}</p>
-    </div>
-  );
-
-  const SurveyItem = ({ survey }: { survey: SurveyRecord }) => (
-    <Card key={survey.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
-      <CardContent className="p-0">
-        <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-          <div className="flex gap-3 items-center">
-            <div className={`p-2 rounded-full shrink-0 ${survey.type === 'dairy' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
-              {survey.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
-            </div>
-            <div>
-              <h3 className="font-bold text-base leading-tight">
-                {survey.data.dairyName || survey.data.farmerName}
-              </h3>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
-                <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {survey.data.village}, {survey.data.taluka}</span>
-                <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
-                <Badge variant={survey.type === 'dairy' ? 'default' : 'secondary'} className={`${survey.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
-                  {survey.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
-                </Badge>
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
-              onClick={() => {
-                setSelectedSurvey(survey);
-                setIsDialogOpen(true);
-              }}
-            >
-              <Eye className="h-3.5 w-3.5" /> पहा
-            </Button>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
-              onClick={() => handleEdit(survey)}
-            >
-              <Edit2 className="h-3.5 w-3.5" /> अपडेट
-            </Button>
-            <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(survey.id)}>
-              <Trash2 className="h-3.5 w-3.5" /> हटवा
-            </Button>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  );
-
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -410,37 +352,132 @@ export default function SurveysList() {
           </TabsList>
 
           <TabsContent value="all" className="space-y-1">
-            {filterSurveys().length === 0 ? <EmptyState /> : filterSurveys().map(s => <SurveyItem key={s.id} survey={s} />)}
+            {filterSurveys().length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
+                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
+                <p className="text-muted-foreground text-sm font-medium">कोणतेही सर्वेक्षण उपलब्ध नाही.</p>
+              </div>
+            ) : filterSurveys().map(s => (
+              <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex gap-3 items-center">
+                      <div className={`p-2 rounded-full shrink-0 ${s.type === 'dairy' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
+                        {s.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base leading-tight">
+                          {s.data.dairyName || s.data.farmerName}
+                        </h3>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}, {s.data.taluka}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                          <Badge variant={s.type === 'dairy' ? 'default' : 'secondary'} className={`${s.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
+                            {s.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
+                        onClick={() => {
+                          setSelectedSurvey(s);
+                          setIsDialogOpen(true);
+                        }}
+                      >
+                        <Eye className="h-3.5 w-3.5" /> पहा
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
+                        onClick={() => handleEdit(s)}
+                      >
+                        <Edit2 className="h-3.5 w-3.5" /> अपडेट
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
+                        <Trash2 className="h-3.5 w-3.5" /> हटवा
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
           <TabsContent value="dairy" className="space-y-1">
-            {filterSurveys('dairy').length === 0 ? <EmptyState message="संकलन केंद्र रिपोर्ट नाहीत." /> : filterSurveys('dairy').map(s => <SurveyItem key={s.id} survey={s} />)}
+            {filterSurveys('dairy').map(s => (
+               <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex gap-3 items-center">
+                      <div className="p-2 rounded-full shrink-0 bg-primary/10 text-primary">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base leading-tight">{s.data.dairyName}</h3>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}, {s.data.taluka}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary text-xs" onClick={() => { setSelectedSurvey(s); setIsDialogOpen(true); }}><Eye className="h-3.5 w-3.5" /> पहा</Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary text-xs" onClick={() => handleEdit(s)}><Edit2 className="h-3.5 w-3.5" /> अपडेट</Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive text-xs" onClick={() => handleDelete(s.id)}><Trash2 className="h-3.5 w-3.5" /> हटवा</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
           <TabsContent value="farmer" className="space-y-1">
-            {filterSurveys('farmer').length === 0 ? <EmptyState message="शेतकरी ब्रँड रिपोर्ट नाहीत." /> : filterSurveys('farmer').map(s => <SurveyItem key={s.id} survey={s} />)}
+            {filterSurveys('farmer').map(s => (
+               <Card key={s.id} className="bg-white hover:shadow-md transition-all border-accent/10 overflow-hidden mb-3 group">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex gap-3 items-center">
+                      <div className="p-2 rounded-full shrink-0 bg-accent/10 text-accent">
+                        <ClipboardList className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base leading-tight">{s.data.farmerName}</h3>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-accent" /> {s.data.village}, {s.data.taluka}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-accent text-accent text-xs" onClick={() => { setSelectedSurvey(s); setIsDialogOpen(true); }}><Eye className="h-3.5 w-3.5" /> पहा</Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-accent text-accent text-xs" onClick={() => handleEdit(s)}><Edit2 className="h-3.5 w-3.5" /> अपडेट</Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive text-xs" onClick={() => handleDelete(s.id)}><Trash2 className="h-3.5 w-3.5" /> हटवा</Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
         </Tabs>
 
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className="max-w-[98vw] md:max-w-[210mm] max-h-[98vh] overflow-y-auto p-0 border-2 dialog-content-print shadow-none">
-            <DialogHeader className="p-4 border-b bg-muted/30 no-print">
-              <div className="flex justify-between items-center">
-                <DialogTitle className="text-lg font-bold flex items-center gap-2">अहवाल पाहणे</DialogTitle>
-                <Button variant="default" size="sm" onClick={() => window.print()} className="bg-black hover:bg-black/90 text-white font-black px-6">
+          <DialogContent className="max-w-[98vw] md:max-w-[210mm] max-h-[95vh] overflow-y-auto p-0 border-2 dialog-content-print shadow-none">
+            <DialogHeader className="p-4 border-b bg-muted/30 no-print sticky top-0 z-50">
+              <div className="flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
+                <DialogTitle className="text-lg font-bold flex items-center gap-2">अहवाल पहा</DialogTitle>
+                <Button variant="default" size="sm" onClick={() => window.print()} className="bg-black hover:bg-black/90 text-white font-black px-6 w-full sm:w-auto">
                   <Printer className="h-4 w-4 mr-2" /> प्रिंट अहवाल
                 </Button>
               </div>
             </DialogHeader>
-            <div className="p-2 md:p-4 print:p-0">
+            <div className="p-2 md:p-6 print:p-0">
               {selectedSurvey && renderDetailedReport(selectedSurvey)}
             </div>
           </DialogContent>
         </Dialog>
-
-        <div className="hidden print:block">
-          <div className="print-only-report">
-            {selectedSurvey && renderDetailedReport(selectedSurvey)}
-          </div>
-        </div>
       </div>
     </div>
   );
