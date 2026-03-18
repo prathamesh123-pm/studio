@@ -181,19 +181,19 @@ export default function SupplierManagement() {
 
   const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[50%] font-black bg-slate-50 py-1 px-2 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
+      <TableHead className="w-[50%] font-black bg-slate-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
         {label}
       </TableHead>
-      <TableCell className="py-1 px-2 text-[11pt] h-auto leading-tight text-black font-black">
+      <TableCell className="py-1.5 px-3 text-[11pt] h-auto leading-tight text-black font-black">
         {value || '-'}
       </TableCell>
     </TableRow>
   );
 
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
-    <div className={`space-y-0.5 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
+    <div className={`space-y-1 py-1 ${isPrint ? 'space-y-1' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">१. व्यावसायिक माहिती</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">१. व्यावसायिक माहिती</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
             <SupplierDataRow label="पुरवठादाराचे नाव (मालक)" value={supplier.name} />
@@ -208,7 +208,7 @@ export default function SupplierManagement() {
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">२. प्रकार व सेवा</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">२. प्रकार व सेवा</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
             <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery ? 'होय' : 'नाही'} />
@@ -219,8 +219,8 @@ export default function SupplierManagement() {
 
       {((supplier.suppliedBrands && supplier.suppliedBrands.length > 0) || supplier.mainBrands) && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">३. पुरवठा करत असलेले ब्रँड्स</h4>
-          <Table className="border border-black rounded-none overflow-hidden table-fixed border-t-0">
+          <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">३. पुरवठा ब्रँड्स</h4>
+          <Table className="border border-black rounded-none overflow-hidden table-fixed">
             <TableBody>
               <SupplierDataRow label="निवडलेले ब्रँड्स" value={supplier.suppliedBrands?.join(", ")} />
               <SupplierDataRow label="इतर ब्रँड्स (असल्यास)" value={supplier.mainBrands} />
@@ -231,10 +231,10 @@ export default function SupplierManagement() {
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-slate-100 px-1">४. ॲड पॉइंट्स (इतर)</h4>
-          <div className="text-[10.5pt] font-black text-black leading-tight p-2 border border-black border-t-0 min-h-[40px] bg-white">
+          <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">४. ॲड पॉइंट्स (इतर)</h4>
+          <div className="text-[10.5pt] font-black text-black leading-tight p-3 border border-black border-t-0 min-h-[50px] bg-white">
             {supplier.customPoints.map((pt, idx) => (
-              <div key={idx} className="mb-1">• {pt.point}</div>
+              <div key={idx} className="mb-1.5">• {pt.point}</div>
             ))}
           </div>
         </section>
@@ -490,7 +490,7 @@ export default function SupplierManagement() {
       </div>
 
       <Dialog open={!!viewingSupplier} onOpenChange={(open) => !open && setViewingSupplier(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4 dialog-content-print">
           <DialogHeader className="mb-2">
             <DialogTitle className="flex items-center gap-2 text-primary border-b pb-1">
               <Store className="h-5 w-5" /> पुरवठादार तपशील
@@ -521,7 +521,7 @@ export default function SupplierManagement() {
           <div className="grid grid-cols-1 print:grid-cols-2 gap-4 print:gap-x-4 print:gap-y-6">
             {filteredSuppliers.map((s, index) => (
               <div key={s.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid print:mt-1">
-                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-slate-100 px-1">
+                <h3 className="text-[11pt] font-black text-black border-b-2 border-black mb-1.5 pb-0.5 bg-slate-100 px-2">
                   {index + 1}. {s.shopName}
                 </h3>
                 <DetailedSupplierTable supplier={s} isPrint={true} />
