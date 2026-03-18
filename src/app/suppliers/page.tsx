@@ -186,8 +186,8 @@ export default function SupplierManagement() {
 
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[45%] font-black bg-gray-50 py-0.5 px-2 text-[10pt] h-auto border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
-        <TableCell className="py-0.5 px-2 text-[10pt] h-auto leading-tight text-black font-black">
+        <TableHead className="w-[40%] font-black bg-gray-50 py-0 px-2 text-[10pt] h-7 border-r border-black leading-tight text-black print:font-black">{label}</TableHead>
+        <TableCell className="py-0 px-2 text-[11pt] h-7 leading-tight text-black font-black">
           {displayValue || '-'}
         </TableCell>
       </TableRow>
@@ -195,42 +195,32 @@ export default function SupplierManagement() {
   };
 
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
-    <div className={`space-y-2 py-0.5 ${isPrint ? 'space-y-1' : ''}`}>
+    <div className={`space-y-1 py-0.5 ${isPrint ? 'space-y-0.5' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">१. व्यावसायिक माहिती</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">१. व्यावसायिक माहिती</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="दुकान" value={supplier.shopName} />
-            <SupplierDataRow label="मालक" value={supplier.name} />
-            <SupplierDataRow label="संपर्क" value={supplier.contact} />
-            <SupplierDataRow label="प्रकार" value={supplier.supplierType} />
+            <SupplierDataRow label="दुकान/मालक" value={`${supplier.shopName} (${supplier.name})`} />
+            <SupplierDataRow label="संपर्क/प्रकार" value={`${supplier.contact} (${supplier.supplierType})`} />
+            <SupplierDataRow label="पत्ता" value={`${supplier.address}, ${supplier.taluka}, ${supplier.district}`} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">२. ठिकाण</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">२. ब्रँड्स व सुविधा</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
-            <SupplierDataRow label="गाव/पत्ता" value={`${supplier.address}, ${supplier.taluka}, ${supplier.district}`} />
-          </TableBody>
-        </Table>
-      </section>
-
-      <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">३. व्यवसाय</h4>
-        <Table className="border border-black rounded-none overflow-hidden table-fixed">
-          <TableBody>
-            <SupplierDataRow label="ब्रँड्स" value={supplier.suppliedBrands} />
-            <SupplierDataRow label="सुविधा" value={`${supplier.providesDelivery ? 'डिलिव्हरी ' : ''}${supplier.providesCredit ? 'उधारी' : ''}`} />
+            <SupplierDataRow label="उपलब्ध ब्रँड्स" value={supplier.suppliedBrands} />
+            <SupplierDataRow label="डिलिव्हरी/उधारी" value={`${supplier.providesDelivery ? 'होय' : 'नाही'} / ${supplier.providesCredit ? 'होय' : 'नाही'}`} />
           </TableBody>
         </Table>
       </section>
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase">४. इतर</h4>
-          <div className="text-[10pt] font-black text-black leading-tight">
+          <h4 className="text-[11pt] font-black mb-0 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">३. इतर माहिती</h4>
+          <div className="text-[10pt] font-black text-black leading-tight p-1 border border-black border-t-0 min-h-[40px]">
             {supplier.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-0.5">• {pt.point}</div>
             ))}
@@ -499,7 +489,7 @@ export default function SupplierManagement() {
       </Dialog>
 
       <Dialog open={showFullReport} onOpenChange={setShowFullReport}>
-        <DialogContent className="max-w-4xl max-h-[95vh] overflow-y-auto p-4 dialog-content-print shadow-none border-2">
+        <DialogContent className="max-w-[210mm] max-h-[95vh] overflow-y-auto p-4 dialog-content-print shadow-none border-2">
           <DialogHeader className="border-b pb-2 mb-4 no-print">
             <div className="flex justify-between items-center">
               <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
@@ -516,10 +506,10 @@ export default function SupplierManagement() {
             <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 print:grid-cols-2 gap-2">
             {filteredSuppliers.map((s, index) => (
-              <div key={s.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid">
-                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5">
+              <div key={s.id} className="border border-black p-1 rounded-none bg-white shadow-none break-inside-avoid">
+                <h3 className="text-[11pt] font-black text-black border-b border-black mb-1 pb-0.5 bg-gray-50 px-1">
                   {index + 1}. {s.shopName}
                 </h3>
                 <DetailedSupplierTable supplier={s} isPrint={true} />

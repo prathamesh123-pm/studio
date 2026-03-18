@@ -56,7 +56,6 @@
     visibility: hidden !important;
   }
 
-  /* Specific handling for print targets */
   .no-print, 
   nav, 
   button, 
@@ -70,7 +69,6 @@
     display: none !important;
   }
 
-  /* Ensure the content is visible and properly positioned */
   .hidden.print\:block,
   .dialog-content-print {
     display: block !important;
@@ -91,7 +89,6 @@
     z-index: 9999 !important;
   }
 
-  /* Specific handling for Radix Dialogs in print */
   [data-radix-portal], 
   body > div[data-radix-portal] {
     visibility: visible !important;
@@ -108,7 +105,7 @@
     border-collapse: collapse !important;
     border: 1.5px solid #000 !important;
     table-layout: fixed !important;
-    margin-bottom: 2px !important;
+    margin-bottom: 0px !important;
     page-break-inside: avoid !important;
   }
 
@@ -117,10 +114,10 @@
   }
 
   th, td {
-    border: 1px solid #000 !important;
+    border: 1.2px solid #000 !important;
     padding: 2px 4px !important;
     color: black !important;
-    font-size: 8.5pt !important;
+    font-size: 10pt !important;
     word-wrap: break-word !important;
     overflow-wrap: break-word !important;
     vertical-align: middle !important;
@@ -137,15 +134,16 @@
     color: black !important;
     font-weight: 900 !important;
     border-bottom: 1.5px solid #000 !important;
-    margin-bottom: 2px !important;
-    padding-bottom: 0px !important;
+    margin-bottom: 1px !important;
+    padding-bottom: 1px !important;
     text-transform: uppercase !important;
-    font-size: 10pt !important;
+    font-size: 11pt !important;
   }
 
   .break-inside-avoid {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
+    margin-bottom: 4px !important;
   }
 
   .text-black, p, span, div, td, th {
