@@ -31,7 +31,7 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-2">
-        <Label className="form-label-mr">जिल्हा (District)</Label>
+        <Label className="form-label-mr">जिल्हा</Label>
         <Select value={district} onValueChange={(val) => { setDistrict(val); setTaluka(""); }}>
           <SelectTrigger>
             <SelectValue placeholder="जिल्हा निवडा" />
@@ -45,7 +45,7 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
       </div>
 
       <div className="space-y-2">
-        <Label className="form-label-mr">तालुका (Taluka)</Label>
+        <Label className="form-label-mr">तालुका</Label>
         <Select value={taluka} onValueChange={setTaluka} disabled={!district}>
           <SelectTrigger>
             <SelectValue placeholder="तालुका निवडा" />
