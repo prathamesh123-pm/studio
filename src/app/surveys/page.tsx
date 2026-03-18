@@ -133,10 +133,10 @@ export default function SurveysList() {
 
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[50%] font-black bg-gray-100/50 py-1.5 px-2 text-[11px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50">
+        <TableHead className="w-[60%] font-black bg-gray-100/50 py-1 px-2 text-[9px] h-auto border-r border-black leading-tight text-black print:bg-gray-200/50">
           {label}
         </TableHead>
-        <TableCell className="py-1.5 px-2 text-[11px] h-auto leading-tight text-black font-black">
+        <TableCell className="py-1 px-2 text-[9px] h-auto leading-tight text-black font-black">
           {displayValue}
         </TableCell>
       </TableRow>
@@ -148,19 +148,19 @@ export default function SurveysList() {
     const isDairy = survey.type === 'dairy';
 
     return (
-      <div className="space-y-4 py-1 print:space-y-3 print:text-black w-full text-black pb-8">
-        <div className="text-center border-b-4 border-black pb-2 mb-4">
-          <h2 className="text-lg font-black uppercase tracking-tight text-black">
+      <div className="space-y-1.5 py-1 print:text-black w-full text-black print:m-0 print:p-0">
+        <div className="text-center border-b-2 border-black pb-1 mb-2">
+          <h2 className="text-sm font-black uppercase tracking-tight text-black">
             {isDairy ? "पशुखाद्य सर्वेक्षण अहवाल: दूध संकलन केंद्र / डेअरी" : "पशुखाद्य सर्वेक्षण अहवाल: शेतकरी ब्रँड सर्वेक्षण"}
           </h2>
-          <p className="text-[10px] font-bold mt-0.5 text-black">अहवाल दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</p>
+          <p className="text-[8px] font-bold text-black">अहवाल दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</p>
         </div>
 
         <section className="break-inside-avoid">
-          <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-            १. सामान्य माहिती (General Info)
+          <h4 className="text-[9px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            १. सामान्य माहिती
           </h4>
-          <Table className="border-2 border-black">
+          <Table className="border border-black">
             <TableBody>
               <DataRow label="लोकेशन टॅगिंग (GPS Location)" value={d.location} />
               <DataRow label={isDairy ? "दूध संकलन केंद्र / डेअरीचे नाव" : "शेतकऱ्याचे नाव"} value={isDairy ? d.dairyName : d.farmerName} />
@@ -169,81 +169,61 @@ export default function SurveysList() {
               <DataRow label="गाव (Village)" value={d.village} />
               <DataRow label="जिल्हा (District)" value={d.district} />
               <DataRow label="तालुका (Taluka)" value={d.taluka} />
-              {isDairy && <DataRow label="संपूर्ण पत्ता" value={d.address} />}
-              {isDairy && <DataRow label="सध्याचे दूध संकलन (लिटर / दिवस)" value={d.milkCollection} />}
-              {isDairy && <DataRow label="एकूण संलग्न शेतकरी संख्या" value={d.farmerCount} />}
+              {isDairy && <DataRow label="सरासरी दूध उत्पादन (प्रति जनावर लिटर/दिवस)" value={d.livestock?.avgMilkPerAnimal} />}
             </TableBody>
           </Table>
         </section>
 
         <section className="break-inside-avoid">
-          <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-            २. पशुधन माहिती (Livestock Info)
+          <h4 className="text-[9px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            २-३. पशुधन व वापर माहिती
           </h4>
-          <Table className="border-2 border-black">
+          <Table className="border border-black">
             <TableBody>
               {isDairy ? (
                 <>
-                  <DataRow label="एकूण जनावरे" value={d.livestock?.totalAnimals} />
-                  <DataRow label="गायी" value={d.livestock?.cows} />
-                  <DataRow label="म्हशी" value={d.livestock?.buffaloes} />
-                  <DataRow label="वासरे" value={d.livestock?.calves} />
-                  <DataRow label="दूध देणारी जनावरे" value={d.livestock?.milkingAnimals} />
-                  <DataRow label="सरासरी दूध उत्पादन (प्रति जनावर लिटर/दिवस)" value={d.livestock?.avgMilkPerAnimal} />
+                  <DataRow label="एकूण जनावरे (गायी/म्हशी/वासरे)" value={`${d.livestock?.totalAnimals} (${d.livestock?.cows}/${d.livestock?.buffaloes}/${d.livestock?.calves})`} />
+                  <DataRow label="कोणत्या प्रकारचे पशुखाद्य वापरता?" value={d.feedType} />
                 </>
               ) : (
                 <>
-                  <DataRow label="गायी" value={d.animalCount?.cows} />
-                  <DataRow label="म्हशी" value={d.animalCount?.buffaloes} />
-                  <DataRow label="वासरे" value={d.animalCount?.calves} />
+                  <DataRow label="एकूण जनावरे (गायी/म्हशी/वासरे)" value={`${parseInt(d.animalCount?.cows || 0) + parseInt(d.animalCount?.buffaloes || 0) + parseInt(d.animalCount?.calves || 0)} (${d.animalCount?.cows}/${d.animalCount?.buffaloes}/${d.animalCount?.calves})`} />
+                  <DataRow label="सध्या कोणत्या पशुखाद्य ब्रँडचा वापर करता?" value={d.currentBrand} />
                 </>
               )}
-            </TableBody>
-          </Table>
-        </section>
-
-        <section className="break-inside-avoid">
-          <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-            ३. पशुखाद्य वापर माहिती (Feed Usage)
-          </h4>
-          <Table className="border-2 border-black">
-            <TableBody>
-              <DataRow label={isDairy ? "कोणत्या प्रकारचे पशुखाद्य वापरता?" : "सध्या कोणत्या पशुखाद्य ब्रँडचा वापर करता?"} value={isDairy ? d.feedType : d.currentBrand} />
-              {!isDairy && <DataRow label="हा ब्रँड तुम्ही किती काळापासून वापरत आहात?" value={d.usageDuration} />}
               <DataRow label={isDairy ? "पशुखाद्य दिवसातून किती वेळा देता?" : "दिवसातून किती वेळा देता?"} value={isDairy ? d.feedFrequency : d.frequency} />
               <DataRow label={isDairy ? "प्रति जनावर दररोज पशुखाद्य (किग्रॅ)" : "तुम्ही दिवसाला प्रति जनावर किती पशुखाद्य देता? (किलो)"} value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
-              <DataRow label={isDairy ? "खालीलपैकी कोणते पूरक खाद्य वापरता?" : "पशुखाद्य सोबत इतर खाद्य देता का?"} value={isDairy ? d.supplements : d.otherFeeds} />
-              {(d.otherSupplement || d.otherFeedText) && <DataRow label="इतर पूरक माहिती" value={d.otherSupplement || d.otherFeedText} />}
+              <DataRow label="पशुखाद्य सोबत इतर खाद्य देता का?" value={isDairy ? d.supplements : d.otherFeeds} />
             </TableBody>
           </Table>
         </section>
 
         {isDairy && d.brandsInfo && d.brandsInfo.length > 0 && (
           <section className="break-inside-avoid">
-            <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
+            <h4 className="text-[9px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
               ४. ब्रँड व पोषण विश्लेषण
             </h4>
-            <div className="border-2 border-black overflow-hidden mb-2">
+            <div className="border border-black overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gray-200 border-b border-black">
-                    <TableHead className="font-black text-black border-r border-black h-7 text-[9px] uppercase py-0.5">ब्रँड नाव</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-7 text-[9px] uppercase py-0.5">किंमत</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-7 text-[9px] uppercase py-0.5">प्रोटीन</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-7 text-[9px] uppercase py-0.5">फॅट</TableHead>
-                    <TableHead className="font-black text-black border-r border-black h-7 text-[9px] uppercase py-0.5">फायबर</TableHead>
-                    <TableHead className="font-black text-black h-7 text-[9px] uppercase py-0.5">कॅल्शियम</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-5 text-[8px] py-0 px-1">ब्रँड</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-5 text-[8px] py-0 px-1">किंमत</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-5 text-[8px] py-0 px-1">प्रोटीन</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-5 text-[8px] py-0 px-1">फॅट</TableHead>
+                    <TableHead className="font-black text-black border-r border-black h-5 text-[8px] py-0 px-1">फायबर</TableHead>
+                    <TableHead className="font-black text-black h-5 text-[8px] py-0 px-1">कॅल्शि.</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {d.brandsInfo.map((b: any, i: number) => (
+                  {d.brandsInfo.slice(0, 3).map((b: any, i: number) => (
                     <TableRow key={i} className="border-b border-black last:border-0">
-                      <TableCell className="font-black border-r border-black py-1 text-[9px]">{b.name}</TableCell>
-                      <TableCell className="border-r border-black py-1 text-[9px] font-black">₹{b.price}</TableCell>
-                      <TableCell className="border-r border-black py-1 text-[9px] font-black">{b.protein}%</TableCell>
-                      <TableCell className="border-r border-black py-1 text-[9px] font-black">{b.fat}%</TableCell>
-                      <TableCell className="border-r border-black py-1 text-[9px] font-black">{b.fiber}%</TableCell>
-                      <TableCell className="py-1 text-[9px] font-black">{b.calcium}%</TableCell>
+                      <TableCell className="font-black border-r border-black py-0.5 px-1 text-[8px]">{b.name}</TableCell>
+                      <TableCell className="border-r border-black py-0.5 px-1 text-[8px] font-black">₹{b.price}</TableCell>
+                      <TableCell className="border-r border-black py-0.5 px-1 text-[8px] font-black">{b.protein}%</TableCell>
+                      <TableCell className="border-r border-black py-0.5 px-1 text-[8px] font-black">{b.fat}%</TableCell>
+                      <TableCell className="border-r border-black py-0.5 px-1 text-[8px] font-black">{b.fiber}%</TableCell>
+                      <TableCell className="py-0.5 px-1 text-[8px] font-black">{b.calcium}%</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -254,17 +234,14 @@ export default function SurveysList() {
 
         {!isDairy && (
           <section className="break-inside-avoid">
-            <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
+            <h4 className="text-[9px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
               ४. गुणवत्ता व परिणाम विश्लेषण
             </h4>
-            <Table className="border-2 border-black">
+            <Table className="border border-black">
               <TableBody>
                 <DataRow label="हा ब्रँड निवडण्याचे मुख्य कारण काय?" value={d.selectionReason} />
-                <DataRow label="हा ब्रँड वापरायला सुरुवात कशी झाली?" value={d.startMethod} />
-                <DataRow label="या पशुखाद्याची गुणवत्ता कशी वाटते?" value={d.quality} />
                 <DataRow label="या फीडमुळे दूध उत्पादन वाढले का?" value={d.milkIncrease} />
                 <DataRow label="जनावरांचे आरोग्य सुधारले का?" value={d.healthImprovement} />
-                <DataRow label="जनावरांना हा फीड खायला आवडतो का?" value={d.likesFeed} />
                 <DataRow label="दूधातील फॅट किंवा SNF मध्ये फरक जाणवला का?" value={d.fatDiff} />
               </TableBody>
             </Table>
@@ -272,122 +249,43 @@ export default function SurveysList() {
         )}
 
         <section className="break-inside-avoid">
-          <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-            ५. खरेदी व पुरवठा माहिती (Supplier Info)
+          <h4 className="text-[9px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            ५-९. खरेदी, पुरवठा व साठवणूक
           </h4>
-          <Table className="border-2 border-black">
+          <Table className="border border-black">
             <TableBody>
-              {isDairy ? (
-                <>
-                  <DataRow label="खरेदी पद्धत" value={d.purchaseMethod} />
-                  {d.suppliers && d.suppliers.map((s: any, idx: number) => (
-                    <DataRow key={idx} label={`पुरवठादार ${idx + 1} (स्त्रोत व नाव)`} value={`${s.source ? s.source + ' - ' : ''}${s.name}`} />
-                  ))}
-                  <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
-                  <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
-                  <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
-                </>
-              ) : (
-                <>
-                  <DataRow label="एका पोत्याची किंमत (₹)" value={d.bagPrice} />
-                  <DataRow label="पोत्याचे वजन (किग्रॅ)" value={d.bagWeight} />
-                  <DataRow label="महिन्याला किती पोती लागतात?" value={d.monthlyBags} />
-                  <DataRow label="हा ब्रँड कुठून खरेदी करता?" value={d.purchaseSource} />
-                  {d.suppliers && d.suppliers.map((s: any, idx: number) => (
-                    <DataRow key={idx} label={`पुरवठादार ${idx + 1}`} value={s.name} />
-                  ))}
-                  <DataRow label="उधारी मिळते का?" value={d.hasCredit} />
-                </>
+              <DataRow label="हा ब्रँड कुठून खरेदी करता?" value={isDairy ? d.purchaseMethod : d.purchaseSource} />
+              {d.suppliers && d.suppliers.slice(0, 2).map((s: any, idx: number) => (
+                <DataRow key={idx} label={`पुरवठादार ${idx + 1}`} value={s.name} />
+              ))}
+              <DataRow label="उधारी मिळते का? / वेळेवर पुरवठा?" value={isDairy ? d.timelySupply : d.hasCredit} />
+              <DataRow label="महिन्याला किती पोती लागतात?" value={d.monthlyBags} />
+              <DataRow label="साठवणुकीसाठी पुरेशी जागा / गोदाम क्षमता?" value={isDairy ? `${d.hasStorage} / ${d.warehouseCapacity}` : d.easyAvailability} />
+              {!isDairy && <DataRow label="पॅकवर दिलेले मुख्य घटक (%)" value={`प्रोटि:${d.packNutrition?.protein}% / फॅट:${d.packNutrition?.fat}% / फायबर:${d.packNutrition?.fiber}%`} />}
+              <DataRow label="समाधान रेटिंग" value={isDairy ? d.satisfaction : `${d.rating}/५ स्टार`} />
+            </TableBody>
+          </Table>
+        </section>
+
+        <section className="break-inside-avoid">
+          <h4 className="text-[9px] font-black mb-0.5 border-b border-black pb-0.5 text-black uppercase bg-gray-100 px-1">
+            १०-११. समस्या, सूचना व अतिरिक्त मुद्दे
+          </h4>
+          <Table className="border border-black">
+            <TableBody>
+              <DataRow label="पशुखाद्याबाबत मुख्य समस्या काय आहे?" value={d.mainProblem || d.problems} />
+              <DataRow label="नवीन ब्रँडचे सॅम्पल मिळाले तर वापरून पाहाल का?" value={d.sampleTrial || d.switchIfCheaper} />
+              <DataRow label="तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={d.goodFeedOpinion || d.idealFeedQualities} />
+              {d.customPoints && d.customPoints.length > 0 && (
+                <DataRow label="इतर नोंदवलेले मुद्दे" value={d.customPoints.map((p: any) => p.point).join(", ")} />
               )}
             </TableBody>
           </Table>
         </section>
 
-        {!isDairy && (
-          <section className="break-inside-avoid">
-            <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-              ६-९. तुलनात्मक विश्लेषण व घटक
-            </h4>
-            <Table className="border-2 border-black">
-              <TableBody>
-                <DataRow label="यापूर्वी कोणते ब्रँड वापरले आहेत?" value={d.previousBrands} />
-                <DataRow label="सध्याच्या ब्रँडपेक्षा चांगला ब्रँड कोणता वाटतो?" value={d.betterBrand} />
-                <DataRow label="हा ब्रँड वापरण्याचे कारण काय?" value={d.switchReason} />
-                <DataRow label="बाजारात हा ब्रँड सहज मिळतो का?" value={d.easyAvailability} />
-                <DataRow label="कंपनी प्रतिनिधी गावात भेट देतात का?" value={d.repVisit} />
-                <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
-                <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
-                <TableRow className="border-b border-black">
-                  <TableHead className="w-[50%] font-black bg-gray-100/50 py-1.5 px-2 text-[11px] border-r border-black text-black">
-                    पॅकवर दिलेले मुख्य घटक (%)
-                  </TableHead>
-                  <TableCell className="py-1.5 px-2 text-[10px] text-black font-black">
-                    <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                      {d.packNutrition?.protein && <span>प्रोटीन: {d.packNutrition.protein}%</span>}
-                      {d.packNutrition?.fat && <span>फॅट: {d.packNutrition.fat}%</span>}
-                      {d.packNutrition?.fiber && <span>फायबर: {d.packNutrition.fiber}%</span>}
-                      {d.packNutrition?.calcium && <span>कॅल्शियम: {d.packNutrition.calcium}%</span>}
-                      {d.packNutrition?.phosphorus && <span>फॉस्फरस: {d.packNutrition.phosphorus}%</span>}
-                      {d.packNutrition?.salt && <span>मीठ: {d.packNutrition.salt}%</span>}
-                      {d.packNutrition?.mineralMix && <span>मिनरल: {d.packNutrition.mineralMix}%</span>}
-                    </div>
-                  </TableCell>
-                </TableRow>
-                <DataRow label="समाधान रेटिंग" value={`${d.rating}/५ स्टार`} />
-              </TableBody>
-            </Table>
-          </section>
-        )}
-
-        {isDairy && (
-          <section className="break-inside-avoid">
-            <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-              ६-९. गुणवत्ता व साठवणूक तपशील
-            </h4>
-            <Table className="border-2 border-black">
-              <TableBody>
-                <DataRow label="सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का?" value={d.satisfaction} />
-                <DataRow label="पशुखाद्य बदलल्याने दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
-                <DataRow label="तुमच्या मते सर्वात चांगला ब्रँड कोणता?" value={d.bestBrand} />
-                <DataRow label="गोदाम क्षमता (MT)" value={d.warehouseCapacity} />
-                <DataRow label="साठवणुकीसाठी पुरेशी जागा उपलब्ध आहे का?" value={d.hasStorage} />
-              </TableBody>
-            </Table>
-          </section>
-        )}
-
-        <section className="break-inside-avoid">
-          <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-            १०. समस्या, सूचना व अभिप्राय
-          </h4>
-          <Table className="border-2 border-black">
-            <TableBody>
-              <DataRow label={isDairy ? "पशुखाद्याबाबत मुख्य समस्या काय आहे?" : "पशुखाद्य वापरताना कोणत्या समस्या येतात?"} value={d.mainProblem || d.problems} />
-              <DataRow label={isDairy ? "नवीन ब्रँडचे सॅम्पल मिळाले तर वापरून पाहाल का?" : "जर दुसऱ्या कंपनीचे स्वस्त आणि चांगले फीड मिळाले तर ब्रँड बदलाल का?"} value={d.sampleTrial || d.switchIfCheaper} />
-              <DataRow label={isDairy ? "तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" : "तुमच्या मते सर्वात चांगल्या पशुखाद्यामध्ये कोणते गुण असावेत?"} value={d.goodFeedOpinion || d.idealFeedQualities} />
-              {!isDairy && <DataRow label="कंपनीने कोणत्या सुधारणा करायला हव्यात?" value={d.improvements} />}
-            </TableBody>
-          </Table>
-        </section>
-
-        {d.customPoints && d.customPoints.length > 0 && (
-          <section className="break-inside-avoid">
-            <h4 className="text-[11px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase bg-gray-100 px-2">
-              ११. अतिरिक्त नोंदवलेले मुद्दे
-            </h4>
-            <Table className="border-2 border-black">
-              <TableBody>
-                {d.customPoints.map((pt: any, idx: number) => (
-                  <DataRow key={idx} label={`मुद्दा क्रमांक ${idx + 1}`} value={pt.point} />
-                ))}
-              </TableBody>
-            </Table>
-          </section>
-        )}
-
-        <div className="mt-6 border-t-4 border-black pt-2 grid grid-cols-2 text-[10px] font-black uppercase tracking-tight break-inside-avoid">
+        <div className="mt-2 border-t border-black pt-1 grid grid-cols-2 text-[8px] font-black uppercase tracking-tight break-inside-avoid">
           <div>सर्वेक्षक: {survey.surveyorName} ({survey.surveyorId})</div>
-          <div className="text-right">नोंदणी दिनांक: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</div>
+          <div className="text-right">तारीख: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</div>
         </div>
       </div>
     );
@@ -506,11 +404,7 @@ export default function SurveysList() {
 
         <div className="hidden print:block">
           <div className="print-only-report">
-            {selectedSurvey ? renderDetailedReport(selectedSurvey) : surveys.map(s => (
-              <div key={s.id} className="mb-10 border-t-2 border-black pt-4">
-                {renderDetailedReport(s)}
-              </div>
-            ))}
+            {selectedSurvey && renderDetailedReport(selectedSurvey)}
           </div>
         </div>
       </div>
