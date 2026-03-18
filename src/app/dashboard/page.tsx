@@ -1,16 +1,17 @@
 
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { Navbar } from "@/components/layout/Navbar";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LocationSelector } from "@/components/forms/LocationSelector";
 import { Button } from "@/components/ui/button";
 import { generateRegionalFeedSummary } from "@/ai/flows/generate-regional-feed-summary";
-import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock, PieChart, Filter } from "lucide-react";
+import { Loader2, TrendingUp, Users, MapPin, BrainCircuit, FileText, LayoutDashboard, Store, Clock, PieChart, Filter, Download, Upload, Copy, Check } from "lucide-react";
 import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { useBrandStore } from "@/lib/brand-store";
 import { useSupplierStore } from "@/lib/supplier-store";
+import { toast } from "@/hooks/use-toast";
 import { 
   BarChart, 
   Bar, 
@@ -31,7 +32,10 @@ export default function Dashboard() {
   const [taluka, setTaluka] = useState("");
   const [aiSummary, setAiSummary] = useState("");
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   // Chart location filters
   const [chartDistrict, setChartDistrict] = useState("");
   const [chartTaluka, setChartTaluka] = useState("");
@@ -48,6 +52,10 @@ export default function Dashboard() {
   const [recentSurveys, setRecentSurveys] = useState<SurveyRecord[]>([]);
 
   useEffect(() => {
+    loadDashboardData();
+  }, []);
+
+  const loadDashboardData = () => {
     const surveys = getSurveys();
     const brands = getBrands();
     const suppliers = getSuppliers();
@@ -77,7 +85,7 @@ export default function Dashboard() {
       totalBrands: brands.length,
       totalSuppliers: suppliers.length
     });
-  }, []);
+  };
 
   const filteredChartData = useMemo(() => {
     const filtered = allSurveys.filter(s => {
@@ -114,6 +122,50 @@ export default function Dashboard() {
     }
   };
 
+  const handleExportData = () => {
+    const data = {
+      surveys: localStorage.getItem('pashudhan_surveys'),
+      brands: localStorage.getItem('pashudhan_master_brands'),
+      suppliers: localStorage.getItem('pashudhan_suppliers'),
+      exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pashudhan_backup_${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    toast({ title: "यशस्वी", description: "बॅकअप फाईल डाउनलोड झाली आहे." });
+  };
+
+  const handleImportData = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        if (data.surveys) localStorage.setItem('pashudhan_surveys', data.surveys);
+        if (data.brands) localStorage.setItem('pashudhan_master_brands', data.brands);
+        if (data.suppliers) localStorage.setItem('pashudhan_suppliers', data.suppliers);
+        toast({ title: "यशस्वी", description: "डेटा यशस्वीरित्या रिस्टोर झाला!" });
+        loadDashboardData();
+        window.location.reload();
+      } catch (err) {
+        toast({ variant: "destructive", title: "त्रुटी", description: "चुकीची फाईल! कृपया योग्य बॅकअप फाईल निवडा." });
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const handleCopyAiSummary = () => {
+    if (!aiSummary) return;
+    navigator.clipboard.writeText(aiSummary);
+    setCopied(true);
+    toast({ title: "कॉपी झाले", description: "विश्लेषण क्लिपबोर्डवर सेव्ह झाले आहे." });
+    setTimeout(() => setCopied(false), 2000);
+  };
+
   const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
   return (
@@ -123,9 +175,24 @@ export default function Dashboard() {
         <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
-              <LayoutDashboard className="h-8 w-8" /> मुख्य डॅशबोर्ड (Dashboard)
+              <LayoutDashboard className="h-8 w-8" /> मुख्य डॅशबोर्ड
             </h1>
             <p className="text-muted-foreground">तुमच्या क्षेत्रातील पशुखाद्य ट्रेंड्स आणि सर्वेक्षण आकडेवारीचे संकलन.</p>
+          </div>
+          <div className="flex items-center gap-2 no-print">
+            <input 
+              type="file" 
+              ref={fileInputRef} 
+              className="hidden" 
+              accept=".json" 
+              onChange={handleImportData} 
+            />
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2 text-xs border-primary text-primary">
+              <Upload className="h-3.5 w-3.5" /> रिस्टोर बॅकअप
+            </Button>
+            <Button variant="default" size="sm" onClick={handleExportData} className="gap-2 text-xs bg-primary shadow-md">
+              <Download className="h-3.5 w-3.5" /> डेटा बॅकअप घ्या
+            </Button>
           </div>
         </header>
 
@@ -184,7 +251,7 @@ export default function Dashboard() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-primary font-headline">
                     <BrainCircuit className="h-5 w-5" />
-                    क्षेत्रीय AI विश्लेषण (Regional Insights)
+                    क्षेत्रीय AI विश्लेषण
                   </CardTitle>
                   <CardDescription>निवडलेल्या भागातील पशुखाद्य वापराचे सविस्तर AI विश्लेषण मिळवा.</CardDescription>
                 </CardHeader>
@@ -204,7 +271,15 @@ export default function Dashboard() {
                   </Button>
 
                   {aiSummary && (
-                    <div className="mt-6 p-5 bg-primary/5 rounded-xl border border-primary/10 text-sm leading-relaxed whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-500 shadow-inner">
+                    <div className="mt-6 p-5 bg-primary/5 rounded-xl border border-primary/10 text-sm leading-relaxed whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-500 shadow-inner relative group">
+                      <Button 
+                        size="icon" 
+                        variant="ghost" 
+                        className="absolute top-2 right-2 h-8 w-8 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={handleCopyAiSummary}
+                      >
+                        {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                      </Button>
                       <div className="font-bold text-primary mb-2 flex items-center gap-2">
                         <TrendingUp className="h-4 w-4" /> विश्लेषण परिणाम ({taluka}, {district}):
                       </div>
