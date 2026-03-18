@@ -179,23 +179,29 @@ export default function SupplierManagement() {
     setEditingId(null);
   };
 
-  const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
-    <TableRow className="hover:bg-transparent border-b">
-      <TableHead className="w-[45%] font-bold bg-muted/5 py-1 px-2 text-[10px] md:text-xs h-auto border-r leading-tight">{label}</TableHead>
-      <TableCell className="py-1 px-2 text-[10px] md:text-xs h-auto leading-tight">
-        {typeof value === 'boolean' ? (value ? 'होय' : 'नाही') : (Array.isArray(value) ? value.join(", ") : (value || '-'))}
-      </TableCell>
-    </TableRow>
-  );
+  const SupplierDataRow = ({ label, value }: { label: string, value: any }) => {
+    let displayValue = value;
+    if (typeof value === 'boolean') displayValue = value ? 'होय' : 'नाही';
+    if (Array.isArray(value)) displayValue = value.join(", ");
+
+    return (
+      <TableRow className="hover:bg-transparent border-b border-black">
+        <TableHead className="w-[45%] font-bold bg-gray-50 py-2 px-2 text-[11px] md:text-xs h-auto border-r border-black leading-tight text-black print:font-extrabold">{label}</TableHead>
+        <TableCell className="py-2 px-2 text-[11px] md:text-xs h-auto leading-tight text-black font-medium">
+          {displayValue || '-'}
+        </TableCell>
+      </TableRow>
+    );
+  };
 
   const DetailedSupplierTable = ({ supplier, isPrint = false }: { supplier: Supplier, isPrint?: boolean }) => (
-    <div className={`space-y-2 py-1 ${isPrint ? 'space-y-1' : ''}`}>
+    <div className={`space-y-3 py-1 ${isPrint ? 'space-y-2' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">१. सामान्य माहिती</h4>
-        <Table className="border rounded-sm">
+        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">१. सामान्य माहिती</h4>
+        <Table className="border-2 border-black rounded-sm overflow-hidden">
           <TableBody>
             <SupplierDataRow label="दुकानाचे नाव" value={supplier.shopName} />
-            <SupplierDataRow label="पुरवठादाराचे नाव" value={supplier.name} />
+            <SupplierDataRow label="पुरवठादाराचे नाव (मालक)" value={supplier.name} />
             <SupplierDataRow label="संपर्क क्रमांक" value={supplier.contact} />
             <SupplierDataRow label="पुरवठादार प्रकार" value={supplier.supplierType} />
           </TableBody>
@@ -203,35 +209,35 @@ export default function SupplierManagement() {
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">२. लोकेशन व पत्ता</h4>
-        <Table className="border rounded-sm">
+        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">२. लोकेशन व पत्ता</h4>
+        <Table className="border-2 border-black rounded-sm overflow-hidden">
           <TableBody>
             <SupplierDataRow label="जिल्हा" value={supplier.district} />
             <SupplierDataRow label="तालुका" value={supplier.taluka} />
-            <SupplierDataRow label="संपूर्ण पत्ता" value={supplier.address} />
+            <SupplierDataRow label="संपूर्ण पत्ता (Address)" value={supplier.address} />
           </TableBody>
         </Table>
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">३. व्यवसाय तपशील</h4>
-        <Table className="border rounded-sm">
+        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">३. व्यवसाय तपशील</h4>
+        <Table className="border-2 border-black rounded-sm overflow-hidden">
           <TableBody>
-            <SupplierDataRow label="उपलब्ध ब्रँड्स" value={supplier.suppliedBrands} />
-            <SupplierDataRow label="इतर ब्रँड्स" value={supplier.mainBrands} />
-            <SupplierDataRow label="डिलिव्हरी सुविधा" value={supplier.providesDelivery} />
-            <SupplierDataRow label="उधारी सुविधा" value={supplier.providesCredit} />
+            <SupplierDataRow label="उपलब्ध ब्रँड्स (मास्टर लिस्ट)" value={supplier.suppliedBrands} />
+            <SupplierDataRow label="इतर ब्रँड्स माहिती" value={supplier.mainBrands} />
+            <SupplierDataRow label="डिलिव्हरी सुविधा?" value={supplier.providesDelivery} />
+            <SupplierDataRow label="उधारी सुविधा?" value={supplier.providesCredit} />
           </TableBody>
         </Table>
       </section>
 
       {supplier.customPoints && supplier.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. अतिरिक्त मुद्दे</h4>
-          <Table className="border rounded-sm">
+          <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">४. अतिरिक्त मुद्दे</h4>
+          <Table className="border-2 border-black rounded-sm overflow-hidden">
             <TableBody>
               {supplier.customPoints.map((pt, idx) => (
-                <SupplierDataRow key={idx} label={`मुद्दा ${idx + 1}`} value={pt.point} />
+                <SupplierDataRow key={idx} label={`मुद्दा क्रमांक ${idx + 1}`} value={pt.point} />
               ))}
             </TableBody>
           </Table>
@@ -491,22 +497,22 @@ export default function SupplierManagement() {
         </div>
       </div>
 
-      <div className="hidden print:block p-4 text-black bg-white">
-        <div className="text-center border-b-2 border-black pb-2 mb-4">
-          <h1 className="text-xl font-bold uppercase">पुरवठादार मास्टर रिपोर्ट</h1>
-          <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+      <div className="hidden print:block p-8 text-black bg-white">
+        <div className="text-center border-b-4 border-black pb-2 mb-6">
+          <h1 className="text-2xl font-black uppercase">पुरवठादार मास्टर अहवाल</h1>
+          <p className="text-[12px] font-bold">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           {(filterDistrict !== "all" || filterTaluka !== "all" || filterBrand !== "all") && (
-            <p className="text-[9px] mt-1 italic">
+            <p className="text-[11px] mt-1 italic font-bold">
               फिल्टर: {filterDistrict !== "all" ? `जिल्हा: ${filterDistrict}` : ''} 
               {filterTaluka !== "all" ? `, तालुका: ${filterTaluka}` : ''}
               {filterBrand !== "all" ? `, ब्रँड: ${filterBrand}` : ''}
             </p>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6">
           {filteredSuppliers.map((s, index) => (
-            <div key={s.id} className="border border-gray-200 p-2 rounded-sm break-inside-avoid">
-              <h2 className="text-xs font-bold border-b border-gray-200 mb-2 pb-1 text-primary">{index + 1}. {s.shopName} ({s.supplierType})</h2>
+            <div key={s.id} className="border-2 border-black p-4 rounded-sm break-inside-avoid shadow-none">
+              <h2 className="text-[14px] font-black border-b-2 border-black mb-3 pb-1 text-black">{index + 1}. {s.shopName} ({s.supplierType})</h2>
               <DetailedSupplierTable supplier={s} isPrint={true} />
             </div>
           ))}
@@ -531,15 +537,15 @@ export default function SupplierManagement() {
               <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
                 <FileText className="h-6 w-6" /> संपूर्ण पुरवठादार रिपोर्ट
               </DialogTitle>
-              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs">
-                <Printer className="h-4 w-4" /> प्रिंट
+              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs border-black">
+                <Printer className="h-4 w-4" /> प्रिंट अहवाल
               </Button>
             </div>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredSuppliers.map((s, index) => (
-              <div key={s.id} className="border p-3 rounded-lg bg-white shadow-sm break-inside-avoid">
-                <h3 className="text-sm font-bold text-primary border-b mb-3 pb-1">
+              <div key={s.id} className="border-2 border-black p-4 rounded-lg bg-white shadow-sm break-inside-avoid">
+                <h3 className="text-md font-black text-black border-b-2 border-black mb-3 pb-1">
                   {index + 1}. {s.shopName} ({s.supplierType})
                 </h3>
                 <DetailedSupplierTable supplier={s} />

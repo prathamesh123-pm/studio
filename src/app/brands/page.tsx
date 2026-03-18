@@ -158,17 +158,17 @@ export default function BrandManagement() {
   };
 
   const BrandDataRow = ({ label, value }: { label: string, value: any }) => (
-    <TableRow className="hover:bg-transparent border-b">
-      <TableHead className="w-[45%] font-bold bg-muted/5 py-1 px-2 text-[10px] md:text-xs h-auto border-r leading-tight">{label}</TableHead>
-      <TableCell className="py-1 px-2 text-[10px] md:text-xs h-auto leading-tight">{value || '-'}</TableCell>
+    <TableRow className="hover:bg-transparent border-b border-black">
+      <TableHead className="w-[45%] font-bold bg-gray-50 py-2 px-2 text-[11px] md:text-xs h-auto border-r border-black leading-tight text-black print:font-extrabold">{label}</TableHead>
+      <TableCell className="py-2 px-2 text-[11px] md:text-xs h-auto leading-tight text-black font-medium">{value || '-'}</TableCell>
     </TableRow>
   );
 
   const DetailedBrandTable = ({ brand, isPrint = false }: { brand: MasterBrand, isPrint?: boolean }) => (
-    <div className={`space-y-2 py-1 ${isPrint ? 'space-y-1' : ''}`}>
+    <div className={`space-y-3 py-1 ${isPrint ? 'space-y-2' : ''}`}>
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">१. सामान्य माहिती</h4>
-        <Table className="border rounded-sm">
+        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">१. सामान्य माहिती</h4>
+        <Table className="border-2 border-black rounded-sm overflow-hidden">
           <TableBody>
             <BrandDataRow label="ब्रँड / कंपनी" value={brand.name} />
             <BrandDataRow label="खाद्य प्रकार" value={brand.feedType} />
@@ -179,23 +179,23 @@ export default function BrandManagement() {
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">२. पोषण मूल्ये (%)</h4>
-        <Table className="border rounded-sm">
+        <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">२. पोषण मूल्ये (%)</h4>
+        <Table className="border-2 border-black rounded-sm overflow-hidden">
           <TableBody>
-            <TableRow className="hover:bg-transparent border-b">
-              <TableCell className="w-1/2 p-1 text-[10px] border-r">प्रोटीन: <b>{brand.nutrition.protein}%</b></TableCell>
-              <TableCell className="p-1 text-[10px]">फॅट: <b>{brand.nutrition.fat}%</b></TableCell>
+            <TableRow className="hover:bg-transparent border-b border-black">
+              <TableCell className="w-1/2 p-2 text-[11px] border-r border-black text-black">प्रोटीन: <b>{brand.nutrition.protein}%</b></TableCell>
+              <TableCell className="p-2 text-[11px] text-black">फॅट: <b>{brand.nutrition.fat}%</b></TableCell>
             </TableRow>
-            <TableRow className="hover:bg-transparent border-b">
-              <TableCell className="w-1/2 p-1 text-[10px] border-r">फायबर: <b>{brand.nutrition.fiber}%</b></TableCell>
-              <TableCell className="p-1 text-[10px]">कॅल्शियम: <b>{brand.nutrition.calcium}%</b></TableCell>
+            <TableRow className="hover:bg-transparent border-b border-black">
+              <TableCell className="w-1/2 p-2 text-[11px] border-r border-black text-black">फायबर: <b>{brand.nutrition.fiber}%</b></TableCell>
+              <TableCell className="p-2 text-[11px] text-black">कॅल्शियम: <b>{brand.nutrition.calcium}%</b></TableCell>
             </TableRow>
-            <TableRow className="hover:bg-transparent border-b">
-              <TableCell className="w-1/2 p-1 text-[10px] border-r">फॉस्फरस: <b>{brand.nutrition.phosphorus}%</b></TableCell>
-              <TableCell className="p-1 text-[10px]">मीठ: <b>{brand.nutrition.salt}%</b></TableCell>
+            <TableRow className="hover:bg-transparent border-b border-black">
+              <TableCell className="w-1/2 p-2 text-[11px] border-r border-black text-black">फॉस्फरस: <b>{brand.nutrition.phosphorus}%</b></TableCell>
+              <TableCell className="p-2 text-[11px] text-black">मीठ: <b>{brand.nutrition.salt}%</b></TableCell>
             </TableRow>
-            <TableRow className="hover:bg-transparent border-b">
-              <TableCell colSpan={2} className="p-1 text-[10px]">मिनरल मिक्स: <b>{brand.nutrition.mineralMix}%</b></TableCell>
+            <TableRow className="hover:bg-transparent text-black">
+              <TableCell colSpan={2} className="p-2 text-[11px]">मिनरल मिक्स: <b>{brand.nutrition.mineralMix}%</b></TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -203,10 +203,10 @@ export default function BrandManagement() {
 
       {brand.ingredients && brand.ingredients.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">३. घटक (Ingredients)</h4>
+          <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">३. घटक (Ingredients)</h4>
           <div className="flex flex-wrap gap-1">
             {brand.ingredients.map((ing, idx) => (
-              <Badge key={idx} variant="outline" className="text-[8px] py-0 px-1 font-normal">
+              <Badge key={idx} variant="outline" className="text-[10px] py-0.5 px-2 font-bold border-black text-black">
                 {ing.ingredient} ({ing.percentage}%)
               </Badge>
             ))}
@@ -216,8 +216,8 @@ export default function BrandManagement() {
 
       {brand.customPoints && brand.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[10px] font-bold mb-1 border-b pb-0.5 text-primary uppercase">४. ॲड पॉइंट्स</h4>
-          <Table className="border rounded-sm">
+          <h4 className="text-[12px] font-black mb-1 border-b-2 border-black pb-0.5 text-black uppercase">४. ॲड पॉइंट्स</h4>
+          <Table className="border-2 border-black rounded-sm overflow-hidden">
             <TableBody>
               {brand.customPoints.map((pt, idx) => (
                 <BrandDataRow key={idx} label={`मुद्दा ${idx + 1}`} value={pt.point} />
@@ -444,18 +444,18 @@ export default function BrandManagement() {
         </div>
       </div>
 
-      <div className="hidden print:block p-4 text-black bg-white">
-        <div className="text-center border-b-2 border-black pb-2 mb-4">
-          <h1 className="text-xl font-bold uppercase">मास्टर ब्रँड लिस्ट रिपोर्ट</h1>
-          <p className="text-[10px]">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+      <div className="hidden print:block p-8 text-black bg-white">
+        <div className="text-center border-b-4 border-black pb-2 mb-6">
+          <h1 className="text-2xl font-black uppercase">मास्टर ब्रँड लिस्ट अहवाल</h1>
+          <p className="text-[12px] font-bold">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           {filterBrandId !== "all" && (
-            <p className="text-[10px] mt-1 font-bold">फिल्टर: {brands.find(b => b.id === filterBrandId)?.name}</p>
+            <p className="text-[12px] mt-1 font-black">ब्रँड: {brands.find(b => b.id === filterBrandId)?.name}</p>
           )}
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-6">
           {filteredBrands.map((brand, index) => (
-            <div key={brand.id} className="border border-gray-200 p-2 rounded-sm break-inside-avoid shadow-none">
-              <h2 className="text-xs font-bold border-b border-gray-200 mb-2 pb-1 text-primary">{index + 1}. {brand.name}</h2>
+            <div key={brand.id} className="border-2 border-black p-4 rounded-sm break-inside-avoid shadow-none">
+              <h2 className="text-[14px] font-black border-b-2 border-black mb-3 pb-1 text-black">{index + 1}. {brand.name}</h2>
               <DetailedBrandTable brand={brand} isPrint={true} />
             </div>
           ))}
@@ -480,15 +480,15 @@ export default function BrandManagement() {
               <DialogTitle className="text-xl font-bold text-primary flex items-center gap-2">
                 <FileText className="h-6 w-6" /> संपूर्ण मास्टर ब्रँड रिपोर्ट
               </DialogTitle>
-              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs">
-                <Printer className="h-4 w-4" /> प्रिंट
+              <Button size="sm" onClick={() => window.print()} className="gap-2 h-8 text-xs border-black">
+                <Printer className="h-4 w-4" /> प्रिंट अहवाल
               </Button>
             </div>
           </DialogHeader>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {filteredBrands.map((brand, index) => (
-              <div key={brand.id} className="border p-3 rounded-lg bg-white shadow-sm break-inside-avoid">
-                <h3 className="text-sm font-bold text-primary border-b mb-3 pb-1">
+              <div key={brand.id} className="border-2 border-black p-4 rounded-lg bg-white shadow-sm break-inside-avoid">
+                <h3 className="text-md font-black text-black border-b-2 border-black mb-3 pb-1">
                   {index + 1}. {brand.name} ({brand.feedType})
                 </h3>
                 <DetailedBrandTable brand={brand} />
