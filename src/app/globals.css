@@ -132,7 +132,7 @@
   .break-inside-avoid {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
-    margin-bottom: 15px !important;
+    margin-bottom: 10px !important;
   }
 
   .text-black, p, span, div, td, th {

@@ -118,7 +118,7 @@ export default function SurveysList() {
     return translations[val] || val;
   };
 
-  const DataRow = ({ label, value, labelWidth = "50%" }: { label: string, value: any, labelWidth?: string }) => {
+  const DataRow = ({ label, value, labelWidth = "68%" }: { label: string, value: any, labelWidth?: string }) => {
     if (value === undefined || value === null || value === "") return null;
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
@@ -259,7 +259,7 @@ export default function SurveysList() {
               {!isDairy && <DataRow label="हा ब्रँड तुम्ही किती काळापासून वापरत आहात?" value={d.usageDuration} labelWidth="68%" />}
               <DataRow label={isDairy ? "पशुखाद्य दिवसातून किती वेळा देता?" : "दिवसातून किती वेळा देता?"} value={isDairy ? d.feedFrequency : d.frequency} labelWidth="68%" />
               <DataRow label={isDairy ? "प्रति जनावर दररोज पशुखाद्य (किलो)" : "तुम्ही दिवसाला प्रति जनावर किती पशुखाद्य देता? (किलो)"} value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} labelWidth="68%" />
-              <DataRow label="खालीलपैकी कोणते पूरक खाद्य वापरता?" value={isDairy ? d.supplements : d.otherFeeds} labelWidth="68%" />
+              <DataRow label={isDairy ? "खालीलपैकी कोणते पूरक खाद्य वापरता?" : "पशुखाद्य सोबत इतर खाद्य देता का?"} value={isDairy ? d.supplements : d.otherFeeds} labelWidth="68%" />
               {!isDairy && <DataRow label="हा ब्रँड निवडण्याचे मुख्य कारण काय?" value={d.selectionReason} labelWidth="68%" />}
               {!isDairy && <DataRow label="हा ब्रँड वापरायला सुरुवात कशी झाली?" value={d.startMethod} labelWidth="68%" />}
             </TableBody>
@@ -316,8 +316,8 @@ export default function SurveysList() {
               <DataRow label={isDairy ? "खरेदी पद्धत" : "हा ब्रँड कुठून खरेदी करता?"} value={isDairy ? d.purchaseMethod : d.purchaseSource} labelWidth="68%" />
               <DataRow label="पुरवठादार" value={d.suppliers?.map((s: any) => s.name).join(", ")} labelWidth="68%" />
               <DataRow label={isDairy ? "पुरवठा वेळेवर मिळतो का?" : "उधारी मिळते का?"} value={isDairy ? d.timelySupply : d.hasCredit} labelWidth="68%" />
-              <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp || (parseInt(d.bagPrice || '0') * parseInt(d.monthlyBags || '0'))} labelWidth="68%" />
-              <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} labelWidth="68%" />
+              <DataRow label={isDairy ? "महिन्याला एकूण खर्च (₹)" : "महिन्याला किती पोती लागतात?"} value={isDairy ? d.monthlyExp : d.monthlyBags} labelWidth="68%" />
+              {isDairy && <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} labelWidth="68%" />}
               <DataRow label={isDairy ? "सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का?" : "या पशुखाद्याची गुणवत्ता कशी वाटते?"} value={isDairy ? d.satisfaction : `${d.quality} (${d.rating}/५)`} labelWidth="68%" />
               <DataRow label={isDairy ? "पशुखाद्य बदलल्याने दूध उत्पादनात वाढ झाली का?" : "या फीडमुळे दूध उत्पादन वाढले का?"} value={isDairy ? d.milkIncrease : `${translate(d.milkIncrease)}`} labelWidth="68%" />
               <DataRow label="तुमच्या मते सर्वात चांगला ब्रँड कोणता?" value={d.bestBrand || d.betterBrand} labelWidth="68%" />
@@ -331,9 +331,9 @@ export default function SurveysList() {
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label="पशुखाद्याबाबत मुख्य समस्या काय आहे?" value={d.mainProblem || d.problems} labelWidth="68%" />
+              <DataRow label={isDairy ? "पशुखाद्याबाबत मुख्य समस्या काय आहे?" : "पशुखाद्य वापरताना कोणत्या समस्या येतात?"} value={d.mainProblem || d.problems} labelWidth="68%" />
               <DataRow label={isDairy ? "नवीन ब्रँडचे सॅम्पल मिळाले तर वापरून पाहाल का?" : "जर स्वस्त आणि चांगले फीड मिळाले तर ब्रँड बदलाल का?"} value={isDairy ? d.sampleTrial : d.switchIfCheaper} labelWidth="68%" />
-              <DataRow label="तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={d.goodFeedOpinion || d.idealFeedQualities} labelWidth="68%" />
+              <DataRow label={isDairy ? "तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" : "तुमच्या मते सर्वात चांगल्या पशुखाद्यामध्ये कोणते गुण असावेत?"} value={d.goodFeedOpinion || d.idealFeedQualities} labelWidth="68%" />
               {d.customPoints?.length > 0 && (
                 <DataRow label="ॲड पॉइंट्स (इतर मुद्दे)" value={d.customPoints.map((p: any) => p.point).join(", ")} labelWidth="68%" />
               )}
