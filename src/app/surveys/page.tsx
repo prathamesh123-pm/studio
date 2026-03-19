@@ -122,10 +122,10 @@ export default function SurveysList() {
     if (value === undefined || value === null || value === "") return null;
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="w-[50%] font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
+        <TableHead className="w-[50%] font-black bg-gray-50 py-2 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
           {label}
         </TableHead>
-        <TableCell className="py-1.5 px-3 text-[11pt] h-auto leading-tight text-black font-black">
+        <TableCell className="py-2 px-3 text-[11pt] h-auto leading-tight text-black font-black">
           {translate(value)}
         </TableCell>
       </TableRow>

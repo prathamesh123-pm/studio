@@ -181,10 +181,10 @@ export default function SupplierManagement() {
 
   const SupplierDataRow = ({ label, value }: { label: string, value: any }) => (
     <TableRow className="hover:bg-transparent border-b border-black">
-      <TableHead className="w-[50%] font-black bg-slate-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
+      <TableHead className="w-[50%] font-black bg-slate-50 py-2 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black">
         {label}
       </TableHead>
-      <TableCell className="py-1.5 px-3 text-[11pt] h-auto leading-tight text-black font-black">
+      <TableCell className="py-2 px-3 text-[11pt] h-auto leading-tight text-black font-black">
         {value || '-'}
       </TableCell>
     </TableRow>
@@ -490,13 +490,22 @@ export default function SupplierManagement() {
       </div>
 
       <Dialog open={!!viewingSupplier} onOpenChange={(open) => !open && setViewingSupplier(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4 dialog-content-print">
-          <DialogHeader className="mb-2">
+        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4 dialog-content-print shadow-none">
+          <DialogHeader className="mb-2 no-print">
             <DialogTitle className="flex items-center gap-2 text-primary border-b pb-1">
               <Store className="h-5 w-5" /> पुरवठादार तपशील
             </DialogTitle>
           </DialogHeader>
+          <div className="hidden print:block text-center border-b-2 border-black pb-1 mb-4">
+            <h1 className="text-[14pt] font-black uppercase">पुरवठादार तपशील अहवाल</h1>
+            <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+          </div>
           {viewingSupplier && <DetailedSupplierTable supplier={viewingSupplier} />}
+          <div className="mt-6 flex justify-end no-print">
+            <Button onClick={() => window.print()} className="gap-2 bg-black text-white">
+              <Printer className="h-4 w-4" /> प्रिंट अहवाल
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
 
