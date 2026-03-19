@@ -55,6 +55,8 @@ export function Navbar() {
       description: "तुमची माहिती आता सर्व फॉर्ममध्ये आपोआप भरली जाईल.",
     });
     setIsOpen(false);
+    // Force a minor refresh for any open forms
+    window.dispatchEvent(new Event('profile-updated'));
   };
 
   return (
