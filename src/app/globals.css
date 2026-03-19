@@ -52,6 +52,7 @@
   }
 
   body {
+<<<<<<< HEAD
     visibility: hidden !important;
     background: white !important;
     height: auto !important;
@@ -59,6 +60,16 @@
 
   [data-radix-portal],
   [data-radix-portal] *,
+=======
+    background: white !important;
+  }
+
+  body * {
+    visibility: hidden;
+  }
+
+  /* Force visibility for dialog content during print */
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
   .dialog-content-print,
   .dialog-content-print * {
     visibility: visible !important;

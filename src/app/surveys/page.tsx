@@ -238,15 +238,15 @@ export default function SurveysList() {
           </h4>
           <div className="border border-black border-t-0">
             <div className="grid grid-cols-4 border-b border-black">
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt]">एकूण: {isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</div>
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt]">गायी: {isDairy ? d.livestock?.cows : d.animalCount?.cows}</div>
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt]">म्हशी: {isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</div>
-              <div className="p-2 bg-gray-50 font-black text-[10pt]">वासरे: {isDairy ? d.livestock?.calves : d.animalCount?.calves}</div>
+              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex gap-1">एकूण: <span className="font-black">{isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span></div>
+              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex gap-1">गायी: <span className="font-black">{isDairy ? d.livestock?.cows : d.animalCount?.cows}</span></div>
+              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex gap-1">म्हशी: <span className="font-black">{isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</span></div>
+              <div className="p-2 bg-gray-50 font-black text-[10pt] flex gap-1">वासरे: <span className="font-black">{isDairy ? d.livestock?.calves : d.animalCount?.calves}</span></div>
             </div>
             <Table className="table-fixed">
               <TableBody>
-                {isDairy && <DataRow label="दूध देणारी जनावरे" value={d.livestock?.milkingAnimals} />}
-                {isDairy && <DataRow label="सरासरी दूध उत्पादन (प्रति जनावर लिटर/दिवस)" value={d.livestock?.avgMilkPerAnimal} />}
+                <DataRow label="दूध देणारी जनावरे" value={isDairy ? d.livestock?.milkingAnimals : d.livestock?.milkingAnimals} />
+                <DataRow label="सरासरी दूध उत्पादन (प्रति जनावर लिटर/दिवस)" value={isDairy ? d.livestock?.avgMilkPerAnimal : d.livestock?.avgMilkPerAnimal} />
               </TableBody>
             </Table>
           </div>
@@ -269,7 +269,11 @@ export default function SurveysList() {
           </Table>
         </section>
 
+<<<<<<< HEAD
         {/* ४. पोषण विश्लेषण */}
+=======
+        {/* ४. ब्रँड व पोषण माहिती / ब्रँड निवड कारण */}
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             ४. पोषण विश्लेषण
@@ -311,7 +315,11 @@ export default function SurveysList() {
           </Table>
         </section>
 
+<<<<<<< HEAD
         {/* ५. खरेदी पद्धत / ब्रँड निवड कारण */}
+=======
+        {/* ५. खरेदी पद्धत / गुणवत्ता व परिणाम */}
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             ५. {isDairy ? "खरेदी पद्धत" : "ब्रँड निवड कारण"}
@@ -358,7 +366,11 @@ export default function SurveysList() {
           </Table>
         </section>
 
+<<<<<<< HEAD
         {/* ७. खर्च माहिती / किंमत व खरेदी */}
+=======
+        {/* ६. पुरवठा माहिती / किंमत व खरेदी */}
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             ७. {isDairy ? "खर्च माहिती" : "किंमत व खरेदी"}
@@ -384,7 +396,11 @@ export default function SurveysList() {
           </Table>
         </section>
 
+<<<<<<< HEAD
         {/* ८. गुणवत्ता व समाधान / ब्रँड तुलना */}
+=======
+        {/* ७. खर्च माहिती / ब्रँड तुलना */}
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             ८. {isDairy ? "गुणवत्ता व समाधान" : "ब्रँड तुलना"}
@@ -408,10 +424,41 @@ export default function SurveysList() {
           </Table>
         </section>
 
+<<<<<<< HEAD
         {/* ९. साठवणूक सुविधा / उपलब्धता व सेवा */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             ९. {isDairy ? "साठवणूक सुविधा (Storage)" : "उपलब्धता व सेवा"}
+=======
+        {/* ८. गुणवत्ता व समाधान / उपलब्धता व सेवा */}
+        <section className="break-inside-avoid">
+          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
+            {isDairy ? "८. गुणवत्ता व समाधान" : "७. उपलब्धता व सेवा"}
+          </h4>
+          <Table className="border border-black table-fixed">
+            <TableBody>
+              {isDairy ? (
+                <>
+                  <DataRow label="सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का?" value={d.satisfaction} />
+                  <DataRow label="पशुखाद्य बदलल्याने दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
+                  <DataRow label="तुमच्या मते सर्वात चांगला ब्रँड कोणता?" value={d.bestBrand} />
+                </>
+              ) : (
+                <>
+                  <DataRow label="बाजारात हा ब्रँड सहज मिळतो का?" value={d.easyAvailability} />
+                  <DataRow label="कंपनी प्रतिनिधी गावात भेट देतात का?" value={d.repVisit} />
+                  <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
+                </>
+              )}
+            </TableBody>
+          </Table>
+        </section>
+
+        {/* ९. साठवणूक सुविधा / घटक माहिती */}
+        <section className="break-inside-avoid">
+          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
+            {isDairy ? "९. साठवणूक सुविधा (Storage)" : "८. घटक माहिती"}
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
@@ -422,9 +469,21 @@ export default function SurveysList() {
                 </>
               ) : (
                 <>
+<<<<<<< HEAD
                   <DataRow label="बाजारात हा ब्रँड सहज मिळतो का?" value={d.easyAvailability} />
                   <DataRow label="कंपनी प्रतिनिधी गावात भेट देतात का?" value={d.repVisit} />
                   <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
+=======
+                  <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
+                  <TableRow className="border-b border-black">
+                    <TableHead className="font-black bg-gray-50 py-1 px-2 text-[9pt] border-r border-black" style={{ width: "32%" }}>घटक (%):</TableHead>
+                    <TableCell className="py-1 px-2 text-[9pt] font-black">
+                      प्रोटीन: {d.packNutrition?.protein}%, फॅट: {d.packNutrition?.fat}%, फायबर: {d.packNutrition?.fiber}%, 
+                      कॅल्शियम: {d.packNutrition?.calcium}%, फॉस्फरस: {d.packNutrition?.phosphorus}%, 
+                      मीठ: {d.packNutrition?.salt}%, मिनरल: {d.packNutrition?.mineralMix}%
+                    </TableCell>
+                  </TableRow>
+>>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
                 </>
               )}
             </TableBody>
