@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -29,7 +30,7 @@ const CowIcon = ({ className }: { className?: string }) => (
     <path d="M7 15c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2H7z" />
     <path d="M17 15l1.5-3.5c.3-.7.1-1.5-.5-2L15 7l-1-2h-4l-1 2-3 2.5c-.6.5-.8 1.3-.5 2L7 15" />
     <path d="M9 5c0-1.7-1.3-3-3-3s-3 1.3-3 3" />
-    <path d="M15 5c0-1.7 1.3-3 3-3s3 1.3 3 3" />
+    <path d="M15 5c0-1.7 1.3-3-3 3-3s3 1.3 3 3" />
     <circle cx="9" cy="11" r="1" fill="currentColor" />
     <circle cx="15" cy="11" r="1" fill="currentColor" />
   </svg>

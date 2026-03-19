@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -56,7 +57,6 @@
     height: auto !important;
   }
 
-  /* Force visibility for dialog content during print */
   [data-radix-portal],
   [data-radix-portal] *,
   .dialog-content-print,
@@ -64,7 +64,6 @@
     visibility: visible !important;
   }
 
-  /* Reset dialog positioning for print */
   .dialog-content-print {
     position: absolute !important;
     top: 0 !important;
@@ -82,7 +81,6 @@
     z-index: 9999 !important;
   }
 
-  /* Hide close button and overlays */
   button[class*="absolute right-4 top-4"],
   div[data-state="open"] > div[class*="fixed inset-0 z-50 bg-black/80"],
   .no-print {
