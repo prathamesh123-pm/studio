@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -269,29 +268,25 @@ export default function SurveysList() {
           </Table>
         </section>
 
-<<<<<<< HEAD
-        {/* ४. पोषण विश्लेषण */}
-=======
         {/* ४. ब्रँड व पोषण माहिती / ब्रँड निवड कारण */}
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ४. पोषण विश्लेषण
+            {isDairy ? "४. ब्रँड व पोषण विश्लेषण" : "४. ब्रँड निवड कारण"}
           </h4>
-          <Table className="border border-black table-fixed">
-            <TableHeader>
-              <TableRow className="bg-gray-50 border-b-2 border-black">
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black">ब्रँड नाव</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black">किंमत</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black">प्रोटीन</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black">फॅट</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black">फायबर</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black">कॅल्शियम</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isDairy ? (
-                d.brandsInfo?.map((b: any, i: number) => (
+          {isDairy ? (
+            <Table className="border border-black table-fixed">
+              <TableHeader>
+                <TableRow className="bg-gray-50 border-b-2 border-black">
+                  <TableHead className="text-[9.5pt] font-black text-black border-r border-black">ब्रँड नाव</TableHead>
+                  <TableHead className="text-[9.5pt] font-black text-black border-r border-black">किंमत</TableHead>
+                  <TableHead className="text-[9.5pt] font-black text-black border-r border-black">प्रोटीन (%)</TableHead>
+                  <TableHead className="text-[9.5pt] font-black text-black border-r border-black">फॅट (%)</TableHead>
+                  <TableHead className="text-[9.5pt] font-black text-black border-r border-black">फायबर (%)</TableHead>
+                  <TableHead className="text-[9.5pt] font-black text-black">कॅल्शियम (%)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {d.brandsInfo?.map((b: any, i: number) => (
                   <TableRow key={i} className="border-b border-black last:border-0">
                     <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">{b.name}</TableCell>
                     <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">₹{b.price}</TableCell>
@@ -300,29 +295,23 @@ export default function SurveysList() {
                     <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">{b.fiber}%</TableCell>
                     <TableCell className="text-[9.5pt] py-1 px-2 font-black">{b.calcium}%</TableCell>
                   </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">{d.currentBrand}</TableCell>
-                  <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">₹{d.bagPrice}</TableCell>
-                  <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">{d.packNutrition?.protein}%</TableCell>
-                  <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">{d.packNutrition?.fat}%</TableCell>
-                  <TableCell className="text-[9.5pt] py-1 px-2 border-r border-black font-black">{d.packNutrition?.fiber}%</TableCell>
-                  <TableCell className="text-[9.5pt] py-1 px-2 font-black">{d.packNutrition?.calcium}%</TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <Table className="border border-black table-fixed">
+              <TableBody>
+                <DataRow label="हा ब्रँड निवडण्याचे मुख्य कारण काय?" value={d.selectionReason} />
+                <DataRow label="हा ब्रँड वापरायला सुरुवात कशी झाली?" value={d.startMethod} />
+              </TableBody>
+            </Table>
+          )}
         </section>
 
-<<<<<<< HEAD
-        {/* ५. खरेदी पद्धत / ब्रँड निवड कारण */}
-=======
         {/* ५. खरेदी पद्धत / गुणवत्ता व परिणाम */}
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ५. {isDairy ? "खरेदी पद्धत" : "ब्रँड निवड कारण"}
+            ५. {isDairy ? "खरेदी पद्धत" : "गुणवत्ता व परिणाम"}
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
@@ -330,28 +319,6 @@ export default function SurveysList() {
                 <>
                   <DataRow label="खरेदी पद्धत" value={d.purchaseMethod} />
                   <DataRow label="दिवसांची उधारी" value={d.creditDays} />
-                </>
-              ) : (
-                <>
-                  <DataRow label="हा ब्रँड निवडण्याचे मुख्य कारण काय?" value={d.selectionReason} />
-                  <DataRow label="हा ब्रँड वापरायला सुरुवात कशी झाली?" value={d.startMethod} />
-                </>
-              )}
-            </TableBody>
-          </Table>
-        </section>
-
-        {/* ६. पुरवठा माहिती / गुणवत्ता व परिणाम */}
-        <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ६. {isDairy ? "पुरवठा माहिती" : "गुणवत्ता व परिणाम"}
-          </h4>
-          <Table className="border border-black table-fixed">
-            <TableBody>
-              {isDairy ? (
-                <>
-                  <DataRow label="पुरवठा माहिती" value={d.suppliers?.map((s: any) => `${s.source}: ${s.name}`).join(", ")} />
-                  <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
                 </>
               ) : (
                 <>
@@ -366,21 +333,17 @@ export default function SurveysList() {
           </Table>
         </section>
 
-<<<<<<< HEAD
-        {/* ७. खर्च माहिती / किंमत व खरेदी */}
-=======
         {/* ६. पुरवठा माहिती / किंमत व खरेदी */}
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ७. {isDairy ? "खर्च माहिती" : "किंमत व खरेदी"}
+            ६. {isDairy ? "पुरवठा माहिती" : "किंमत व खरेदी"}
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
               {isDairy ? (
                 <>
-                  <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
-                  <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
+                  <DataRow label="पुरवठा माहिती" value={d.suppliers?.map((s: any) => `${s.source}: ${s.name}`).join(", ")} />
+                  <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />
                 </>
               ) : (
                 <>
@@ -396,22 +359,17 @@ export default function SurveysList() {
           </Table>
         </section>
 
-<<<<<<< HEAD
-        {/* ८. गुणवत्ता व समाधान / ब्रँड तुलना */}
-=======
         {/* ७. खर्च माहिती / ब्रँड तुलना */}
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ८. {isDairy ? "गुणवत्ता व समाधान" : "ब्रँड तुलना"}
+            ७. {isDairy ? "खर्च माहिती" : "ब्रँड तुलना"}
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
               {isDairy ? (
                 <>
-                  <DataRow label="सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का?" value={d.satisfaction} />
-                  <DataRow label="पशुखाद्य बदलल्याने दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
-                  <DataRow label="तुमच्या मते सर्वात चांगला ब्रँड कोणता?" value={d.bestBrand} />
+                  <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
+                  <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
                 </>
               ) : (
                 <>
@@ -424,16 +382,10 @@ export default function SurveysList() {
           </Table>
         </section>
 
-<<<<<<< HEAD
-        {/* ९. साठवणूक सुविधा / उपलब्धता व सेवा */}
-        <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ९. {isDairy ? "साठवणूक सुविधा (Storage)" : "उपलब्धता व सेवा"}
-=======
         {/* ८. गुणवत्ता व समाधान / उपलब्धता व सेवा */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            {isDairy ? "८. गुणवत्ता व समाधान" : "७. उपलब्धता व सेवा"}
+            ८. {isDairy ? "गुणवत्ता व समाधान" : "उपलब्धता व सेवा"}
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
@@ -457,37 +409,48 @@ export default function SurveysList() {
         {/* ९. साठवणूक सुविधा / घटक माहिती */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            {isDairy ? "९. साठवणूक सुविधा (Storage)" : "८. घटक माहिती"}
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
+            ९. {isDairy ? "साठवणूक सुविधा (Storage)" : "घटक व पोषण माहिती"}
           </h4>
-          <Table className="border border-black table-fixed">
-            <TableBody>
-              {isDairy ? (
-                <>
-                  <DataRow label="गोदाम क्षमता (MT)" value={d.warehouseCapacity} />
-                  <DataRow label="साठवणुकीसाठी पुरेशी जागा उपलब्ध आहे का?" value={d.hasStorage} />
-                </>
-              ) : (
-                <>
-<<<<<<< HEAD
-                  <DataRow label="बाजारात हा ब्रँड सहज मिळतो का?" value={d.easyAvailability} />
-                  <DataRow label="कंपनी प्रतिनिधी गावात भेट देतात का?" value={d.repVisit} />
-                  <DataRow label="कंपनीकडून सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />
-=======
+          {isDairy ? (
+            <Table className="border border-black table-fixed">
+              <TableBody>
+                <DataRow label="गोदाम क्षमता (MT)" value={d.warehouseCapacity} />
+                <DataRow label="साठवणुकीसाठी पुरेशी जागा उपलब्ध आहे का?" value={d.hasStorage} />
+              </TableBody>
+            </Table>
+          ) : (
+            <>
+              <Table className="border border-black table-fixed">
+                <TableBody>
                   <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
-                  <TableRow className="border-b border-black">
-                    <TableHead className="font-black bg-gray-50 py-1 px-2 text-[9pt] border-r border-black" style={{ width: "32%" }}>घटक (%):</TableHead>
-                    <TableCell className="py-1 px-2 text-[9pt] font-black">
-                      प्रोटीन: {d.packNutrition?.protein}%, फॅट: {d.packNutrition?.fat}%, फायबर: {d.packNutrition?.fiber}%, 
-                      कॅल्शियम: {d.packNutrition?.calcium}%, फॉस्फरस: {d.packNutrition?.phosphorus}%, 
-                      मीठ: {d.packNutrition?.salt}%, मिनरल: {d.packNutrition?.mineralMix}%
-                    </TableCell>
+                </TableBody>
+              </Table>
+              <Table className="border border-black table-fixed border-t-0">
+                <TableHeader>
+                  <TableRow className="bg-gray-50 border-b-2 border-black">
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black">प्रोटीन</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black">फॅट</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black">फायबर</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black">कॅल्शियम</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black">फॉस्फरस</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black">मीठ</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black">मिनरल</TableHead>
                   </TableRow>
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
-                </>
-              )}
-            </TableBody>
-          </Table>
+                </TableHeader>
+                <TableBody>
+                  <TableRow>
+                    <TableCell className="text-[9pt] py-1 px-1 border-r border-black font-black text-center">{d.packNutrition?.protein}%</TableCell>
+                    <TableCell className="text-[9pt] py-1 px-1 border-r border-black font-black text-center">{d.packNutrition?.fat}%</TableCell>
+                    <TableCell className="text-[9pt] py-1 px-1 border-r border-black font-black text-center">{d.packNutrition?.fiber}%</TableCell>
+                    <TableCell className="text-[9pt] py-1 px-1 border-r border-black font-black text-center">{d.packNutrition?.calcium}%</TableCell>
+                    <TableCell className="text-[9pt] py-1 px-1 border-r border-black font-black text-center">{d.packNutrition?.phosphorus}%</TableCell>
+                    <TableCell className="text-[9pt] py-1 px-1 border-r border-black font-black text-center">{d.packNutrition?.salt}%</TableCell>
+                    <TableCell className="text-[9pt] py-1 px-1 font-black text-center">{d.packNutrition?.mineralMix}%</TableCell>
+                  </TableRow>
+                </TableBody>
+              </Table>
+            </>
+          )}
         </section>
 
         {/* १०. समस्या व सूचना */}

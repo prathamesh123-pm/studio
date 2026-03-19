@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -52,15 +51,6 @@
   }
 
   body {
-<<<<<<< HEAD
-    visibility: hidden !important;
-    background: white !important;
-    height: auto !important;
-  }
-
-  [data-radix-portal],
-  [data-radix-portal] *,
-=======
     background: white !important;
   }
 
@@ -68,8 +58,6 @@
     visibility: hidden;
   }
 
-  /* Force visibility for dialog content during print */
->>>>>>> 0a709a9 (Try fixing this error: `Build Error: Module not found: Can't resolve '@/)
   .dialog-content-print,
   .dialog-content-print * {
     visibility: visible !important;
@@ -103,12 +91,10 @@
     border-collapse: collapse !important;
     border: 1.5px solid #000 !important;
     table-layout: fixed !important;
-    page-break-inside: auto !important;
   }
 
   tr {
     page-break-inside: avoid !important;
-    page-break-after: auto !important;
   }
 
   th, td {
@@ -116,7 +102,6 @@
     padding: 6px 10px !important;
     color: #000 !important;
     font-size: 10.5pt !important;
-    word-wrap: break-word !important;
     vertical-align: middle !important;
     line-height: 1.3 !important;
     font-weight: 900 !important;
