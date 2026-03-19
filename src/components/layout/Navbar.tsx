@@ -39,8 +39,10 @@ export function Navbar() {
   const [profileName, setProfileName] = useState("");
   const [profileId, setProfileId] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     const savedName = localStorage.getItem('last_surveyor_name') || "";
     const savedId = localStorage.getItem('last_surveyor_id') || "";
     setProfileName(savedName);
@@ -55,7 +57,6 @@ export function Navbar() {
       description: "तुमची माहिती आता सर्व फॉर्ममध्ये आपोआप भरली जाईल.",
     });
     setIsOpen(false);
-    // Force a minor refresh for any open forms
     window.dispatchEvent(new Event('profile-updated'));
   };
 
@@ -94,45 +95,47 @@ export function Navbar() {
             </Button>
           </Link>
 
-          <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full h-8 w-8 md:h-9 md:w-9 shrink-0 ml-1">
-                <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5 text-primary" /> सर्वेक्षक प्रोफाईल सेटिंग्स
-                </DialogTitle>
-              </DialogHeader>
-              <div className="grid gap-4 py-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">सर्वे करणाऱ्याचे पूर्ण नाव</Label>
-                  <Input
-                    id="name"
-                    value={profileName}
-                    onChange={(e) => setProfileName(e.target.value)}
-                    placeholder="उदा. राहुल पाटील"
-                  />
-                </div>
-                <div className="grid gap-2">
-                  <Label htmlFor="id">आयडी नंबर / कर्मचारी क्रमांक</Label>
-                  <Input
-                    id="id"
-                    value={profileId}
-                    onChange={(e) => setProfileId(e.target.value)}
-                    placeholder="उदा. EMP123"
-                  />
-                </div>
-              </div>
-              <DialogFooter>
-                <Button onClick={handleSaveProfile} className="w-full bg-primary">
-                  <Save className="mr-2 h-4 w-4" /> माहिती सेव्ह करा
+          {mounted && (
+            <Dialog open={isOpen} onOpenChange={setIsOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full h-8 w-8 md:h-9 md:w-9 shrink-0 ml-1">
+                  <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
                 </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Settings className="h-5 w-5 text-primary" /> सर्वेक्षक प्रोफाईल सेटिंग्स
+                  </DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="name">सर्वे करणाऱ्याचे पूर्ण नाव</Label>
+                    <Input
+                      id="name"
+                      value={profileName}
+                      onChange={(e) => setProfileName(e.target.value)}
+                      placeholder="उदा. राहुल पाटील"
+                    />
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="id">आयडी नंबर / कर्मचारी क्रमांक</Label>
+                    <Input
+                      id="id"
+                      value={profileId}
+                      onChange={(e) => setProfileId(e.target.value)}
+                      placeholder="उदा. EMP123"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button onClick={handleSaveProfile} className="w-full bg-primary">
+                    <Save className="mr-2 h-4 w-4" /> माहिती सेव्ह करा
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </div>
     </nav>

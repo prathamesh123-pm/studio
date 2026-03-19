@@ -50,14 +50,13 @@
     margin: 10mm;
   }
 
-  /* Force all visibility hidden on body, then show specific print target */
   body {
     visibility: hidden !important;
     background: white !important;
     height: auto !important;
   }
 
-  /* Make sure the portal and dialog content are visible */
+  /* Force visibility for dialog content during print */
   [data-radix-portal],
   [data-radix-portal] *,
   .dialog-content-print,
@@ -65,7 +64,7 @@
     visibility: visible !important;
   }
 
-  /* Reset dialog positioning for print to avoid blankness */
+  /* Reset dialog positioning for print */
   .dialog-content-print {
     position: absolute !important;
     top: 0 !important;
@@ -80,9 +79,10 @@
     box-shadow: none !important;
     background: white !important;
     overflow: visible !important;
+    z-index: 9999 !important;
   }
 
-  /* Hide close button and background overlay */
+  /* Hide close button and overlays */
   button[class*="absolute right-4 top-4"],
   div[data-state="open"] > div[class*="fixed inset-0 z-50 bg-black/80"],
   .no-print {
@@ -104,7 +104,7 @@
 
   th, td {
     border: 1.2px solid #000 !important;
-    padding: 8px 12px !important;
+    padding: 6px 10px !important;
     color: #000 !important;
     font-size: 10.5pt !important;
     word-wrap: break-word !important;
@@ -116,7 +116,6 @@
   th {
     background-color: #f8fafc !important;
     text-align: left !important;
-    width: 50% !important;
     -webkit-print-color-adjust: exact;
   }
 
@@ -124,8 +123,8 @@
     color: #000 !important;
     font-weight: 900 !important;
     border-bottom: 2.5px solid #000 !important;
-    margin-bottom: 12px !important;
-    padding-bottom: 6px !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 4px !important;
     text-transform: uppercase !important;
     font-size: 12pt !important;
   }
@@ -133,7 +132,7 @@
   .break-inside-avoid {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
-    margin-bottom: 20px !important;
+    margin-bottom: 15px !important;
   }
 
   .text-black, p, span, div, td, th {
