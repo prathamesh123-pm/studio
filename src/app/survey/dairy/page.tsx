@@ -32,7 +32,7 @@ import {
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Save, Printer, ArrowLeft, Trash2, Search, MapPin, Loader2, PlusCircle, Check, Store, Plus } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, MapPin, Loader2, PlusCircle, Check, Store, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -93,7 +93,7 @@ const dairySchema = z.object({
   bestBrand: z.string(),
   warehouseCapacity: z.string(),
   hasStorage: z.string().optional(),
-  mainProblem: z.string().optional(),
+  mainProblem: z.array(z.string()).default([]),
   otherProblem: z.string().optional(),
   sampleTrial: z.string().optional(),
   goodFeedOpinion: z.string().optional(),
@@ -129,6 +129,7 @@ function DairySurveyForm() {
       brandsInfo: [],
       suppliers: [{ source: "", name: "" }],
       customPoints: [],
+      mainProblem: [],
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
       surveyorName: "",
@@ -273,6 +274,16 @@ function DairySurveyForm() {
     { label: "हिरवा चारा", value: "GreenFodder" },
     { label: "सुका चारा", value: "DryFodder" },
     { label: "खनिज मिश्रण", value: "MineralMix" },
+  ];
+
+  const complaintOptions = [
+    { label: "दूध वाढ नाही", value: "NoMilkIncrease" },
+    { label: "फॅट कमी लागते", value: "LowFat" },
+    { label: "जनावर खात नाही", value: "AnimalDoesntLike" },
+    { label: "किंमत जास्त आहे", value: "HighPrice" },
+    { label: "पुरवठा उशिरा होतो", value: "LateSupply" },
+    { label: "भेसळ वाटते", value: "Adulteration" },
+    { label: "पचनाचे त्रास", value: "DigestionIssues" },
   ];
 
   return (
@@ -530,7 +541,11 @@ function DairySurveyForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. खरेदी पद्धत</h3>
-              <RadioGroup onValueChange={(v) => form.setValue("purchaseMethod", v)} className="space-y-2" value={form.watch("purchaseMethod")}>
+              <RadioGroup 
+                onValueChange={(v) => form.setValue("purchaseMethod", v)} 
+                className="space-y-2" 
+                value={form.watch("purchaseMethod")}
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="Cash" id="p1" />
                   <Label htmlFor="p1" className="cursor-pointer">रोखीने (Cash)</Label>
@@ -639,9 +654,30 @@ function DairySurveyForm() {
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१०. समस्या व सूचना</h3>
             <div className="space-y-4">
-              <Input {...form.register("mainProblem")} placeholder="मुख्य समस्या" />
-              <Input {...form.register("otherProblem")} placeholder="इतर समस्या" />
-              <div className="flex items-center gap-4">
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-primary">मुख्य तक्रारी (Main Complaints)</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {complaintOptions.map((opt) => (
+                    <div key={opt.value} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`comp-${opt.value}`}
+                        checked={(form.watch("mainProblem") || []).includes(opt.value)}
+                        onCheckedChange={(checked) => {
+                          const current = form.getValues("mainProblem") || [];
+                          if (checked) form.setValue("mainProblem", [...current, opt.value]);
+                          else form.setValue("mainProblem", current.filter(v => v !== opt.value));
+                        }}
+                      />
+                      <Label htmlFor={`comp-${opt.value}`} className="text-xs">{opt.label}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-primary">इतर तक्रारी (Other Complaints)</Label>
+                <Input {...form.register("otherProblem")} placeholder="इतर कोणती तक्रार असल्यास लिहा" />
+              </div>
+              <div className="flex items-center gap-4 border-t pt-4">
                 <Label className="text-sm">नमुना ट्रायल पाहाल का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("sampleTrial", v)} className="flex gap-4" value={form.watch("sampleTrial")}>
                   <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="st1" /><Label htmlFor="st1">होय</Label></div>

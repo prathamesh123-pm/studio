@@ -72,6 +72,7 @@ const farmerSchema = z.object({
   packNutrition: z.any(),
   rating: z.string(),
   problems: z.array(z.string()).default([]),
+  otherProblem: z.string().optional(),
   improvements: z.string(),
   switchIfCheaper: z.string().optional(),
   idealFeedQualities: z.string(),
@@ -206,6 +207,16 @@ function FarmerSurveyForm() {
     }
   };
 
+  const complaintOptions = [
+    { label: "दूध वाढ नाही", value: "NoMilkIncrease" },
+    { label: "फॅट कमी लागते", value: "LowFat" },
+    { label: "जनावर खात नाही", value: "AnimalDoesntLike" },
+    { label: "किंमत जास्त आहे", value: "HighPrice" },
+    { label: "पुरवठा उशिरा होतो", value: "LateSupply" },
+    { label: "भेसळ वाटते", value: "Adulteration" },
+    { label: "पचनाचे त्रास", value: "DigestionIssues" },
+  ];
+
   return (
     <div className="min-h-screen pb-12 bg-background">
       <Navbar />
@@ -256,7 +267,7 @@ function FarmerSurveyForm() {
             </div>
             <div className="mt-4 space-y-4">
               <div className="flex justify-between items-center">
-                <Label className="text-sm">पुरवठादार (विभाग ६)</Label>
+                <Label className="text-sm font-bold text-primary">पुरवठादार (विभाग ६)</Label>
                 <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "" })}>जोडा</Button>
               </div>
               {supplierFields.map((field, index) => (
@@ -291,6 +302,31 @@ function FarmerSurveyForm() {
               <Input {...form.register("previousBrands")} placeholder="पूर्वीचे ब्रँड" />
               <Input {...form.register("betterBrand")} placeholder="चांगला ब्रँड कोणता वाटतो?" />
               <div className="flex items-center gap-4"><Label>रेटिंग:</Label><Input {...form.register("rating")} type="range" min="1" max="5" className="w-40" /></div>
+              
+              <div className="space-y-2 border-t pt-4">
+                <Label className="text-sm font-bold text-primary">मुख्य तक्रारी (Main Complaints)</Label>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {complaintOptions.map((opt) => (
+                    <div key={opt.value} className="flex items-center space-x-2">
+                      <Checkbox 
+                        id={`farmer-comp-${opt.value}`}
+                        checked={(form.watch("problems") || []).includes(opt.value)}
+                        onCheckedChange={(checked) => {
+                          const current = form.getValues("problems") || [];
+                          if (checked) form.setValue("problems", [...current, opt.value]);
+                          else form.setValue("problems", current.filter(v => v !== opt.value));
+                        }}
+                      />
+                      <Label htmlFor={`farmer-comp-${opt.value}`} className="text-xs">{opt.label}</Label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label className="text-sm font-bold text-primary">इतर तक्रारी (Other Complaints)</Label>
+                <Input {...form.register("otherProblem")} placeholder="इतर कोणती तक्रार असल्यास लिहा" />
+              </div>
+
               <Textarea {...form.register("improvements")} placeholder="सुधारणा सूचना" />
               <Textarea {...form.register("idealFeedQualities")} placeholder="आदर्श पशुखाद्य गुण" />
             </div>

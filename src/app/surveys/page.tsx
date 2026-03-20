@@ -100,7 +100,14 @@ export default function SurveysList() {
     'NotSatisfied': 'समाधानी नाही',
     'LocalShop': 'स्थानिक दुकान',
     'Dealer': 'डीलर',
-    'Other': 'इतर'
+    'Other': 'इतर',
+    'NoMilkIncrease': 'दूध वाढ नाही',
+    'LowFat': 'फॅट कमी लागते',
+    'AnimalDoesntLike': 'जनावर खात नाही',
+    'HighPrice': 'किंमत जास्त आहे',
+    'LateSupply': 'पुरवठा उशिरा होतो',
+    'Adulteration': 'भेसळ वाटते',
+    'DigestionIssues': 'पचनाचे त्रास'
   };
 
   const translate = (val: any) => {
@@ -307,7 +314,7 @@ export default function SurveysList() {
           <Table className="border border-black table-fixed">
             <TableBody>
               <DataRow label="पशुखाद्याबाबत मुख्य समस्या / तक्रारी" value={isDairy ? d.mainProblem : d.problems} />
-              {isDairy && d.otherProblem && <DataRow label="इतर समस्या" value={d.otherProblem} />}
+              {(d.otherProblem || d.otherProblem === "") && <DataRow label="इतर समस्या" value={d.otherProblem} />}
               <DataRow label="आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
               {!isDairy && <DataRow label="भविष्यात सुधारणा काय असाव्यात?" value={d.improvements} />}
               <DataRow label="नवीन ब्रँडचे नमुना ट्रायल घेऊन पाहणार का?" value={isDairy ? d.sampleTrial : (d.switchIfCheaper ? "हो, स्वस्त असल्यास" : "नाही")} />
