@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -182,7 +181,7 @@ export default function BrandManagement() {
         <Label className="text-[10px] uppercase font-bold text-primary">{label}</Label>
         <div className="flex gap-1">
           <Select 
-            value={item.limit} 
+            value={item?.limit || 'Min'} 
             onValueChange={(val: any) => setNutrition({...nutrition, [field]: { ...item, limit: val }})}
           >
             <SelectTrigger className="h-8 w-16 text-[10px] px-1 bg-slate-50">
@@ -195,7 +194,7 @@ export default function BrandManagement() {
           </Select>
           <Input 
             type="number" 
-            value={item.value} 
+            value={item?.value || ""} 
             onChange={(e) => setNutrition({...nutrition, [field]: { ...item, value: e.target.value }})} 
             className="h-8 text-xs flex-1"
             placeholder="Val"
@@ -216,14 +215,19 @@ export default function BrandManagement() {
     </TableRow>
   );
 
-  const NutrientRow = ({ desc, data }: { desc: string, data: NutrientValue }) => (
-    <TableRow className="border-b border-black">
-      <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black">{desc}</TableCell>
-      <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{data.limit}</TableCell>
-      <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
-      <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center">{data.value || '-'}</TableCell>
-    </TableRow>
-  );
+  const NutrientRow = ({ desc, data }: { desc: string, data: NutrientValue | any }) => {
+    const limit = data?.limit || (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
+    const val = typeof data === 'object' ? data?.value : data;
+    
+    return (
+      <TableRow className="border-b border-black">
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black">{desc}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{limit}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center">{val || '-'}</TableCell>
+      </TableRow>
+    );
+  };
 
   const DetailedBrandTable = ({ brand, isPrint = false }: { brand: MasterBrand, isPrint?: boolean }) => (
     <div className={`space-y-1 py-1 ${isPrint ? 'space-y-1' : ''}`}>
@@ -253,19 +257,19 @@ export default function BrandManagement() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <NutrientRow desc="Crude protein" data={brand.nutrition.protein} />
-            <NutrientRow desc="Crude fat" data={brand.nutrition.fat} />
-            <NutrientRow desc="Crude fiber" data={brand.nutrition.fiber} />
-            <NutrientRow desc="Acid insoluble ash" data={brand.nutrition.ash} />
-            <NutrientRow desc="Calcium" data={brand.nutrition.calcium} />
-            <NutrientRow desc="Total phosphorus" data={brand.nutrition.totalPhosphorus} />
-            <NutrientRow desc="Available phosphorus" data={brand.nutrition.availablePhosphorus} />
-            <NutrientRow desc="Aflatoxin B1" data={brand.nutrition.aflatoxin} />
-            <NutrientRow desc="Urea" data={brand.nutrition.urea} />
-            <NutrientRow desc="Moisture" data={brand.nutrition.moisture} />
+            <NutrientRow desc="Crude protein" data={brand.nutrition?.protein} />
+            <NutrientRow desc="Crude fat" data={brand.nutrition?.fat} />
+            <NutrientRow desc="Crude fiber" data={brand.nutrition?.fiber} />
+            <NutrientRow desc="Acid insoluble ash" data={brand.nutrition?.ash} />
+            <NutrientRow desc="Calcium" data={brand.nutrition?.calcium} />
+            <NutrientRow desc="Total phosphorus" data={brand.nutrition?.totalPhosphorus} />
+            <NutrientRow desc="Available phosphorus" data={brand.nutrition?.availablePhosphorus} />
+            <NutrientRow desc="Aflatoxin B1" data={brand.nutrition?.aflatoxin} />
+            <NutrientRow desc="Urea" data={brand.nutrition?.urea} />
+            <NutrientRow desc="Moisture" data={brand.nutrition?.moisture} />
           </TableBody>
         </Table>
-        {brand.nutrition.others && (
+        {brand.nutrition?.others && (
           <div className="p-2 border border-black border-t-0 text-[10pt] font-black">इतर: {brand.nutrition.others}</div>
         )}
       </section>

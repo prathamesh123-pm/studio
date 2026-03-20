@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -38,6 +37,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { NutrientValue } from "@/lib/brand-store";
+import React from "react";
 
 export default function SurveysList() {
   const router = useRouter();
@@ -135,8 +135,8 @@ export default function SurveysList() {
   };
 
   const NutrientRow = ({ desc, data }: { desc: string, data: NutrientValue | any }) => {
-    const val = typeof data === 'object' ? data.value : data;
-    const limit = typeof data === 'object' ? data.limit : (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
+    const limit = data?.limit || (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
+    const val = typeof data === 'object' ? data?.value : data;
     
     return (
       <TableRow className="border-b border-black">
@@ -287,40 +287,40 @@ export default function SurveysList() {
         {/* ४. पोषण विश्लेषण */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ४. पोषण विश्लेषण
+            ४. ब्रँड व पोषण विश्लेषण
           </h4>
           <Table className="border border-black table-fixed">
             <TableHeader className="bg-gray-50">
               <TableRow className="border-b-2 border-black">
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black">Description</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black text-center">Min/Max</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black border-r border-black text-center">UOM</TableHead>
-                <TableHead className="text-[9.5pt] font-black text-black text-center">Value</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black w-[30%]">ब्रँड नाव</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">किंमत (₹)</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">प्रोटीन (%)</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">फॅट (%)</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">फायबर (%)</TableHead>
+                <TableHead className="text-[9pt] font-black text-black text-center">कॅल्शियम (%)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isDairy ? (
                 d.brandsInfo?.map((b: any, i: number) => (
-                  <React.Fragment key={i}>
-                    <TableRow className="bg-slate-100 border-b border-black">
-                      <TableCell colSpan={4} className="text-[9pt] font-black py-1 px-2 uppercase">{i+1}. {b.name}</TableCell>
-                    </TableRow>
-                    <NutrientRow desc="Crude protein" data={b.protein} />
-                    <NutrientRow desc="Crude fat" data={b.fat} />
-                    <NutrientRow desc="Crude fiber" data={b.fiber} />
-                    <NutrientRow desc="Acid insoluble ash" data={b.ash} />
-                    <NutrientRow desc="Calcium" data={b.calcium} />
-                    <NutrientRow desc="Phosphorus" data={b.phosphorus} />
-                  </React.Fragment>
+                  <TableRow key={i} className="border-b border-black">
+                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black">{b.name}</TableCell>
+                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{b.price}</TableCell>
+                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{typeof b.protein === 'object' ? b.protein.value : b.protein}</TableCell>
+                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{typeof b.fat === 'object' ? b.fat.value : b.fat}</TableCell>
+                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{typeof b.fiber === 'object' ? b.fiber.value : b.fiber}</TableCell>
+                    <TableCell className="py-1 px-2 text-[8.5pt] font-black text-center">{typeof b.calcium === 'object' ? b.calcium.value : b.calcium}</TableCell>
+                  </TableRow>
                 ))
               ) : (
-                <>
-                  <NutrientRow desc="Crude protein" data={d.packNutrition?.protein} />
-                  <NutrientRow desc="Crude fat" data={d.packNutrition?.fat} />
-                  <NutrientRow desc="Crude fiber" data={d.packNutrition?.fiber} />
-                  <NutrientRow desc="Calcium" data={d.packNutrition?.calcium} />
-                  <NutrientRow desc="Phosphorus" data={d.packNutrition?.phosphorus} />
-                </>
+                <TableRow className="border-b border-black">
+                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black">{d.currentBrand}</TableCell>
+                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.bagPrice}</TableCell>
+                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.packNutrition?.protein}</TableCell>
+                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.packNutrition?.fat}</TableCell>
+                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.packNutrition?.fiber}</TableCell>
+                  <TableCell className="py-1 px-2 text-[8.5pt] font-black text-center">{d.packNutrition?.calcium}</TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>

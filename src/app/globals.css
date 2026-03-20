@@ -1,29 +1,28 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 40% 99%;
+    --background: 30 40% 98%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 221.2 83.2% 53.3%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
+    --primary: 25 74% 46%;
+    --primary-foreground: 30 40% 98%;
+    --secondary: 30 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
+    --muted: 30 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 217.2 91.2% 59.8%;
+    --accent: 352 69% 70%;
     --accent-foreground: 222.2 47.4% 11.2%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 221.2 83.2% 53.3%;
+    --ring: 25 74% 46%;
     --radius: 0.75rem;
   }
 }
@@ -48,12 +47,13 @@
 @media print {
   @page {
     size: A4;
-    margin: 5mm;
+    margin: 8mm;
   }
 
   body {
     background: white !important;
     color: black !important;
+    font-size: 10pt !important;
   }
 
   body * {
@@ -82,8 +82,6 @@
     z-index: 9999 !important;
   }
 
-  button[class*="absolute right-4 top-4"],
-  div[data-state="open"] > div[class*="fixed inset-0 z-50 bg-black/80"],
   .no-print {
     display: none !important;
   }
@@ -95,15 +93,11 @@
     table-layout: fixed !important;
   }
 
-  tr {
-    page-break-inside: avoid !important;
-  }
-
   th, td {
     border: 1.2px solid #000 !important;
-    padding: 4px 8px !important;
+    padding: 3px 6px !important;
     color: #000 !important;
-    font-size: 9.5pt !important;
+    font-size: 9pt !important;
     vertical-align: middle !important;
     line-height: 1.2 !important;
     font-weight: 900 !important;
@@ -112,26 +106,25 @@
   th {
     background-color: #f8fafc !important;
     text-align: left !important;
-    -webkit-print-color-adjust: exact;
   }
 
-  h1, h2, h3, h4 {
+  h2, h4 {
     color: #000 !important;
     font-weight: 900 !important;
     border-bottom: 2px solid #000 !important;
-    margin-bottom: 6px !important;
+    margin-bottom: 4px !important;
     padding-bottom: 2px !important;
     text-transform: uppercase !important;
-    font-size: 10.5pt !important;
+    font-size: 10pt !important;
   }
 
   .break-inside-avoid {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
-    margin-bottom: 8px !important;
+    margin-bottom: 6px !important;
   }
 
-  .text-black, p, span, div, td, th {
+  p, span, div {
     color: #000 !important;
     font-weight: 900 !important;
   }
