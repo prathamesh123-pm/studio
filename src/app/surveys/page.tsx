@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
-import { useSurveyStore, SurveyRecord } from "@/survey-store";
+import { useSurveyStore, SurveyRecord } from "@/lib/survey-store";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +18,7 @@ import {
   Trash2,
   Edit2,
   User,
+  Star
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -36,7 +37,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { NutrientValue } from "@/lib/brand-store";
 import React from "react";
 
 export default function SurveysList() {
@@ -134,7 +134,7 @@ export default function SurveysList() {
     );
   };
 
-  const NutrientRow = ({ desc, data }: { desc: string, data: NutrientValue | any }) => {
+  const NutrientRow = ({ desc, data }: { desc: string, data: any }) => {
     const limit = data?.limit || (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
     const val = typeof data === 'object' ? data?.value : data;
     
@@ -225,7 +225,7 @@ export default function SurveysList() {
           </div>
         </div>
 
-        {/* १. सामान्य माहिती */}
+        {/* १. सामान्य व लोकेशन माहिती */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             १. सामान्य व लोकेशन माहिती
@@ -278,8 +278,8 @@ export default function SurveysList() {
               {!isDairy && <DataRow label="हा ब्रँड तुम्ही किती काळापासून वापरत आहात?" value={d.usageDuration} />}
               <DataRow label={isDairy ? "पशुखाद्य दिवसातून किती वेळा देता?" : "दिवसातून किती वेळा देता?"} value={isDairy ? d.feedFrequency : d.frequency} />
               <DataRow label={isDairy ? "प्रति जनावर दररोज पशुखाद्य (किलो)" : "तुम्ही दिवसाला प्रति जनावर किती पशुखाद्य देता? (किलो)"} value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
-              <DataRow label={isDairy ? "खालीलपैकी कोणते पूरक खाद्य वापरता?" : "पशुखाद्य सोबत इतर खाद्य देता का?"} value={isDairy ? d.supplements : d.otherFeeds} />
-              <DataRow label={isDairy ? "इतर काही असल्यास" : "इतर"} value={isDairy ? d.otherSupplement : d.otherFeedText} />
+              <DataRow label={isDairy ? "पूरक खाद्य" : "पशुखाद्य सोबत इतर खाद्य"} value={isDairy ? d.supplements : d.otherFeeds} />
+              <DataRow label="इतर पूरक खाद्य" value={isDairy ? d.otherSupplement : d.otherFeedText} />
             </TableBody>
           </Table>
         </section>
@@ -287,11 +287,11 @@ export default function SurveysList() {
         {/* ४. पोषण विश्लेषण */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ४. ब्रँड व पोषण विश्लेषण
+            ४. पोषण विश्लेषण
           </h4>
           <Table className="border border-black table-fixed">
             <TableHeader className="bg-gray-50">
-              <TableRow className="border-b-2 border-black">
+              <TableRow className="border-b border-black">
                 <TableHead className="text-[9pt] font-black text-black border-r border-black" style={{ width: '40%' }}>Description</TableHead>
                 <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>Min/Max</TableHead>
                 <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>UOM</TableHead>
@@ -302,21 +302,21 @@ export default function SurveysList() {
               {isDairy ? (
                 d.brandsInfo?.map((b: any, i: number) => (
                   <React.Fragment key={i}>
-                    <TableRow className="bg-gray-50/50">
-                      <TableCell colSpan={4} className="py-1 px-2 text-[9pt] font-bold border-b border-black">{b.name} (किंमत: ₹{b.price})</TableCell>
+                    <TableRow className="bg-gray-50/50 border-b border-black">
+                      <TableCell colSpan={4} className="py-1 px-2 text-[9pt] font-bold">{b.name} (किंमत: ₹{b.price})</TableCell>
                     </TableRow>
-                    <NutrientRow desc="Crude protein" data={b.protein} />
-                    <NutrientRow desc="Crude fat" data={b.fat} />
-                    <NutrientRow desc="Crude fiber" data={b.fiber} />
-                    <NutrientRow desc="Calcium" data={b.calcium} />
+                    <NutrientRow desc="Crude protein" data={{ value: b.protein, limit: 'Min' }} />
+                    <NutrientRow desc="Crude fat" data={{ value: b.fat, limit: 'Min' }} />
+                    <NutrientRow desc="Crude fiber" data={{ value: b.fiber, limit: 'Max' }} />
+                    <NutrientRow desc="Calcium" data={{ value: b.calcium, limit: 'Min' }} />
                   </React.Fragment>
                 ))
               ) : (
                 <>
-                  <NutrientRow desc="Crude protein" data={d.packNutrition?.protein} />
-                  <NutrientRow desc="Crude fat" data={d.packNutrition?.fat} />
-                  <NutrientRow desc="Crude fiber" data={d.packNutrition?.fiber} />
-                  <NutrientRow desc="Calcium" data={d.packNutrition?.calcium} />
+                  <NutrientRow desc="Crude protein" data={{ value: d.packNutrition?.protein, limit: 'Min' }} />
+                  <NutrientRow desc="Crude fat" data={{ value: d.packNutrition?.fat, limit: 'Min' }} />
+                  <NutrientRow desc="Crude fiber" data={{ value: d.packNutrition?.fiber, limit: 'Max' }} />
+                  <NutrientRow desc="Calcium" data={{ value: d.packNutrition?.calcium, limit: 'Min' }} />
                 </>
               )}
             </TableBody>
@@ -348,12 +348,15 @@ export default function SurveysList() {
               <DataRow label="महिन्याला एकूण खर्च / पोती" value={`${d.monthlyExp || '₹0'} / ${d.monthlyBags || '0'} पोती`} />
               <DataRow label="समाधान पातळी / गुणवत्ता" value={isDairy ? d.satisfaction : d.quality} />
               <DataRow label="दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
-              {!isDairy && <DataRow label="समाधान रेटिंग" value={`${d.rating}/५`} />}
+              {!isDairy && <TableRow className="border-b border-black">
+                <TableHead className="font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black" style={{ width: '68%' }}>समाधान रेटिंग</TableHead>
+                <TableCell className="py-2 px-3 text-[11pt] font-black">{d.rating}/५</TableCell>
+              </TableRow>}
             </TableBody>
           </Table>
         </section>
 
-        {/* ७. इतर माहिती व समस्या */}
+        {/* ७. समस्या व सूचना */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
             ७. समस्या व सूचना
@@ -361,17 +364,18 @@ export default function SurveysList() {
           <Table className="border border-black table-fixed">
             <TableBody>
               <DataRow label="मुख्य समस्या काय आहे?" value={isDairy ? d.mainProblem : d.problems} />
+              <DataRow label="इतर समस्या" value={d.otherProblem} />
               <DataRow label="तुमच्या सूचना / मते" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
               <DataRow label="नवीन ब्रँड सॅम्पल/बदलण्याची तयारी" value={isDairy ? d.sampleTrial : d.switchIfCheaper} />
             </TableBody>
           </Table>
         </section>
 
-        {/* ८. ॲड पॉइंट्स */}
+        {/* ८. अ‍ॅड पॉइंट्स */}
         {d.customPoints?.length > 0 && (
           <section className="break-inside-avoid">
             <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-              ८. ॲड पॉइंट्स (इतर मुद्दे)
+              ८. अ‍ॅड पॉइंट्स (इतर मुद्दे)
             </h4>
             <div className="border border-black p-2 min-h-[40px] font-black text-[10pt]">
               {d.customPoints.map((p: any, idx: number) => (
@@ -406,9 +410,9 @@ export default function SurveysList() {
 
         <Tabs defaultValue="all" className="w-full no-print">
           <TabsList className="grid w-full grid-cols-3 mb-6 h-10 bg-primary/5 p-1 border border-primary/10">
-            <TabsTrigger value="all" className="text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white">सर्व</TabsTrigger>
-            <TabsTrigger value="dairy" className="text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white">संकलन केंद्र</TabsTrigger>
-            <TabsTrigger value="farmer" className="text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white">शेतकरी ब्रँड</TabsTrigger>
+            <TabsTrigger value="all" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white">सर्व</TabsTrigger>
+            <TabsTrigger value="dairy" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white">संकलन केंद्र</TabsTrigger>
+            <TabsTrigger value="farmer" className="text-xs data-[state=active]:bg-primary data-[state=active]:text-white">शेतकरी ब्रँड</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-1 mt-0">

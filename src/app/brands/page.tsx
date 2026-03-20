@@ -112,7 +112,7 @@ export default function BrandManagement() {
     setBagWeight(brand.bagWeight || "");
     setAvailableWeights(brand.availableWeights || "");
     setPrice(brand.price || "");
-    setNutrition(brand.nutrition || initialNutrition);
+    setNutrition({ ...initialNutrition, ...brand.nutrition });
     setIngredients(brand.ingredients || [{ ingredient: "", percentage: "" }]);
     setCustomPoints(brand.customPoints?.map(p => ({ point: p.point })) || []);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -215,7 +215,7 @@ export default function BrandManagement() {
     </TableRow>
   );
 
-  const NutrientRow = ({ desc, data }: { desc: string, data: NutrientValue | any }) => {
+  const NutrientRow = ({ desc, data }: { desc: string, data: any }) => {
     const limit = data?.limit || (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
     const val = typeof data === 'object' ? data?.value : data;
     
@@ -236,7 +236,7 @@ export default function BrandManagement() {
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableBody>
             <BrandDataRow label="ब्रँड / कंपनीचे नाव" value={brand.name} />
-            <BrandDataRow label="compounded cattlefeed type" value={brand.compoundedType} />
+            <BrandDataRow label="Cattlefeed Type" value={brand.compoundedType} />
             <BrandDataRow label="खाद्य प्रकार" value={brand.feedType} />
             <BrandDataRow label="बेस वजन (किग्रॅ)" value={brand.bagWeight} />
             <BrandDataRow label="बेस किंमत (₹)" value={brand.price} />
@@ -285,7 +285,7 @@ export default function BrandManagement() {
 
       {brand.customPoints && brand.customPoints.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">४. ॲड पॉइंट्स (इतर)</h4>
+          <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">४. अ‍ॅड पॉइंट्स (इतर)</h4>
           <div className="text-[10.5pt] font-black text-black leading-tight p-3 border border-black border-t-0 min-h-[50px] bg-white">
             {brand.customPoints.map((pt, idx) => (
               <div key={idx} className="mb-1.5">• {pt.point}</div>
@@ -336,7 +336,7 @@ export default function BrandManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase font-bold text-primary">compounded cattlefeed type</Label>
+                    <Label className="text-[11px] uppercase font-bold text-primary">Cattlefeed Type</Label>
                     <Select value={compoundedType} onValueChange={setCompoundedType}>
                       <SelectTrigger className="h-9 border-primary/20">
                         <SelectValue placeholder="निवडा" />
@@ -439,7 +439,7 @@ export default function BrandManagement() {
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-primary font-bold text-sm">ॲड पॉइंट्स (इतर)</Label>
+                    <Label className="text-primary font-bold text-sm">अ‍ॅड पॉइंट्स (इतर)</Label>
                     <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-[10px] border-primary text-primary">
                       <PlusCircle className="h-3 w-3 mr-1" /> जोडा
                     </Button>
