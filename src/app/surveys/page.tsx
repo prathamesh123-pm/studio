@@ -279,7 +279,14 @@ export default function SurveysList() {
               {!isDairy && <DataRow label="पोत्याचे वजन (किग्रॅ)" value={d.bagWeight} />}
               <DataRow label="महिन्याला लागणारी पोती (Bags)" value={d.monthlyBags} />
               {isDairy && <DataRow label="महिन्याचा एकूण खर्च (₹)" value={d.monthlyExp} />}
-              <DataRow label="पुरवठादार माहिती (विभाग ६)" value={d.suppliers?.map((s: any) => s.name).filter(Boolean).join(", ")} />
+              <DataRow 
+                label="पुरवठादार माहिती (विभाग ६)" 
+                value={d.suppliers?.map((s: any) => {
+                  if (!s.name) return null;
+                  const details = [s.contact && `संपर्क: ${s.contact}`, s.address && `पत्ता: ${s.address}`].filter(Boolean).join(", ");
+                  return details ? `${s.name} (${details})` : s.name;
+                }).filter(Boolean).join(" | ")} 
+              />
             </TableBody>
           </Table>
         </section>

@@ -62,6 +62,8 @@ const farmerSchema = z.object({
   purchaseSource: z.string().optional(),
   suppliers: z.array(z.object({
     name: z.string(),
+    contact: z.string().optional(),
+    address: z.string().optional(),
     source: z.string().optional(),
   })).default([{ name: "" }]),
   hasCredit: z.string().optional(),
@@ -109,7 +111,7 @@ function FarmerSurveyForm() {
       selectionReason: [],
       switchReason: [],
       problems: [],
-      suppliers: [{ name: "" }],
+      suppliers: [{ name: "", contact: "", address: "" }],
       customPoints: [],
       packNutrition: {
         protein: { value: "", limit: "Min" },
@@ -173,7 +175,8 @@ function FarmerSurveyForm() {
     const selected = masterSuppliers.find(s => s.id === supplierId);
     if (selected) {
       form.setValue(`suppliers.${index}.name`, selected.shopName);
-      // Optional: Set source if available in master list
+      form.setValue(`suppliers.${index}.contact`, selected.contact);
+      form.setValue(`suppliers.${index}.address`, `${selected.address}, ${selected.taluka}, ${selected.district}`);
     }
   };
 
@@ -271,7 +274,7 @@ function FarmerSurveyForm() {
             <div className="mt-4 space-y-4">
               <div className="flex justify-between items-center">
                 <Label className="text-sm font-bold text-primary">पुरवठादार (विभाग ६)</Label>
-                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "" })}>जोडा</Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "", contact: "", address: "" })}>जोडा</Button>
               </div>
               {supplierFields.map((field, index) => (
                 <div key={field.id} className="p-3 border rounded-lg relative bg-muted/5 space-y-3">
@@ -294,6 +297,11 @@ function FarmerSurveyForm() {
                   <div className="grid grid-cols-1 gap-2">
                     <Input {...form.register(`suppliers.${index}.name`)} placeholder="पुरवठादाराचे नाव" className="h-9" />
                   </div>
+                  {form.watch(`suppliers.${index}.contact`) && (
+                    <div className="text-[10px] text-muted-foreground italic px-1">
+                      संपर्क: {form.watch(`suppliers.${index}.contact`)}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

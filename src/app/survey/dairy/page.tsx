@@ -83,6 +83,8 @@ const dairySchema = z.object({
   suppliers: z.array(z.object({
     source: z.string(),
     name: z.string(),
+    contact: z.string().optional(),
+    address: z.string().optional(),
     otherSource: z.string().optional(),
   })).default([{ source: "", name: "" }]),
   timelySupply: z.enum(["Yes", "No"]).optional(),
@@ -130,7 +132,7 @@ function DairySurveyForm() {
       district: "",
       taluka: "",
       brandsInfo: [],
-      suppliers: [{ source: "", name: "" }],
+      suppliers: [{ source: "", name: "", contact: "", address: "" }],
       customPoints: [],
       mainProblem: [],
       surveyDate: new Date().toISOString().split('T')[0],
@@ -239,6 +241,8 @@ function DairySurveyForm() {
     const selected = masterSuppliers.find(s => s.id === supplierId);
     if (selected) {
       form.setValue(`suppliers.${index}.name`, selected.shopName);
+      form.setValue(`suppliers.${index}.contact`, selected.contact);
+      form.setValue(`suppliers.${index}.address`, `${selected.address}, ${selected.taluka}, ${selected.district}`);
       form.setValue(`suppliers.${index}.source`, selected.supplierType === 'Retailer' ? 'LocalShop' : 'Dealer');
     }
   };
@@ -566,7 +570,7 @@ function DairySurveyForm() {
             <section className="form-section">
               <div className="flex justify-between items-center mb-4 border-b pb-2">
                 <h3 className="text-lg font-bold text-primary">६. पुरवठा माहिती</h3>
-                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "" })} className="h-8 text-xs">जोडा</Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "", contact: "", address: "" })} className="h-8 text-xs">जोडा</Button>
               </div>
               <div className="space-y-4">
                 {supplierFields.map((field, index) => (
@@ -604,6 +608,11 @@ function DairySurveyForm() {
                         <Input {...form.register(`suppliers.${index}.name`)} placeholder="नाव" className="h-8 text-xs" />
                       </div>
                     </div>
+                    {form.watch(`suppliers.${index}.contact`) && (
+                      <div className="text-[10px] text-muted-foreground italic px-1">
+                        संपर्क: {form.watch(`suppliers.${index}.contact`)}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
