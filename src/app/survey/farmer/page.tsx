@@ -239,7 +239,7 @@ function FarmerSurveyForm() {
       <div className="container mx-auto px-4 py-8 max-w-5xl">
         <div className="flex items-center gap-4 mb-6 no-print">
           <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}><ArrowLeft className="h-5 w-5" /></Button>
-          <h1 className="text-2xl font-bold font-headline text-primary">शेतकरी पशुखाद्य ब्रँड सर्वेक्षण फॉर्म</h1>
+          <h1 className="text-xl md:text-2xl font-bold font-headline text-primary">शेतकरी पशुखाद्य ब्रँड सर्वेक्षण फॉर्म</h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -261,9 +261,9 @@ function FarmerSurveyForm() {
               <LocationSelector onLocationChange={(d, t) => { form.setValue("district", d); form.setValue("taluka", t); }} defaultDistrict={form.getValues("district")} defaultTaluka={form.getValues("taluka")} />
             </div>
             <div className="grid grid-cols-3 gap-4 mt-4 bg-muted/20 p-4 rounded-lg">
-              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्याकडे सध्या किती दुभत्या गायी आहेत?</Label><Input {...form.register("animalCount.cows")} type="number" /></div>
-              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्याकडे सध्या किती दुभत्या म्हशी आहेत?</Label><Input {...form.register("animalCount.buffaloes")} type="number" /></div>
-              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्याकडे किती लहान वासरे आहेत?</Label><Input {...form.register("animalCount.calves")} type="number" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">गायी</Label><Input {...form.register("animalCount.cows")} type="number" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">म्हशी</Label><Input {...form.register("animalCount.buffaloes")} type="number" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">वासरे</Label><Input {...form.register("animalCount.calves")} type="number" /></div>
             </div>
           </section>
 
@@ -287,7 +287,7 @@ function FarmerSurveyForm() {
               <div className="space-y-1"><Label className="text-xs">प्रत्येक जनावराला दररोज साधारणपणे किती किलो पशुखाद्य देता?</Label><Input {...form.register("dailyQtyPerAnimal")} type="number" placeholder="उदा. ४ किलो" /></div>
             </div>
             <div className="mt-4 space-y-2">
-              <Label className="text-sm font-bold">तुम्ही पशुखाद्यासोबत इतर कोणते खाद्य वापरता?</Label>
+              <Label className="text-sm font-bold">तुमजी पशुखाद्यासोबत इतर कोणते खाद्य वापरता?</Label>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                 {supplementOptions.map((opt) => (
                   <div key={opt.value} className="flex items-center space-x-2 bg-muted/10 p-2 rounded">
@@ -306,7 +306,7 @@ function FarmerSurveyForm() {
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">३-४-५. ब्रँड निवड, गुणवत्ता व समाधान</h3>
             <div className="space-y-6">
               <div className="space-y-2">
-                <Label className="text-sm font-bold">तुम्ही हाच ब्रँड निवडण्याचे मुख्य कारण काय आहे?</Label>
+                <Label className="text-sm font-bold">तुमजी हाच ब्रँड निवडण्याचे मुख्य कारण काय आहे?</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {selectionOptions.map((opt) => (
                     <div key={opt.value} className="flex items-center space-x-2 bg-white p-2 rounded border">
@@ -478,11 +478,11 @@ function FarmerSurveyForm() {
               </div>
               <div className="space-y-1"><Label className="text-xs font-bold">इतर काही तक्रार असल्यास येथे लिहा:</Label><Input {...form.register("otherProblem")} placeholder="तपशील लिहा" className="h-10" /></div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-1"><Label className="text-xs font-bold text-primary">तुम्ही पशुखाद्यात काही सुधारणा सुचवू इच्छिता का?</Label><Textarea {...form.register("improvements")} className="h-24 bg-white" placeholder="तुमची सूचना येथे लिहा..." /></div>
+                <div className="space-y-1"><Label className="text-xs font-bold text-primary">तुमजी पशुखाद्यात काही सुधारणा सुचवू इच्छिता का?</Label><Textarea {...form.register("improvements")} className="h-24 bg-white" placeholder="तुमची सूचना येथे लिहा..." /></div>
                 <div className="space-y-1"><Label className="text-xs font-bold text-primary">तुमच्या मते एका 'आदर्श पशुखाद्यात' कोणते गुण असावेत?</Label><Textarea {...form.register("idealFeedQualities")} className="h-24 bg-white" placeholder="उदा. दूध वाढ, चकाकी इ." /></div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 border-t pt-4">
-                <div className="space-y-1"><Label className="text-xs font-bold">तुम्हाला स्वस्त दरात चांगला ब्रँड मिळाल्यास तुम्ही बदलणार का?</Label>
+                <div className="space-y-1"><Label className="text-xs font-bold">तुमजी स्वस्त दरात चांगला ब्रँड मिळाल्यास तुम्ही बदलणार का?</Label>
                   <RadioGroup onValueChange={(v) => form.setValue("switchIfCheaper", v)} value={form.watch("switchIfCheaper")} className="flex gap-8 py-2">
                     <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="sic1" /><Label htmlFor="sic1" className="text-sm">होय, नक्कीच</Label></div>
                     <div className="flex items-center space-x-1"><RadioGroupItem value="No" id="sic2" /><Label htmlFor="sic2" className="text-sm">नाही, सध्याचाच योग्य आहे</Label></div>
@@ -523,12 +523,12 @@ function FarmerSurveyForm() {
             </div>
           </section>
 
-          <div className="flex justify-end gap-4 no-print pt-6 border-t">
-            <Button type="button" variant="outline" onClick={() => window.print()} className="h-12 px-8 border-primary text-primary hover:bg-primary/5">
-              <Printer className="mr-2 h-5 w-5" />अहवाल प्रिंट करा
+          <div className="flex justify-center md:justify-end gap-3 no-print pt-6 border-t">
+            <Button type="button" variant="outline" onClick={() => window.print()} className="h-10 px-4 md:px-6 border-primary text-primary hover:bg-primary/5 text-xs md:text-sm">
+              <Printer className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />अहवाल प्रिंट करा
             </Button>
-            <Button type="submit" className="bg-primary h-12 px-10 shadow-lg hover:bg-primary/90">
-              <Save className="mr-2 h-5 w-5" />माहिती जतन करा
+            <Button type="submit" className="bg-primary h-10 px-6 md:px-8 shadow-lg hover:bg-primary/90 text-xs md:text-sm">
+              <Save className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />माहिती जतन करा
             </Button>
           </div>
         </form>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo, useRef } from "react";
@@ -173,12 +174,12 @@ export default function Dashboard() {
       <div className="container mx-auto px-4 py-8">
         <header className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold font-headline text-primary flex items-center gap-2">
-              <LayoutDashboard className="h-8 w-8" /> मुख्य डॅशबोर्ड
+            <h1 className="text-2xl md:text-3xl font-bold font-headline text-primary flex items-center gap-2">
+              <LayoutDashboard className="h-6 w-6 md:h-8 md:w-8" /> मुख्य डॅशबोर्ड
             </h1>
-            <p className="text-muted-foreground">तुमच्या क्षेत्रातील पशुखाद्य ट्रेंड्स आणि सर्वेक्षण आकडेवारीचे संकलन.</p>
+            <p className="text-xs md:text-sm text-muted-foreground">तुमच्या क्षेत्रातील ट्रेंड्स आणि सर्वेक्षण आकडेवारी.</p>
           </div>
-          <div className="flex items-center gap-2 no-print">
+          <div className="flex flex-wrap items-center gap-2 no-print">
             <input 
               type="file" 
               ref={fileInputRef} 
@@ -186,59 +187,59 @@ export default function Dashboard() {
               accept=".json" 
               onChange={handleImportData} 
             />
-            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-2 text-xs border-primary text-primary">
-              <Upload className="h-3.5 w-3.5" /> रिस्टोर बॅकअप
+            <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} className="gap-1 md:gap-2 text-[10px] md:text-xs border-primary text-primary h-8 px-2">
+              <Upload className="h-3 w-3 md:h-3.5 md:w-3.5" /> रिस्टोर
             </Button>
-            <Button variant="default" size="sm" onClick={handleExportData} className="gap-2 text-xs bg-primary shadow-md">
-              <Download className="h-3.5 w-3.5" /> डेटा बॅकअप घ्या
+            <Button variant="default" size="sm" onClick={handleExportData} className="gap-1 md:gap-2 text-[10px] md:text-xs bg-primary shadow-md h-8 px-2">
+              <Download className="h-3 w-3 md:h-3.5 md:w-3.5" /> बॅकअप
             </Button>
           </div>
         </header>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 md:gap-4 mb-8">
           <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">एकूण सर्वेक्षणे</CardTitle>
-              <Users className="h-4 w-4 text-primary" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
+              <CardTitle className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">सर्वेक्षणे</CardTitle>
+              <Users className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total}</div>
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="text-xl md:text-2xl font-bold">{stats.total}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">सक्रिय जिल्हे</CardTitle>
-              <MapPin className="h-4 w-4 text-primary" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
+              <CardTitle className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">जिल्हे</CardTitle>
+              <MapPin className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.districts}</div>
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="text-xl md:text-2xl font-bold">{stats.districts}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">लोकप्रिय ब्रँड</CardTitle>
-              <TrendingUp className="h-4 w-4 text-accent" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
+              <CardTitle className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">लोकप्रिय</CardTitle>
+              <TrendingUp className="h-3 w-3 md:h-4 md:w-4 text-accent" />
             </CardHeader>
-            <CardContent>
-              <div className="text-lg font-bold text-accent truncate">{stats.popularBrand}</div>
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="text-xs md:text-lg font-bold text-accent truncate">{stats.popularBrand}</div>
             </CardContent>
           </Card>
           <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">मास्टर ब्रँड्स</CardTitle>
-              <FileText className="h-4 w-4 text-primary" />
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
+              <CardTitle className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">ब्रँड्स</CardTitle>
+              <FileText className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalBrands}</div>
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="text-xl md:text-2xl font-bold">{stats.totalBrands}</div>
             </CardContent>
           </Card>
-          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-bold uppercase tracking-wider text-muted-foreground">पुरवठादार</CardTitle>
-              <Store className="h-4 w-4 text-primary" />
+          <Card className="bg-white border-primary/20 shadow-sm hover:shadow-md transition-shadow col-span-2 lg:col-span-1">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 p-3 md:p-6">
+              <CardTitle className="text-[10px] md:text-xs font-bold uppercase tracking-wider text-muted-foreground">पुरवठादार</CardTitle>
+              <Store className="h-3 w-3 md:h-4 md:w-4 text-primary" />
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.totalSuppliers}</div>
+            <CardContent className="p-3 md:p-6 pt-0 md:pt-0">
+              <div className="text-xl md:text-2xl font-bold">{stats.totalSuppliers}</div>
             </CardContent>
           </Card>
         </div>
@@ -248,11 +249,11 @@ export default function Dashboard() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Card className="bg-white border-primary/20 shadow-md">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-primary font-headline">
+                  <CardTitle className="flex items-center gap-2 text-primary font-headline text-lg">
                     <BrainCircuit className="h-5 w-5" />
                     क्षेत्रीय AI विश्लेषण
                   </CardTitle>
-                  <CardDescription>निवडलेल्या भागातील पशुखाद्य वापराचे सविस्तर AI विश्लेषण मिळवा.</CardDescription>
+                  <CardDescription className="text-xs">निवडलेल्या भागातील ट्रेंड्सचे AI विश्लेषण मिळवा.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <LocationSelector 
@@ -263,7 +264,7 @@ export default function Dashboard() {
                   />
                   <Button 
                     onClick={getAiSummary} 
-                    className="w-full bg-primary mt-4 shadow-md" 
+                    className="w-full bg-primary mt-4 shadow-md h-10 text-sm" 
                     disabled={!district || !taluka || loading}
                   >
                     {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <MapPin className="mr-2 h-4 w-4" />}
@@ -271,17 +272,17 @@ export default function Dashboard() {
                   </Button>
 
                   {aiSummary && (
-                    <div className="mt-6 p-5 bg-primary/5 rounded-xl border border-primary/10 text-sm leading-relaxed whitespace-pre-wrap animate-in fade-in slide-in-from-top-2 duration-500 shadow-inner relative group">
+                    <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/10 text-xs md:text-sm leading-relaxed whitespace-pre-wrap relative group shadow-inner">
                       <Button 
                         size="icon" 
                         variant="ghost" 
-                        className="absolute top-2 right-2 h-8 w-8 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-2 right-2 h-7 w-7 text-primary opacity-0 group-hover:opacity-100 transition-opacity"
                         onClick={handleCopyAiSummary}
                       >
                         {copied ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                       </Button>
                       <div className="font-bold text-primary mb-2 flex items-center gap-2">
-                        <TrendingUp className="h-4 w-4" /> विश्लेषण परिणाम ({taluka}, {district}):
+                        <TrendingUp className="h-4 w-4" /> {taluka}, {district}:
                       </div>
                       {aiSummary}
                     </div>
@@ -291,16 +292,16 @@ export default function Dashboard() {
 
               <Card className="bg-white border-primary/20 shadow-md">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-primary font-headline">
+                  <CardTitle className="flex items-center gap-2 text-primary font-headline text-lg">
                     <PieChart className="h-5 w-5" />
-                    ब्रँड लोकप्रियता (Top 5 Brands)
+                    ब्रँड लोकप्रियता
                   </CardTitle>
-                  <CardDescription>निवडलेल्या जिल्हा व तालुक्यातील टॉप ५ ब्रँड्स.</CardDescription>
+                  <CardDescription className="text-xs">निवडलेल्या भागातील टॉप ५ ब्रँड्स.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="bg-primary/5 p-3 rounded-lg border border-primary/10 mb-2">
-                    <div className="flex items-center gap-2 mb-2 text-primary font-bold text-xs uppercase">
-                      <Filter className="h-3 w-3" /> चार्ट फिल्टर करा
+                  <div className="bg-primary/5 p-2 rounded-lg border border-primary/10 mb-2">
+                    <div className="flex items-center gap-2 mb-2 text-primary font-bold text-[10px] uppercase">
+                      <Filter className="h-3 w-3" /> चार्ट फिल्टर
                     </div>
                     <LocationSelector 
                       onLocationChange={(d, t) => {
@@ -312,20 +313,20 @@ export default function Dashboard() {
                     />
                   </div>
                   
-                  <div className="h-[250px]">
+                  <div className="h-[200px] md:h-[250px]">
                     {filteredChartData.length > 0 ? (
                       <ResponsiveContainer width="100%" height="100%">
-                        <BarChart data={filteredChartData} layout="vertical" margin={{ left: 40, right: 20 }}>
+                        <BarChart data={filteredChartData} layout="vertical" margin={{ left: 20, right: 20 }}>
                           <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                           <XAxis type="number" hide />
                           <YAxis 
                             dataKey="name" 
                             type="category" 
-                            width={80} 
-                            tick={{ fontSize: 10, fontWeight: 'bold' }} 
+                            width={70} 
+                            tick={{ fontSize: 9, fontWeight: 'bold' }} 
                           />
                           <RechartsTooltip 
-                            contentStyle={{ fontSize: '12px', borderRadius: '8px' }}
+                            contentStyle={{ fontSize: '11px', borderRadius: '8px' }}
                             cursor={{ fill: '#f1f5f9' }}
                           />
                           <Bar dataKey="count" radius={[0, 4, 4, 0]}>
@@ -336,9 +337,9 @@ export default function Dashboard() {
                         </BarChart>
                       </ResponsiveContainer>
                     ) : (
-                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-sm italic p-4 text-center">
-                        <FileText className="h-8 w-8 mb-2 opacity-20" />
-                        निवडलेल्या भागात अद्याप कोणतेही सर्वेक्षण झालेले नाही.
+                      <div className="flex flex-col items-center justify-center h-full text-muted-foreground text-xs italic p-4 text-center">
+                        <FileText className="h-6 w-6 mb-2 opacity-20" />
+                        माहिती उपलब्ध नाही.
                       </div>
                     )}
                   </div>
@@ -350,35 +351,30 @@ export default function Dashboard() {
           <div className="lg:col-span-4">
             <Card className="bg-white border-primary/20 shadow-md h-full">
               <CardHeader>
-                <CardTitle className="text-primary font-headline flex items-center gap-2">
+                <CardTitle className="text-primary font-headline flex items-center gap-2 text-lg">
                   <Clock className="h-5 w-5" /> अलीकडील सर्वेक्षणे
                 </CardTitle>
-                <CardDescription>नुकतेच पूर्ण झालेले सर्वे रिपोर्ट.</CardDescription>
+                <CardDescription className="text-xs">नुकतेच पूर्ण झालेले रिपोर्ट.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {recentSurveys.length === 0 ? (
-                    <div className="text-center py-20 text-muted-foreground">
-                      <FileText className="h-10 w-10 mx-auto mb-2 opacity-10" />
-                      अद्याप कोणतीही हालचाल नाही.
+                    <div className="text-center py-20 text-muted-foreground text-sm">
+                      <FileText className="h-8 w-8 mx-auto mb-2 opacity-10" />
+                      हालचाल नाही.
                     </div>
                   ) : (
                     recentSurveys.map((survey, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-transparent hover:border-primary/20 transition-all hover:bg-white hover:shadow-sm">
+                      <div key={i} className="flex items-center justify-between p-2 md:p-3 bg-muted/30 rounded-lg border border-transparent hover:border-primary/20 hover:bg-white hover:shadow-sm transition-all">
                         <div className="min-w-0 flex-1">
-                          <p className="font-bold text-sm text-primary truncate">
+                          <p className="font-bold text-xs md:text-sm text-primary truncate">
                             {survey.type === 'dairy' ? survey.data.dairyName : survey.data.farmerName}
                           </p>
                           <p className="text-[10px] text-muted-foreground flex items-center gap-1 mt-0.5 truncate">
-                            <MapPin className="h-3 w-3 text-primary" /> {survey.data.village}, {survey.data.taluka}
+                            <MapPin className="h-3 w-3 text-primary" /> {survey.data.village}
                           </p>
-                          <div className="mt-1">
-                            <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full ${survey.type === 'dairy' ? 'bg-blue-100 text-blue-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                              {survey.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
-                            </span>
-                          </div>
                         </div>
-                        <span className="text-[10px] font-medium text-muted-foreground bg-white px-2 py-1 rounded border shadow-sm shrink-0 ml-2">
+                        <span className="text-[9px] md:text-[10px] font-medium text-muted-foreground bg-white px-1.5 py-0.5 rounded border shadow-sm ml-2">
                           {new Date(survey.timestamp).toLocaleDateString('mr-IN')}
                         </span>
                       </div>
@@ -386,8 +382,8 @@ export default function Dashboard() {
                   )}
                 </div>
                 {recentSurveys.length > 0 && (
-                  <Button variant="ghost" className="w-full mt-4 text-xs text-primary" asChild>
-                    <a href="/surveys">सर्व सर्वेक्षणे पहा</a>
+                  <Button variant="ghost" className="w-full mt-4 text-[10px] md:text-xs text-primary h-8" asChild>
+                    <a href="/surveys">सर्व रिपोर्ट पहा</a>
                   </Button>
                 )}
               </CardContent>

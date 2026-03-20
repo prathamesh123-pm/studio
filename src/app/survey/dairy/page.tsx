@@ -271,7 +271,7 @@ function DairySurveyForm() {
       <div className="container mx-auto px-4 py-8 max-w-[95%]">
         <div className="flex items-center gap-4 mb-6 no-print">
           <Button type="button" variant="ghost" size="icon" onClick={() => router.back()}><ArrowLeft className="h-5 w-5" /></Button>
-          <h1 className="text-2xl font-bold font-headline text-primary">गवळी संकलन केंद्र (डेअरी) सर्वेक्षण फॉर्म</h1>
+          <h1 className="text-xl md:text-2xl font-bold font-headline text-primary">गवळी संकलन केंद्र (डेअरी) सर्वेक्षण फॉर्म</h1>
         </div>
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -510,12 +510,12 @@ function DairySurveyForm() {
             </div>
           </section>
 
-          <div className="flex justify-end gap-4 no-print pt-6 border-t">
-            <Button type="button" variant="outline" onClick={() => window.print()} className="h-12 px-8 border-primary text-primary hover:bg-primary/5">
-              <Printer className="mr-2 h-5 w-5" />अहवाल प्रिंट करा
+          <div className="flex justify-center md:justify-end gap-3 no-print pt-6 border-t">
+            <Button type="button" variant="outline" onClick={() => window.print()} className="h-10 px-4 md:px-6 border-primary text-primary hover:bg-primary/5 text-xs md:text-sm">
+              <Printer className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />अहवाल प्रिंट करा
             </Button>
-            <Button type="submit" className="bg-primary h-12 px-10 shadow-lg hover:bg-primary/90">
-              <Save className="mr-2 h-5 w-5" />माहिती जतन करा
+            <Button type="submit" className="bg-primary h-10 px-6 md:px-8 shadow-lg hover:bg-primary/90 text-xs md:text-sm">
+              <Save className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />माहिती जतन करा
             </Button>
           </div>
         </form>
