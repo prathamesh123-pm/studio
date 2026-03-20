@@ -112,18 +112,18 @@ export function Navbar() {
               </DialogHeader>
               <div className="grid gap-4 py-4">
                 <div className="grid gap-2">
-                  <Label htmlFor="name">सर्वे करणाऱ्याचे पूर्ण नाव</Label>
+                  <Label htmlFor="profile-name">सर्वे करणाऱ्याचे पूर्ण नाव</Label>
                   <Input
-                    id="name"
+                    id="profile-name"
                     value={profileName}
                     onChange={(e) => setProfileName(e.target.value)}
                     placeholder="उदा. राहुल पाटील"
                   />
                 </div>
                 <div className="grid gap-2">
-                  <Label htmlFor="id">आयडी नंबर / कर्मचारी क्रमांक</Label>
+                  <Label htmlFor="profile-id">आयडी नंबर</Label>
                   <Input
-                    id="id"
+                    id="profile-id"
                     value={profileId}
                     onChange={(e) => setProfileId(e.target.value)}
                     placeholder="उदा. EMP123"

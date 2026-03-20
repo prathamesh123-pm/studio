@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -66,14 +65,17 @@ const dairySchema = z.object({
     feedType: z.string(),
     bagWeight: z.string(),
     price: z.string(),
-    protein: z.string(),
-    fat: z.string(),
-    fiber: z.string(),
-    calcium: z.string(),
-    phosphorus: z.string(),
-    salt: z.string(),
-    mineralMix: z.string(),
-    others: z.string(),
+    protein: z.any(),
+    fat: z.any(),
+    fiber: z.any(),
+    ash: z.any(),
+    calcium: z.any(),
+    totalPhosphorus: z.any(),
+    availablePhosphorus: z.any(),
+    aflatoxin: z.any(),
+    urea: z.any(),
+    moisture: z.any(),
+    others: z.string().optional(),
   })).default([]),
   purchaseMethod: z.string().optional(),
   creditDays: z.string().optional(),
@@ -163,7 +165,6 @@ function DairySurveyForm() {
         if (existing.data.customPoints) replacePoints(existing.data.customPoints);
       }
     } else {
-      // Set defaults from profile
       form.setValue("surveyorName", savedName);
       form.setValue("surveyorId", savedId);
     }
@@ -207,10 +208,13 @@ function DairySurveyForm() {
             protein: selected.nutrition.protein,
             fat: selected.nutrition.fat,
             fiber: selected.nutrition.fiber,
+            ash: selected.nutrition.ash,
             calcium: selected.nutrition.calcium,
-            phosphorus: selected.nutrition.phosphorus,
-            salt: selected.nutrition.salt,
-            mineralMix: selected.nutrition.mineralMix,
+            totalPhosphorus: selected.nutrition.totalPhosphorus,
+            availablePhosphorus: selected.nutrition.availablePhosphorus,
+            aflatoxin: selected.nutrition.aflatoxin,
+            urea: selected.nutrition.urea,
+            moisture: selected.nutrition.moisture,
             others: selected.nutrition.others,
           });
         }
@@ -332,7 +336,7 @@ function DairySurveyForm() {
             <div className="grid grid-cols-1 gap-4 mt-4">
               <div className="space-y-2">
                 <Label className="form-label-mr">संपूर्ण पत्ता</Label>
-                <Textarea {...form.register("address")} placeholder="रस्ता, गल्ली, खुणा इ. (मोठ्या पत्त्यासाठी पुरेशी जागा)" />
+                <Textarea {...form.register("address")} placeholder="रस्ता, गल्ली इ." />
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -373,7 +377,7 @@ function DairySurveyForm() {
                 <Input {...form.register("livestock.milkingAnimals")} type="number" />
               </div>
               <div className="space-y-2">
-                <Label className="form-label-mr">सरासरी दूध उत्पादन (प्रति जनावर लिटर/दिवस)</Label>
+                <Label className="form-label-mr">सरासरी दूध उत्पादन (लिटर/दिवस)</Label>
                 <Input {...form.register("livestock.avgMilkPerAnimal")} type="number" step="0.1" />
               </div>
             </div>
@@ -391,7 +395,7 @@ function DairySurveyForm() {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="ReadyMade" id="rd1" />
-                    <Label htmlFor="rd1">रेडीमेड पशुखाद्य</Label>
+                    <Label htmlFor="rd1">रेडीमेड</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="HomeMade" id="rd2" />
@@ -411,9 +415,7 @@ function DairySurveyForm() {
                     onValueChange={(val) => form.setValue("feedFrequency", val)}
                     value={form.watch("feedFrequency")}
                   >
-                    <SelectTrigger>
-                      <SelectValue placeholder="निवडा" />
-                    </SelectTrigger>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="1">१ वेळ</SelectItem>
                       <SelectItem value="2">२ वेळा</SelectItem>
@@ -428,8 +430,8 @@ function DairySurveyForm() {
               </div>
 
               <div className="space-y-2">
-                <Label className="form-label-mr">खालीलपैकी कोणते पूरक खाद्य वापरता?</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <Label className="form-label-mr">कोणते पूरक खाद्य वापरता?</Label>
+                <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                   {supplementOptions.map((opt) => (
                     <div key={opt.value} className="flex items-center space-x-2">
                       <Checkbox 
@@ -445,9 +447,6 @@ function DairySurveyForm() {
                     </div>
                   ))}
                 </div>
-                <div className="mt-2">
-                  <Input {...form.register("otherSupplement")} placeholder="इतर काही असल्यास लिहा" />
-                </div>
               </div>
             </div>
           </section>
@@ -455,57 +454,27 @@ function DairySurveyForm() {
           <section className="form-section overflow-x-auto">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b pb-2">
               <h3 className="text-lg font-bold text-primary">४. ब्रँड व पोषण माहिती</h3>
-              <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 no-print">
-                <Search className="h-4 w-4 text-primary" />
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-bold text-primary uppercase">मास्टर ब्रँड निवडा</span>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" className="h-8 bg-white w-[250px] text-xs justify-between">
-                        {selectedBrandIds.length > 0 
-                          ? `${selectedBrandIds.length} ब्रँड निवडले आहेत` 
-                          : "येथून ब्रँड निवडा"}
-                        <PlusCircle className="h-4 w-4 ml-2" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[300px] p-0" align="start">
-                      <div className="p-2 space-y-1 max-h-[300px] overflow-y-auto">
-                        {masterBrands.length === 0 ? (
-                          <div className="p-4 text-center text-xs text-muted-foreground italic">प्रथम ब्रँड मास्टर लिस्टमध्ये जतन करा</div>
-                        ) : (
-                          masterBrands.map((b) => (
-                            <div 
-                              key={b.id} 
-                              className={cn(
-                                "flex items-center gap-2 p-2 rounded-md hover:bg-muted cursor-pointer transition-colors",
-                                selectedBrandIds.includes(b.id) && "bg-primary/10"
-                              )}
-                              onClick={() => toggleBrandSelection(b.id)}
-                            >
-                              <div className={cn(
-                                "h-4 w-4 border rounded flex items-center justify-center",
-                                selectedBrandIds.includes(b.id) ? "bg-primary border-primary" : "border-input"
-                              )}>
-                                {selectedBrandIds.includes(b.id) && <Check className="h-3 w-3 text-white" />}
-                              </div>
-                              <span className="text-xs font-medium">{b.name}</span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                      <div className="p-2 border-t bg-muted/5">
-                        <Button 
-                          className="w-full h-8 text-xs" 
-                          size="sm" 
-                          onClick={handleAddSelectedBrands}
-                          disabled={selectedBrandIds.length === 0}
+              <div className="no-print">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2"><PlusCircle className="h-4 w-4" /> मास्टर ब्रँड जोडा</Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[300px] p-0" align="end">
+                    <div className="p-2 space-y-1 max-h-[300px] overflow-y-auto">
+                      {masterBrands.map((b) => (
+                        <div 
+                          key={b.id} 
+                          className={cn("flex items-center gap-2 p-2 rounded-md hover:bg-muted cursor-pointer", selectedBrandIds.includes(b.id) && "bg-primary/10")}
+                          onClick={() => toggleBrandSelection(b.id)}
                         >
-                          निवडलेले ब्रँड जोडा
-                        </Button>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
+                          <div className={cn("h-4 w-4 border rounded", selectedBrandIds.includes(b.id) && "bg-primary border-primary")} />
+                          <span className="text-xs">{b.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="p-2 border-t"><Button className="w-full h-8 text-xs" onClick={handleAddSelectedBrands}>निवडलेले ब्रँड जोडा</Button></div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
 
@@ -513,48 +482,38 @@ function DairySurveyForm() {
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead className="font-bold">ब्रँड नाव</TableHead>
-                  <TableHead className="font-bold">प्रकार</TableHead>
-                  <TableHead className="font-bold">वजन (किग्रॅ)</TableHead>
                   <TableHead className="font-bold">किंमत (₹)</TableHead>
                   <TableHead className="font-bold text-xs">प्रोटीन (%)</TableHead>
                   <TableHead className="font-bold text-xs">फॅट (%)</TableHead>
                   <TableHead className="font-bold text-xs">फायबर (%)</TableHead>
+                  <TableHead className="font-bold text-xs">Ash (%)</TableHead>
                   <TableHead className="font-bold text-xs">कॅल्शियम (%)</TableHead>
-                  <TableHead className="font-bold text-xs">फॉस्फरस (%)</TableHead>
-                  <TableHead className="font-bold text-xs">मीठ (%)</TableHead>
-                  <TableHead className="font-bold text-xs">मिनरल (%)</TableHead>
+                  <TableHead className="font-bold text-xs">T. Phos (%)</TableHead>
+                  <TableHead className="font-bold text-xs">A. Phos (%)</TableHead>
+                  <TableHead className="font-bold text-xs">Aflatoxin</TableHead>
+                  <TableHead className="font-bold text-xs">Urea (%)</TableHead>
+                  <TableHead className="font-bold text-xs">Moisture (%)</TableHead>
                   <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {brandFields.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={12} className="text-center py-6 text-muted-foreground text-sm">
-                      मास्टर ब्रँड निवडल्यास सर्व माहिती येथे आपोआप भरली जाईल.
-                    </TableCell>
+                {brandFields.map((field, index) => (
+                  <TableRow key={field.id}>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.name` as const)} className="h-8 text-xs" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.price` as const)} className="h-8 text-xs w-20" type="number" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.protein.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.fat.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.fiber.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.ash.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.calcium.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.totalPhosphorus.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.availablePhosphorus.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.aflatoxin.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.urea.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${index}.moisture.value` as any)} className="h-8 text-xs w-14" /></TableCell>
+                    <TableCell><Button type="button" variant="ghost" size="icon" onClick={() => removeBrand(index)}><Trash2 className="h-4 w-4 text-destructive" /></Button></TableCell>
                   </TableRow>
-                ) : (
-                  brandFields.map((field, index) => (
-                    <TableRow key={field.id}>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.name` as const)} className="h-8 text-xs font-bold" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.feedType` as const)} className="h-8 text-xs" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.bagWeight` as const)} className="h-8 text-xs w-16" type="number" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.price` as const)} className="h-8 text-xs w-20" type="number" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.protein` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.fat` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.fiber` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.calcium` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.phosphorus` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.salt` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell><Input {...form.register(`brandsInfo.${index}.mineralMix` as const)} className="h-8 text-xs w-14" /></TableCell>
-                      <TableCell>
-                        <Button type="button" variant="ghost" size="icon" onClick={() => removeBrand(index)}>
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                )}
+                ))}
               </TableBody>
             </Table>
           </section>
@@ -562,97 +521,27 @@ function DairySurveyForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. खरेदी पद्धत</h3>
-              <RadioGroup 
-                onValueChange={(v) => form.setValue("purchaseMethod", v)} 
-                className="space-y-2"
-                value={form.watch("purchaseMethod")}
-              >
+              <RadioGroup onValueChange={(v) => form.setValue("purchaseMethod", v)} className="space-y-2" value={form.watch("purchaseMethod")}>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने</Label></div>
                 <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने</Label></div>
-                <div className="flex items-center space-x-2 ml-6">
-                  <Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-20" />
-                  <span className="text-xs">दिवसांची उधारी</span>
-                </div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Weekly" id="p3" /><Label htmlFor="p3">साप्ताहिक</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Fortnightly" id="p4" /><Label htmlFor="p4">पंधरवड्याने</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Monthly" id="p5" /><Label htmlFor="p5">मासिक</Label></div>
+                <div className="flex items-center space-x-2 ml-6"><Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-20" /><span className="text-xs">दिवस</span></div>
               </RadioGroup>
             </section>
-
             <section className="form-section">
-              <div className="flex justify-between items-center mb-4 border-b pb-2">
-                <h3 className="text-lg font-bold text-primary">६. पुरवठा माहिती (मल्टिपल पुरवठादार)</h3>
-                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "" })} className="gap-1 h-8 text-xs">
-                  <Plus className="h-3 w-3" /> पुरवठादार जोडा
-                </Button>
-              </div>
-              <div className="space-y-6">
-                {supplierFields.map((field, index) => (
-                  <div key={field.id} className="p-4 border rounded-lg bg-muted/5 relative space-y-4 group">
-                    <Button 
-                      type="button" 
-                      variant="ghost" 
-                      size="icon" 
-                      className="absolute top-1 right-1 text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeSupplier(index)}
-                      disabled={supplierFields.length === 1}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <div className="space-y-2">
-                      <Label className="text-xs">पशुखाद्य कुठून खरेदी करता? (स्त्रोत {index + 1})</Label>
-                      <Select 
-                        onValueChange={(v) => form.setValue(`suppliers.${index}.source`, v)}
-                        value={form.watch(`suppliers.${index}.source`)}
-                      >
-                        <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
-                          <SelectItem value="Dealer">कंपनी डीलर</SelectItem>
-                          <SelectItem value="Dairy">डेअरी / संकलन केंद्र</SelectItem>
-                          <SelectItem value="Other">इतर</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      {form.watch(`suppliers.${index}.source`) === "Other" && <Input {...form.register(`suppliers.${index}.otherSource`)} placeholder="इतर स्त्रोताचे नाव" className="mt-1" />}
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label className="text-xs">पुरवठादार निवडा (मास्टर लिस्ट मधून)</Label>
-                      <Select onValueChange={(v) => form.setValue(`suppliers.${index}.name`, v)} value={form.watch(`suppliers.${index}.name`)}>
-                        <SelectTrigger className="h-10 text-xs">
-                          <SelectValue placeholder="पुरवठादार निवडा" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {masterSuppliers.length === 0 ? (
-                            <SelectItem value="none" disabled>प्रथम पुरवठादार मास्टरमध्ये जोडा</SelectItem>
-                          ) : (
-                            masterSuppliers.map(s => (
-                              <SelectItem key={s.id} value={`${s.shopName} (${s.name})`}>
-                                {s.shopName} - {s.name}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <div className="mt-2">
-                        <Label className="text-[10px] text-muted-foreground">किंवा इतर नाव असल्यास येथे लिहा:</Label>
-                        <Input {...form.register(`suppliers.${index}.name`)} placeholder="एजन्सी किंवा दुकानदाराचे नाव" className="h-8 text-xs" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                <div className="space-y-2 pt-2">
-                  <Label className="text-sm">पुरवठा वेळेवर मिळतो का?</Label>
-                  <RadioGroup 
-                    onValueChange={(v) => form.setValue("timelySupply", v as any)} 
-                    className="flex gap-4"
-                    value={form.watch("timelySupply")}
-                  >
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="ts1" /><Label htmlFor="ts1">होय</Label></div>
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ts2" /><Label htmlFor="ts2">नाही</Label></div>
-                  </RadioGroup>
+              <div className="flex justify-between items-center mb-4 border-b pb-2"><h3 className="text-lg font-bold text-primary">६. पुरवठा माहिती</h3><Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "" })} className="h-8 text-xs">जोडा</Button></div>
+              {supplierFields.map((field, index) => (
+                <div key={field.id} className="p-3 border rounded-lg mb-3 relative bg-muted/5">
+                  <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeSupplier(index)}><Trash2 className="h-3 w-3" /></Button>
+                  <Select onValueChange={(v) => form.setValue(`suppliers.${index}.source`, v)} value={form.watch(`suppliers.${index}.source`)}><SelectTrigger><SelectValue placeholder="स्त्रोत निवडा" /></SelectTrigger><SelectContent><SelectItem value="LocalShop">स्थानिक दुकान</SelectItem><SelectItem value="Dealer">डीलर</SelectItem><SelectItem value="Other">इतर</SelectItem></SelectContent></Select>
+                  <Input {...form.register(`suppliers.${index}.name`)} placeholder="नाव" className="mt-2 h-9" />
                 </div>
+              ))}
+              <div className="flex items-center gap-4 mt-2">
+                <Label className="text-sm">वेळेवर मिळतो का?</Label>
+                <RadioGroup onValueChange={(v) => form.setValue("timelySupply", v as any)} className="flex gap-4" value={form.watch("timelySupply")}>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="ts1" /><Label htmlFor="ts1">होय</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="No" id="ts2" /><Label htmlFor="ts2">नाही</Label></div>
+                </RadioGroup>
               </div>
             </section>
           </div>
@@ -661,69 +550,34 @@ function DairySurveyForm() {
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७. खर्च माहिती</h3>
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm">महिन्याला एकूण खर्च (₹)</Label>
-                  <Input {...form.register("monthlyExp")} type="number" />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm">महिन्याला लागणाऱ्या पोत्यांची संख्या</Label>
-                  <Input {...form.register("monthlyBags")} type="number" />
-                </div>
+                <div className="space-y-2"><Label className="text-sm">महिन्याला एकूण खर्च (₹)</Label><Input {...form.register("monthlyExp")} type="number" /></div>
+                <div className="space-y-2"><Label className="text-sm">महिन्याला लागणाऱ्या पोत्यांची संख्या</Label><Input {...form.register("monthlyBags")} type="number" /></div>
               </div>
             </section>
-
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">८. गुणवत्ता व समाधान</h3>
               <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-sm">सध्याच्या पशुखाद्याबद्दल तुम्ही समाधानी आहात का?</Label>
-                  <Select 
-                    onValueChange={(v) => form.setValue("satisfaction", v)}
-                    value={form.watch("satisfaction")}
-                  >
-                    <SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="VeryGood">खूप चांगले</SelectItem>
-                      <SelectItem value="Okay">ठीक आहे</SelectItem>
-                      <SelectItem value="NotSatisfied">समाधानी नाही</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm">पशुखाद्य बदलल्याने दूध उत्पादनात वाढ झाली का?</Label>
-                  <RadioGroup 
-                    onValueChange={(v) => form.setValue("milkIncrease", v)} 
-                    className="flex gap-4"
-                    value={form.watch("milkIncrease")}
-                  >
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="mi1" /><Label htmlFor="mi1">होय</Label></div>
-                    <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="mi2" /><Label htmlFor="mi2">नाही</Label></div>
+                <Select onValueChange={(v) => form.setValue("satisfaction", v)} value={form.watch("satisfaction")}><SelectTrigger><SelectValue placeholder="समाधानी आहात का?" /></SelectTrigger><SelectContent><SelectItem value="VeryGood">होय</SelectItem><SelectItem value="Okay">ठीक आहे</SelectItem><SelectItem value="NotSatisfied">नाही</SelectItem></SelectContent></Select>
+                <div className="flex items-center gap-4">
+                  <Label className="text-sm">दूध वाढले का?</Label>
+                  <RadioGroup onValueChange={(v) => form.setValue("milkIncrease", v)} className="flex gap-4" value={form.watch("milkIncrease")}>
+                    <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="mi1" /><Label htmlFor="mi1">होय</Label></div>
+                    <div className="flex items-center space-x-1"><RadioGroupItem value="No" id="mi2" /><Label htmlFor="mi2">नाही</Label></div>
                   </RadioGroup>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-sm">तुमच्या मते सर्वात चांगला ब्रँड कोणता?</Label>
-                  <Input {...form.register("bestBrand")} placeholder="ब्रँडचे नाव लिहा" />
-                </div>
+                <Input {...form.register("bestBrand")} placeholder="तुमच्या मते चांगला ब्रँड" />
               </div>
             </section>
           </div>
 
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. साठवणूक सुविधा (Storage)</h3>
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">९. साठवणूक सुविधा</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-sm">गोदाम क्षमता (MT)</Label>
-                <Input {...form.register("warehouseCapacity")} placeholder="उदा. १० MT" />
-              </div>
-              <div className="space-y-2">
-                <Label className="text-sm">साठवणुकीसाठी पुरेशी जागा उपलब्ध आहे का?</Label>
-                <RadioGroup 
-                  onValueChange={(v) => form.setValue("hasStorage", v)} 
-                  className="flex gap-4"
-                  value={form.watch("hasStorage")}
-                >
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="hs1" /><Label htmlFor="hs1">होय</Label></div>
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="hs2" /><Label htmlFor="hs2">नाही</Label></div>
+              <div className="space-y-2"><Label className="text-sm">गोदाम क्षमता (MT)</Label><Input {...form.register("warehouseCapacity")} /></div>
+              <div className="space-y-2"><Label className="text-sm">जागा उपलब्ध आहे का?</Label>
+                <RadioGroup onValueChange={(v) => form.setValue("hasStorage", v)} className="flex gap-4" value={form.watch("hasStorage")}>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="hs1" /><Label htmlFor="hs1">होय</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="No" id="hs2" /><Label htmlFor="hs2">नाही</Label></div>
                 </RadioGroup>
               </div>
             </div>
@@ -731,113 +585,38 @@ function DairySurveyForm() {
 
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१०. समस्या व सूचना</h3>
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <Label className="text-sm">पशुखाद्याबाबत मुख्य समस्या काय आहे?</Label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                  {["जास्त किंमत", "कमी गुणवत्ता", "उपलब्धतेची अडधण", "उधारी मिळत नाही"].map((p) => (
-                    <div key={p} className="flex items-center space-x-2">
-                      <Checkbox 
-                        id={p} 
-                        checked={(form.watch("mainProblem") || "").includes(p)}
-                        onCheckedChange={(checked) => {
-                          const current = form.getValues("mainProblem") || "";
-                          if (checked) form.setValue("mainProblem", current ? `${current}, ${p}` : p);
-                          else form.setValue("mainProblem", current.split(", ").filter(v => v !== p).join(", "));
-                        }}
-                      />
-                      <Label htmlFor={p}>{p}</Label>
-                    </div>
-                  ))}
-                </div>
-                <Input {...form.register("otherProblem")} placeholder="इतर काही समस्या असल्यास येथे लिहा" className="mt-2" />
-              </div>
-
-              <div className="space-y-2">
-                <Label className="text-sm">नवीन ब्रँडचे सॅम्पल मिळाले तर वापरून पाहाल का?</Label>
-                <RadioGroup 
-                  onValueChange={(v) => form.setValue("sampleTrial", v)} 
-                  className="flex gap-4"
-                  value={form.watch("sampleTrial")}
-                >
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="Yes" id="st1" /><Label htmlFor="st1">होय</Label></div>
-                  <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="st2" /><Label htmlFor="st2">नाही</Label></div>
+            <div className="space-y-4">
+              <Input {...form.register("mainProblem")} placeholder="मुख्य समस्या" />
+              <Input {...form.register("otherProblem")} placeholder="इतर समस्या" />
+              <div className="flex items-center gap-4">
+                <Label className="text-sm">नमुना ट्रायल पाहाल का?</Label>
+                <RadioGroup onValueChange={(v) => form.setValue("sampleTrial", v)} className="flex gap-4" value={form.watch("sampleTrial")}>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="st1" /><Label htmlFor="st1">होय</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="No" id="st2" /><Label htmlFor="st2">नाही</Label></div>
                 </RadioGroup>
               </div>
-
-              <div className="space-y-2">
-                <Label className="form-label-mr">तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?</Label>
-                <Textarea {...form.register("goodFeedOpinion")} placeholder="तुमची मते / सूचना" />
-              </div>
+              <Textarea {...form.register("goodFeedOpinion")} placeholder="आदर्श पशुखाद्य वैशिष्ट्ये" />
             </div>
           </section>
 
           <section className="form-section">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center justify-between">
-              ११. ॲड पॉइंट्स (इतर मुद्दे)
-              <Button 
-                type="button" 
-                variant="outline" 
-                size="sm" 
-                onClick={() => appendPoint({ point: "" })}
-                className="gap-2"
-              >
-                <PlusCircle className="h-4 w-4" /> नवीन मुद्दा जोडा
-              </Button>
-            </h3>
-            <div className="space-y-4">
-              {pointFields.length === 0 ? (
-                <p className="text-center py-4 text-muted-foreground text-sm">येथे तुम्ही तुमच्या गरजेनुसार अतिरिक्त मुद्दे जोडू शकता.</p>
-              ) : (
-                pointFields.map((field, index) => (
-                  <div key={field.id} className="p-3 border rounded-lg bg-muted/5 relative space-y-2 group">
-                    <Button 
-                      type="button"
-                      variant="ghost" 
-                      size="icon" 
-                      className="absolute top-2 right-2 text-destructive h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removePoint(index)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                    <Label className="text-xs font-bold text-primary">मुद्दा {index + 1}</Label>
-                    <Textarea 
-                      {...form.register(`customPoints.${index}.point` as const)} 
-                      placeholder="माहिती लिहा..." 
-                      className="h-20 text-xs bg-white" 
-                    />
-                  </div>
-                ))
-              )}
+            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex justify-between">११. अ‍ॅड पॉइंट्स <Button type="button" variant="outline" size="sm" onClick={() => appendPoint({ point: "" })}>जोडा</Button></h3>
+            <div className="space-y-2">
+              {pointFields.map((field, index) => (
+                <div key={field.id} className="relative"><Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removePoint(index)}><Trash2 className="h-3 w-3" /></Button><Textarea {...form.register(`customPoints.${index}.point` as const)} placeholder="माहिती लिहा..." /></div>
+              ))}
             </div>
           </section>
 
           <section className="form-section bg-primary/5">
-            <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">सर्वेक्षक तपशील</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="space-y-2">
-                <Label className="form-label-mr">सर्वे करणाऱ्याचे नाव</Label>
-                <Input {...form.register("surveyorName")} placeholder="तुमचे पूर्ण नाव" />
-              </div>
-              <div className="space-y-2">
-                <Label className="form-label-mr">आयडी नंबर / कर्मचारी क्रमांक</Label>
-                <Input {...form.register("surveyorId")} placeholder="तुमचा अधिकृत आयडी" />
-              </div>
-              <div className="space-y-2">
-                <Label className="form-label-mr">दिनांक</Label>
-                <Input {...form.register("surveyDate")} type="date" />
-              </div>
+              <div className="space-y-1"><Label className="text-xs">नाव</Label><Input {...form.register("surveyorName")} /></div>
+              <div className="space-y-1"><Label className="text-xs">आयडी</Label><Input {...form.register("surveyorId")} /></div>
+              <div className="space-y-1"><Label className="text-xs">दिनांक</Label><Input {...form.register("surveyDate")} type="date" /></div>
             </div>
           </section>
 
-          <div className="flex justify-end gap-4 no-print">
-            <Button type="button" variant="outline" onClick={() => window.print()} className="gap-2">
-              <Printer className="h-4 w-4" /> पीडीएफ प्रिंट करा
-            </Button>
-            <Button type="submit" className="gap-2 bg-primary hover:bg-primary/90">
-              <Save className="h-4 w-4" /> {surveyId ? "डेटा अपडेट करा" : "डेटा जतन करा"}
-            </Button>
-          </div>
+          <div className="flex justify-end gap-4 no-print"><Button type="button" variant="outline" onClick={() => window.print()}><Printer className="h-4 w-4 mr-2" /> प्रिंट</Button><Button type="submit" className="bg-primary"><Save className="h-4 w-4 mr-2" /> जतन करा</Button></div>
         </form>
       </div>
     </div>
