@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -173,7 +172,7 @@ function DairySurveyForm() {
       form.setValue("surveyorName", savedName);
       form.setValue("surveyorId", savedId);
     }
-  }, [surveyId, getBrands, getSuppliers, getSurveyById]);
+  }, [surveyId]);
 
   const handleGetLocation = () => {
     setLocating(true);
@@ -283,7 +282,8 @@ function DairySurveyForm() {
 
         <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.error(errors);
-          toast({ variant: "destructive", title: "त्रुटी", description: "कृपया सर्व अनिवार्य माहिती भरा." });
+          const firstError = Object.keys(errors)[0];
+          toast({ variant: "destructive", title: "त्रुटी", description: "कृपया सर्व अनिवार्य माहिती भरा. " + (errors as any)[firstError]?.message || "" });
         })} className="space-y-6">
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center gap-2"><MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (GPS Location)</h3>
@@ -295,29 +295,36 @@ function DairySurveyForm() {
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">१. सामान्य व संकलन माहिती</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="space-y-1"><Label className="text-xs">तुमच्या दूध संकलन केंद्राचे (डेअरी) नाव काय आहे?</Label><Input {...form.register("dairyName")} placeholder="डेअरीचे नाव" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">डेअरी मालकाचे पूर्ण नाव काय आहे?</Label><Input {...form.register("ownerName")} placeholder="मालकाचे नाव" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">तुमचा मोबाईल नंबर किंवा संपर्क क्रमांक काय आहे?</Label><Input {...form.register("contact")} placeholder="मोबाईल नंबर" maxLength={10} className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">तुमचे गाव कोणते आहे?</Label><Input {...form.register("village")} placeholder="गावाचे नाव" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्या दूध संकलन केंद्राचे (डेअरी) नाव काय आहे?</Label><Input {...form.register("dairyName")} placeholder="डेअरीचे नाव" className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">डेअरी मालकाचे पूर्ण नाव काय आहे?</Label><Input {...form.register("ownerName")} placeholder="मालकाचे नाव" className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">तुमचा मोबाईल नंबर किंवा संपर्क क्रमांक काय आहे?</Label><Input {...form.register("contact")} placeholder="मोबाईल नंबर" maxLength={10} className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्या गावाचे नाव काय आहे?</Label><Input {...form.register("village")} placeholder="गावाचे नाव" className="h-10 border-primary/20" /></div>
             </div>
             <div className="mt-4">
               <Label className="text-sm font-bold block mb-2">तुमचा जिल्हा व तालुका निवडा:</Label>
-              <LocationSelector onLocationChange={(d, t) => { form.setValue("district", d); form.setValue("taluka", t); }} defaultDistrict={form.getValues("district")} defaultTaluka={form.getValues("taluka")} />
+              <LocationSelector 
+                onLocationChange={(d, t) => { 
+                  if (d !== form.getValues("district")) form.setValue("district", d); 
+                  if (t !== form.getValues("taluka")) form.setValue("taluka", t); 
+                }} 
+                defaultDistrict={form.getValues("district")} 
+                defaultTaluka={form.getValues("taluka")} 
+              />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-1"><Label className="text-xs">दिवसाचे एकूण दूध संकलन किती लिटर होते?</Label><Input {...form.register("milkCollection")} placeholder="लिटर/दिवस" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">तुमच्या केंद्राशी एकूण किती शेतकरी जोडले आहेत?</Label><Input {...form.register("farmerCount")} placeholder="शेतकरी संख्या" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">दिवसाचे एकूण दूध संकलन किती लिटर होते?</Label><Input {...form.register("milkCollection")} placeholder="लिटर/दिवस" className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्या केंद्राशी एकूण किती शेतकरी जोडले आहेत?</Label><Input {...form.register("farmerCount")} placeholder="शेतकरी संख्या" className="h-10 border-primary/20" /></div>
             </div>
           </section>
 
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती (Livestock Data)</h3>
-            <p className="text-xs text-muted-foreground mb-3">तुमच्याकडे सध्या उपलब्ध असलेल्या जनावरांची संख्या लिहा:</p>
+            <p className="text-xs text-muted-foreground mb-3 font-bold">तुमच्याकडे सध्या उपलब्ध असलेल्या जनावरांची संख्या लिहा:</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-1"><Label className="text-xs">एकूण जनावरांची संख्या</Label><Input {...form.register("livestock.totalAnimals")} className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">गायींची संख्या</Label><Input {...form.register("livestock.cows")} className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">म्हशींची संख्या</Label><Input {...form.register("livestock.buffaloes")} className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">वासरांची संख्या</Label><Input {...form.register("livestock.calves")} className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">एकूण जनावरांची संख्या</Label><Input {...form.register("livestock.totalAnimals")} className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">गायींची संख्या</Label><Input {...form.register("livestock.cows")} className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">म्हशींची संख्या</Label><Input {...form.register("livestock.buffaloes")} className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">वासरांची संख्या</Label><Input {...form.register("livestock.calves")} className="h-10 border-primary/20" /></div>
             </div>
           </section>
 
@@ -327,14 +334,14 @@ function DairySurveyForm() {
               <div className="space-y-2">
                 <Label className="text-sm font-bold">तुमच्या दूध संकलन केंद्रात तुम्ही कोणत्या प्रकारचे पशुखाद्य वापरता?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("feedType", v as any)} value={form.watch("feedType")} className="flex gap-4">
-                  <div className="flex items-center space-x-1"><RadioGroupItem value="ReadyMade" id="rd1" /><Label htmlFor="rd1">रेडीमेड (Ready Made)</Label></div>
-                  <div className="flex items-center space-x-1"><RadioGroupItem value="HomeMade" id="rd2" /><Label htmlFor="rd2">घरगुती मिश्रण (Home Made)</Label></div>
-                  <div className="flex items-center space-x-1"><RadioGroupItem value="Both" id="rd3" /><Label htmlFor="rd3">दोन्ही प्रकारचे</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="ReadyMade" id="rd1" /><Label htmlFor="rd1" className="font-bold">रेडीमेड (Ready Made)</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="HomeMade" id="rd2" /><Label htmlFor="rd2" className="font-bold">घरगुती मिश्रण (Home Made)</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="Both" id="rd3" /><Label htmlFor="rd3" className="font-bold">दोन्ही प्रकारचे</Label></div>
                 </RadioGroup>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1"><Label className="text-xs">दिवसातून किती वेळा पशुखाद्य देता?</Label><Input {...form.register("feedFrequency")} placeholder="उदा. २ वेळा" className="h-10" /></div>
-                <div className="space-y-1"><Label className="text-xs">प्रत्येक जनावराला दररोज किती किलो पशुखाद्य देता?</Label><Input {...form.register("dailyFeedPerAnimal")} placeholder="उदा. ४ किलो" className="h-10" /></div>
+                <div className="space-y-1"><Label className="text-xs font-bold">दिवसातून किती वेळा पशुखाद्य देता?</Label><Input {...form.register("feedFrequency")} placeholder="उदा. २ वेळा" className="h-10 border-primary/20" /></div>
+                <div className="space-y-1"><Label className="text-xs font-bold">प्रत्येक जनावराला दररोज किती किलो पशुखाद्य देता?</Label><Input {...form.register("dailyFeedPerAnimal")} placeholder="उदा. ४ किलो" className="h-10 border-primary/20" /></div>
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-bold">वापरत असलेले इतर पूरक खाद्य (Additives):</Label>
@@ -345,7 +352,7 @@ function DairySurveyForm() {
                         const cur = form.getValues("supplements") || [];
                         form.setValue("supplements", checked ? [...cur, opt.value] : cur.filter(v => v !== opt.value));
                       }} />
-                      <Label htmlFor={`dsupp-${opt.value}`} className="text-xs">{opt.label}</Label>
+                      <Label htmlFor={`dsupp-${opt.value}`} className="text-xs font-bold">{opt.label}</Label>
                     </div>
                   ))}
                 </div>
@@ -374,27 +381,27 @@ function DairySurveyForm() {
                 </Popover>
               </div>
             </div>
-            <Table className="min-w-[1000px]">
+            <Table className="min-w-[1000px] border border-black">
               <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead>ब्रँडचे नाव</TableHead>
-                  <TableHead>किंमत (₹)</TableHead>
-                  <TableHead>प्रोटीन (%)</TableHead>
-                  <TableHead>फॅट (%)</TableHead>
-                  <TableHead>फायबर (%)</TableHead>
-                  <TableHead>Ash (%)</TableHead>
-                  <TableHead className="w-20">कृती</TableHead>
+                <TableRow className="bg-muted/50 border-b border-black">
+                  <TableHead className="font-bold text-black border-r border-black">ब्रँडचे नाव</TableHead>
+                  <TableHead className="font-bold text-black border-r border-black">किंमत (₹)</TableHead>
+                  <TableHead className="font-bold text-black border-r border-black">प्रोटीन (%)</TableHead>
+                  <TableHead className="font-bold text-black border-r border-black">फॅट (%)</TableHead>
+                  <TableHead className="font-bold text-black border-r border-black">फायबर (%)</TableHead>
+                  <TableHead className="font-bold text-black border-r border-black">Ash (%)</TableHead>
+                  <TableHead className="w-20 font-bold text-black">कृती</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {brandFields.map((f, i) => (
-                  <TableRow key={f.id} className="hover:bg-muted/20">
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.name`)} className="h-9 text-xs" /></TableCell>
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.price`)} className="h-9 text-xs w-20" /></TableCell>
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.protein.value` as any)} className="h-9 text-xs w-14" /></TableCell>
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.fat.value` as any)} className="h-9 text-xs w-14" /></TableCell>
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.fiber.value` as any)} className="h-9 text-xs w-14" /></TableCell>
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.ash.value` as any)} className="h-9 text-xs w-14" /></TableCell>
+                  <TableRow key={f.id} className="hover:bg-muted/20 border-b border-black">
+                    <TableCell className="border-r border-black"><Input {...form.register(`brandsInfo.${i}.name`)} className="h-9 text-xs border-primary/10" /></TableCell>
+                    <TableCell className="border-r border-black"><Input {...form.register(`brandsInfo.${i}.price`)} className="h-9 text-xs w-20 border-primary/10" /></TableCell>
+                    <TableCell className="border-r border-black"><Input {...form.register(`brandsInfo.${i}.protein.value` as any)} className="h-9 text-xs w-14 border-primary/10" /></TableCell>
+                    <TableCell className="border-r border-black"><Input {...form.register(`brandsInfo.${i}.fat.value` as any)} className="h-9 text-xs w-14 border-primary/10" /></TableCell>
+                    <TableCell className="border-r border-black"><Input {...form.register(`brandsInfo.${i}.fiber.value` as any)} className="h-9 text-xs w-14 border-primary/10" /></TableCell>
+                    <TableCell className="border-r border-black"><Input {...form.register(`brandsInfo.${i}.ash.value` as any)} className="h-9 text-xs w-14 border-primary/10" /></TableCell>
                     <TableCell><Button type="button" variant="ghost" size="icon" onClick={() => removeBrand(i)} className="text-destructive h-9 w-9 hover:bg-destructive/10"><Trash2 className="h-4 w-4" /></Button></TableCell>
                   </TableRow>
                 ))}
@@ -414,12 +421,12 @@ function DairySurveyForm() {
               <div className="space-y-4">
                 <Label className="font-bold text-sm block border-b pb-1">५. तुमची खरेदी करण्याची पद्धत काय आहे?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("purchaseMethod", v)} value={form.watch("purchaseMethod")} className="flex gap-6 py-2">
-                  <div className="flex items-center space-x-1"><RadioGroupItem value="Cash" id="pm1" /><Label htmlFor="pm1" className="text-sm">रोखीने (Cash)</Label></div>
-                  <div className="flex items-center space-x-1"><RadioGroupItem value="Credit" id="pm2" /><Label htmlFor="pm2" className="text-sm">उधारीने (Credit)</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="Cash" id="pm1" /><Label htmlFor="pm1" className="text-sm font-bold">रोखीने (Cash)</Label></div>
+                  <div className="flex items-center space-x-1"><RadioGroupItem value="Credit" id="pm2" /><Label htmlFor="pm2" className="text-sm font-bold">उधारीने (Credit)</Label></div>
                 </RadioGroup>
                 <div className="flex items-center gap-3 bg-muted/30 p-3 rounded border">
                   <Label className="text-xs font-bold text-primary">जर उधारीने असेल, तर किती दिवसांची उधारी मिळते?</Label>
-                  <Input {...form.register("creditDays")} className="h-9 w-24 bg-white" placeholder="दिवस" />
+                  <Input {...form.register("creditDays")} className="h-9 w-24 bg-white border-primary/20" placeholder="दिवस" />
                 </div>
               </div>
               <div className="space-y-4">
@@ -429,7 +436,7 @@ function DairySurveyForm() {
                 </div>
                 <div className="space-y-3">
                   {supplierFields.map((f, i) => (
-                    <div key={f.id} className="p-3 border rounded-lg relative space-y-3 bg-white shadow-sm">
+                    <div key={f.id} className="p-3 border rounded-lg relative space-y-3 bg-white shadow-sm border-primary/10">
                       <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-7 w-7 text-destructive" onClick={() => removeSupplier(i)}><Trash2 className="h-3.5 w-3.5" /></Button>
                       <div className="space-y-1">
                         <Label className="text-[10px] font-bold text-primary uppercase tracking-wider">मास्टर लिस्टमधून निवडा:</Label>
@@ -439,10 +446,10 @@ function DairySurveyForm() {
                         </Select>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <div className="space-y-1"><Label className="text-[10px]">पुरवठादाराचे नाव</Label><Input {...form.register(`suppliers.${i}.name`)} placeholder="नाव" className="h-9 text-xs" /></div>
-                        <div className="space-y-1"><Label className="text-[10px]">मोबाईल नंबर</Label><Input {...form.register(`suppliers.${i}.contact`)} placeholder="संपर्क" className="h-9 text-xs" /></div>
+                        <div className="space-y-1"><Label className="text-[10px] font-bold">पुरवठादाराचे नाव</Label><Input {...form.register(`suppliers.${i}.name`)} placeholder="नाव" className="h-9 text-xs border-primary/10" /></div>
+                        <div className="space-y-1"><Label className="text-[10px] font-bold">मोबाईल नंबर</Label><Input {...form.register(`suppliers.${i}.contact`)} placeholder="संपर्क" className="h-9 text-xs border-primary/10" /></div>
                       </div>
-                      <div className="space-y-1"><Label className="text-[10px]">पत्ता</Label><Input {...form.register(`suppliers.${i}.address`)} placeholder="पत्ता" className="h-9 text-xs" /></div>
+                      <div className="space-y-1"><Label className="text-[10px] font-bold">पत्ता</Label><Input {...form.register(`suppliers.${i}.address`)} placeholder="पत्ता" className="h-9 text-xs border-primary/10" /></div>
                     </div>
                   ))}
                 </div>
@@ -453,46 +460,46 @@ function DairySurveyForm() {
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७-८-९-१०. समाधान, गुणवत्ता व तक्रारी</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="space-y-1"><Label className="text-xs">पशुखाद्यावर होणारा एकूण मासिक खर्च किती आहे (₹)?</Label><Input {...form.register("monthlyExp")} placeholder="₹ दर महा" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">महिन्याला साधारणपणे किती पोती लागतात?</Label><Input {...form.register("monthlyBags")} placeholder="पोती संख्या" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">तुमच्या मते सध्याचा सर्वोत्तम ब्रँड कोणता आहे?</Label><Input {...form.register("bestBrand")} placeholder="ब्रँडचे नाव" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">पशुखाद्यावर होणारा एकूण मासिक खर्च किती आहे (₹)?</Label><Input {...form.register("monthlyExp")} placeholder="₹ दर महा" className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">महिन्याला साधारणपणे किती पोती लागतात?</Label><Input {...form.register("monthlyBags")} placeholder="पोती संख्या" className="h-10 border-primary/20" /></div>
+              <div className="space-y-1"><Label className="text-xs font-bold">तुमच्या मते सध्याचा सर्वोत्तम ब्रँड कोणता आहे?</Label><Input {...form.register("bestBrand")} placeholder="ब्रँडचे नाव" className="h-10 border-primary/20" /></div>
               <div className="space-y-1">
-                <Label className="text-xs">पशुखाद्याची कॉलिटी योग्य आहे का?</Label>
+                <Label className="text-xs font-bold">पशुखाद्याची कॉलिटी योग्य आहे का?</Label>
                 <Select onValueChange={(v) => form.setValue("pelletQuality", v)} value={form.watch("pelletQuality")}>
-                  <SelectTrigger className="h-10"><SelectValue placeholder="निवडा" /></SelectTrigger>
+                  <SelectTrigger className="h-10 border-primary/20"><SelectValue placeholder="निवडा" /></SelectTrigger>
                   <SelectContent><SelectItem value="होय">होय, उत्तम आहे</SelectItem><SelectItem value="नाही">नाही, समाधानकारक नाही</SelectItem><SelectItem value="मध्यम">मध्यम स्वरूपाची आहे</SelectItem></SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">पोत्यामध्ये धुळीचे (Powder) प्रमाण जास्त असते का?</Label>
+                <Label className="text-xs font-bold">पोत्यामध्ये धुळीचे (Powder) प्रमाण जास्त असते का?</Label>
                 <Select onValueChange={(v) => form.setValue("dustContent", v)} value={form.watch("dustContent")}>
-                  <SelectTrigger className="h-10"><SelectValue placeholder="निवडा" /></SelectTrigger>
+                  <SelectTrigger className="h-10 border-primary/20"><SelectValue placeholder="निवडा" /></SelectTrigger>
                   <SelectContent><SelectItem value="होय">होय, जास्त असते</SelectItem><SelectItem value="नाही">नाही, कमी असते</SelectItem><SelectItem value="कधीकधी">कधीकधी असते</SelectItem></SelectContent>
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label className="text-xs">खाद्य सुरू केल्यावर जनावरांच्या आरोग्यात किंवा स्फूर्तीत फरक जाणवला का?</Label>
+                <Label className="text-xs font-bold">खाद्य सुरू केल्यावर जनावरांच्या आरोग्यात किंवा स्फूर्तीत फरक जाणवला का?</Label>
                 <Select onValueChange={(v) => form.setValue("healthObservation", v)} value={form.watch("healthObservation")}>
-                  <SelectTrigger className="h-10"><SelectValue placeholder="निवडा" /></SelectTrigger>
+                  <SelectTrigger className="h-10 border-primary/20"><SelectValue placeholder="निवडा" /></SelectTrigger>
                   <SelectContent><SelectItem value="होय">होय, चांगला फरक आहे</SelectItem><SelectItem value="नाही">नाही, काहीच बदल नाही</SelectItem><SelectItem value="थोड्या प्रमाणात">थोड्या प्रमाणात जाणवतो</SelectItem></SelectContent>
                 </Select>
               </div>
             </div>
             <div className="space-y-2 mt-6 border-t pt-4">
               <Label className="text-sm font-bold text-primary">पशुखाद्याबाबत तुमच्या मुख्य तक्रारी कोणत्या आहेत?</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 bg-muted/10 p-4 rounded-lg border border-dashed">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 bg-muted/10 p-4 rounded-lg border border-dashed border-primary/20">
                 {complaintOptions.map((opt) => (
                   <div key={opt.value} className="flex items-center space-x-2 bg-white p-2 rounded shadow-sm border border-transparent hover:border-primary/20 transition-all">
                     <Checkbox id={`dcomp-${opt.value}`} checked={form.watch("mainProblem").includes(opt.value)} onCheckedChange={(checked) => {
                       const cur = form.getValues("mainProblem") || [];
                       form.setValue("mainProblem", checked ? [...cur, opt.value] : cur.filter(v => v !== opt.value));
                     }} />
-                    <Label htmlFor={`dcomp-${opt.value}`} className="text-xs cursor-pointer">{opt.label}</Label>
+                    <Label htmlFor={`dcomp-${opt.value}`} className="text-xs cursor-pointer font-bold">{opt.label}</Label>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="space-y-1 mt-4"><Label className="text-xs font-bold">इतर काही विशेष तक्रार असल्यास येथे लिहा:</Label><Textarea {...form.register("otherProblem")} placeholder="इतर तक्रारींची माहिती..." className="h-16" /></div>
+            <div className="space-y-1 mt-4"><Label className="text-xs font-bold">इतर काही विशेष तक्रार असल्यास येथे लिहा:</Label><Textarea {...form.register("otherProblem")} placeholder="इतर तक्रारींची माहिती..." className="h-16 border-primary/20" /></div>
           </section>
 
           <section className="form-section">
@@ -505,7 +512,7 @@ function DairySurveyForm() {
                 <div key={f.id} className="relative group">
                   <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-7 w-7 text-destructive opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => removePoint(i)}><Trash2 className="h-4 w-4" /></Button>
                   <Label className="text-[10px] font-bold text-primary uppercase mb-1 block">मुद्दा क्र. {i+1}:</Label>
-                  <Textarea {...form.register(`customPoints.${i}.point` as const)} placeholder="येथे अतिरिक्त माहिती लिहा..." className="bg-white" />
+                  <Textarea {...form.register(`customPoints.${i}.point` as const)} placeholder="येथे अतिरिक्त माहिती लिहा..." className="bg-white border-primary/20" />
                 </div>
               ))}
             </div>
@@ -523,7 +530,7 @@ function DairySurveyForm() {
             <Button type="button" variant="outline" onClick={handlePrint} className="h-10 px-4 md:px-6 border-primary text-primary hover:bg-primary/5 text-xs md:text-sm">
               <Printer className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />अहवाल प्रिंट करा
             </Button>
-            <Button type="submit" className="bg-primary h-10 px-6 md:px-8 shadow-lg hover:bg-primary/90 text-xs md:text-sm">
+            <Button type="submit" className="bg-primary h-10 px-6 md:px-8 shadow-lg hover:bg-primary/90 text-xs md:text-sm font-bold">
               <Save className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />माहिती जतन करा
             </Button>
           </div>

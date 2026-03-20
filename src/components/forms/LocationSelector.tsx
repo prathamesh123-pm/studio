@@ -16,6 +16,16 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
   const [taluka, setTaluka] = useState(defaultTaluka);
   const [talukas, setTalukas] = useState<string[]>([]);
 
+  // Sync internal state with props if they change externally (e.g., when editing a survey)
+  useEffect(() => {
+    if (defaultDistrict !== district) {
+      setDistrict(defaultDistrict);
+    }
+    if (defaultTaluka !== taluka) {
+      setTaluka(defaultTaluka);
+    }
+  }, [defaultDistrict, defaultTaluka]);
+
   useEffect(() => {
     if (district) {
       setTalukas(MAHARASHTRA_LOCATIONS[district] || []);
@@ -24,16 +34,23 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
     }
   }, [district]);
 
-  useEffect(() => {
-    onLocationChange(district, taluka);
-  }, [district, taluka]);
+  const handleDistrictChange = (val: string) => {
+    setDistrict(val);
+    setTaluka("");
+    onLocationChange(val, "");
+  };
+
+  const handleTalukaChange = (val: string) => {
+    setTaluka(val);
+    onLocationChange(district, val);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-2">
-        <Label className="form-label-mr">जिल्हा</Label>
-        <Select value={district} onValueChange={(val) => { setDistrict(val); setTaluka(""); }}>
-          <SelectTrigger>
+        <Label className="form-label-mr font-bold">तुमचा जिल्हा निवडा</Label>
+        <Select value={district} onValueChange={handleDistrictChange}>
+          <SelectTrigger className="h-10 border-primary/20">
             <SelectValue placeholder="जिल्हा निवडा" />
           </SelectTrigger>
           <SelectContent>
@@ -45,9 +62,9 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
       </div>
 
       <div className="space-y-2">
-        <Label className="form-label-mr">तालुका</Label>
-        <Select value={taluka} onValueChange={setTaluka} disabled={!district}>
-          <SelectTrigger>
+        <Label className="form-label-mr font-bold">तुमचा तालुका निवडा</Label>
+        <Select value={taluka} onValueChange={handleTalukaChange} disabled={!district}>
+          <SelectTrigger className="h-10 border-primary/20">
             <SelectValue placeholder="तालुका निवडा" />
           </SelectTrigger>
           <SelectContent>
