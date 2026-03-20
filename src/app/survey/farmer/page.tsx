@@ -165,6 +165,14 @@ function FarmerSurveyForm() {
     toast({ title: "ब्रँड माहिती अपडेट झाली", description: `${selected.name} चे सर्व घटक आपोआप भरले गेले आहेत.` });
   };
 
+  const handleMasterSupplierSelect = (index: number, supplierId: string) => {
+    const selected = masterSuppliers.find(s => s.id === supplierId);
+    if (selected) {
+      form.setValue(`suppliers.${index}.name`, selected.shopName);
+      form.setValue(`suppliers.${index}.source`, selected.supplierType);
+    }
+  };
+
   const handleGetLocation = () => {
     setLocating(true);
     if (!navigator.geolocation) {
@@ -247,12 +255,31 @@ function FarmerSurveyForm() {
               <Input {...form.register("monthlyBags")} placeholder="मासिक पोती संख्या" type="number" />
             </div>
             <div className="mt-4 space-y-4">
-              <div className="flex justify-between items-center"><Label className="text-sm">पुरवठादार</Label><Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "" })}>जोडा</Button></div>
+              <div className="flex justify-between items-center">
+                <Label className="text-sm">पुरवठादार (विभाग ६)</Label>
+                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ name: "" })}>जोडा</Button>
+              </div>
               {supplierFields.map((field, index) => (
-                <div key={field.id} className="relative flex gap-2">
-                  <Select onValueChange={(v) => form.setValue(`suppliers.${index}.name`, v)} value={form.watch(`suppliers.${index}.name`)}><SelectTrigger className="h-9"><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent>{masterSuppliers.map(s => <SelectItem key={s.id} value={s.shopName}>{s.shopName}</SelectItem>)}</SelectContent></Select>
-                  <Input {...form.register(`suppliers.${index}.name`)} placeholder="नाव" className="h-9" />
-                  <Button type="button" variant="ghost" size="icon" onClick={() => removeSupplier(index)}><Trash2 className="h-4 w-4" /></Button>
+                <div key={field.id} className="p-3 border rounded-lg relative bg-muted/5 space-y-3">
+                  <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeSupplier(index)}><Trash2 className="h-4 w-4" /></Button>
+                  
+                  <div className="space-y-1">
+                    <Label className="text-[10px] font-bold text-primary uppercase">मास्टर लिस्टमधून निवडा</Label>
+                    <Select onValueChange={(v) => handleMasterSupplierSelect(index, v)}>
+                      <SelectTrigger className="h-9 text-xs">
+                        <SelectValue placeholder="पुरवठादार निवडा" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {masterSuppliers.map(s => (
+                          <SelectItem key={s.id} value={s.id}>{s.shopName} ({s.name})</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-2">
+                    <Input {...form.register(`suppliers.${index}.name`)} placeholder="पुरवठादाराचे नाव" className="h-9" />
+                  </div>
                 </div>
               ))}
             </div>

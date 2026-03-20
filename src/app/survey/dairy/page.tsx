@@ -231,6 +231,14 @@ function DairySurveyForm() {
     );
   };
 
+  const handleMasterSupplierSelect = (index: number, supplierId: string) => {
+    const selected = masterSuppliers.find(s => s.id === supplierId);
+    if (selected) {
+      form.setValue(`suppliers.${index}.name`, selected.shopName);
+      form.setValue(`suppliers.${index}.source`, selected.supplierType === 'Retailer' ? 'LocalShop' : 'Dealer');
+    }
+  };
+
   const onSubmit = async (data: DairyFormValues) => {
     try {
       localStorage.setItem('last_surveyor_name', data.surveyorName);
@@ -523,21 +531,65 @@ function DairySurveyForm() {
             <section className="form-section">
               <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">५. खरेदी पद्धत</h3>
               <RadioGroup onValueChange={(v) => form.setValue("purchaseMethod", v)} className="space-y-2" value={form.watch("purchaseMethod")}>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Cash" id="p1" /><Label htmlFor="p1">रोखीने</Label></div>
-                <div className="flex items-center space-x-2"><RadioGroupItem value="Credit" id="p2" /><Label htmlFor="p2">उधारीने</Label></div>
-                <div className="flex items-center space-x-2 ml-6"><Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-20" /><span className="text-xs">दिवस</span></div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Cash" id="p1" />
+                  <Label htmlFor="p1" className="cursor-pointer">रोखीने (Cash)</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Credit" id="p2" />
+                  <Label htmlFor="p2" className="cursor-pointer">उधारीने (Credit)</Label>
+                </div>
               </RadioGroup>
+              <div className="mt-4 flex items-center gap-2">
+                <Label className="text-sm">उधारीचे दिवस:</Label>
+                <Input {...form.register("creditDays")} placeholder="दिवस" className="h-8 w-24" type="number" />
+              </div>
             </section>
             <section className="form-section">
-              <div className="flex justify-between items-center mb-4 border-b pb-2"><h3 className="text-lg font-bold text-primary">६. पुरवठा माहिती</h3><Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "" })} className="h-8 text-xs">जोडा</Button></div>
-              {supplierFields.map((field, index) => (
-                <div key={field.id} className="p-3 border rounded-lg mb-3 relative bg-muted/5">
-                  <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeSupplier(index)}><Trash2 className="h-3 w-3" /></Button>
-                  <Select onValueChange={(v) => form.setValue(`suppliers.${index}.source`, v)} value={form.watch(`suppliers.${index}.source`)}><SelectTrigger><SelectValue placeholder="स्त्रोत निवडा" /></SelectTrigger><SelectContent><SelectItem value="LocalShop">स्थानिक दुकान</SelectItem><SelectItem value="Dealer">डीलर</SelectItem><SelectItem value="Other">इतर</SelectItem></SelectContent></Select>
-                  <Input {...form.register(`suppliers.${index}.name`)} placeholder="नाव" className="mt-2 h-9" />
-                </div>
-              ))}
-              <div className="flex items-center gap-4 mt-2">
+              <div className="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 className="text-lg font-bold text-primary">६. पुरवठा माहिती</h3>
+                <Button type="button" variant="outline" size="sm" onClick={() => appendSupplier({ source: "", name: "" })} className="h-8 text-xs">जोडा</Button>
+              </div>
+              <div className="space-y-4">
+                {supplierFields.map((field, index) => (
+                  <div key={field.id} className="p-3 border rounded-lg relative bg-muted/5 space-y-3">
+                    <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6" onClick={() => removeSupplier(index)}><Trash2 className="h-3 w-3" /></Button>
+                    
+                    <div className="space-y-1.5">
+                      <Label className="text-[10px] uppercase font-bold text-primary">मास्टर लिस्टमधून निवडा</Label>
+                      <Select onValueChange={(v) => handleMasterSupplierSelect(index, v)}>
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="पुरवठादार निवडा" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {masterSuppliers.map(s => (
+                            <SelectItem key={s.id} value={s.id}>{s.shopName} ({s.name})</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">स्त्रोत</Label>
+                        <Select onValueChange={(v) => form.setValue(`suppliers.${index}.source`, v)} value={form.watch(`suppliers.${index}.source`)}>
+                          <SelectTrigger className="h-8 text-xs"><SelectValue placeholder="स्त्रोत" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="LocalShop">स्थानिक दुकान</SelectItem>
+                            <SelectItem value="Dealer">डीलर</SelectItem>
+                            <SelectItem value="Other">इतर</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-[10px]">नाव</Label>
+                        <Input {...form.register(`suppliers.${index}.name`)} placeholder="नाव" className="h-8 text-xs" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-4 mt-4 border-t pt-2">
                 <Label className="text-sm">वेळेवर मिळतो का?</Label>
                 <RadioGroup onValueChange={(v) => form.setValue("timelySupply", v as any)} className="flex gap-4" value={form.watch("timelySupply")}>
                   <div className="flex items-center space-x-1"><RadioGroupItem value="Yes" id="ts1" /><Label htmlFor="ts1">होय</Label></div>

@@ -273,11 +273,11 @@ export default function SurveysList() {
           <Table className="border border-black table-fixed">
             <TableBody>
               <DataRow label={isDairy ? "खरेदी पद्धत" : "एका पोत्याची किंमत (₹)"} value={isDairy ? d.purchaseMethod : d.bagPrice} />
-              {isDairy && d.purchaseMethod === 'Credit' && <DataRow label="उधारीचे दिवस" value={d.creditDays} />}
+              {isDairy && d.creditDays && <DataRow label="उधारीचे दिवस" value={d.creditDays} />}
               {!isDairy && <DataRow label="पोत्याचे वजन (किग्रॅ)" value={d.bagWeight} />}
               <DataRow label="महिन्याला लागणारी पोती (Bags)" value={d.monthlyBags} />
               {isDairy && <DataRow label="महिन्याचा एकूण खर्च (₹)" value={d.monthlyExp} />}
-              <DataRow label="पुरवठादार / खरेदी स्त्रोत" value={d.suppliers?.map((s: any) => s.name || s.source).filter(Boolean).join(", ")} />
+              <DataRow label="पुरवठादार माहिती (विभाग ६)" value={d.suppliers?.map((s: any) => s.name).filter(Boolean).join(", ")} />
               {isDairy && <DataRow label="पुरवठा वेळेवर मिळतो का?" value={d.timelySupply} />}
               {!isDairy && <DataRow label="सहज उपलब्ध होते का?" value={d.easyAvailability} />}
               {!isDairy && <DataRow label="उधारी सुविधा मिळते का?" value={d.hasCredit} />}
