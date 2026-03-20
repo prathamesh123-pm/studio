@@ -221,10 +221,10 @@ export default function BrandManagement() {
     
     return (
       <TableRow className="border-b border-black">
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black">{desc}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{limit}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center">{val || '-'}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black" style={{ width: '40%' }}>{desc}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{limit}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
+        <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center" style={{ width: '20%' }}>{val || '-'}</TableCell>
       </TableRow>
     );
   };
@@ -250,10 +250,10 @@ export default function BrandManagement() {
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
           <TableHeader className="bg-slate-50 border-b border-black">
             <TableRow>
-              <TableHead className="text-[10pt] font-black text-black border-r border-black">Description</TableHead>
-              <TableHead className="text-[10pt] font-black text-black border-r border-black text-center">Min/Max</TableHead>
-              <TableHead className="text-[10pt] font-black text-black border-r border-black text-center">UOM</TableHead>
-              <TableHead className="text-[10pt] font-black text-black text-center">Value</TableHead>
+              <TableHead className="text-[10pt] font-black text-black border-r border-black" style={{ width: '40%' }}>Description</TableHead>
+              <TableHead className="text-[10pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>Min/Max</TableHead>
+              <TableHead className="text-[10pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>UOM</TableHead>
+              <TableHead className="text-[10pt] font-black text-black text-center" style={{ width: '20%' }}>Value</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
