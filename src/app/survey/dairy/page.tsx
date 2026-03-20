@@ -641,7 +641,7 @@ function DairySurveyForm() {
                   <Input {...form.register("bestBrand")} placeholder="उदा. गोदरेज" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">पशुखाद्याच्या पेलेटची कडकपणा व आकार योग्य आहे का?</Label>
+                  <Label className="text-sm">पशुखाद्याची कॉलिटी योग्य आहे का?</Label>
                   <Select onValueChange={(v) => form.setValue("pelletQuality", v)} value={form.watch("pelletQuality")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="मध्यम">मध्यम</SelectItem></SelectContent></Select>
                 </div>
                 <div className="space-y-2">

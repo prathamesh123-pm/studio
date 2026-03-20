@@ -290,7 +290,7 @@ export default function SurveysList() {
             <TableBody>
               <DataRow label="पशुखाद्याच्या गुणवत्तेबाबत समाधानी आहात का?" value={d.satisfaction} />
               <DataRow label="पशुखाद्यामुळे जनावरांच्या दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
-              <DataRow label="पशुखाद्याच्या पेलेटची कडकपणा व आकार (Pellet Quality) योग्य आहे का?" value={d.pelletQuality} />
+              <DataRow label="पशुखाद्याची कॉलिटी योग्य आहे का?" value={d.pelletQuality} />
               <DataRow label="पोत्यामध्ये धुळीचे (Dust/Powder) प्रमाण जास्त असते का?" value={d.dustContent} />
               <DataRow label="खाद्य सुरू केल्यावर जनावरांच्या शरीराची चकाकी किंवा स्फूर्तीमध्ये फरक जाणवला का?" value={d.healthObservation} />
               <DataRow label={isDairy ? "तुमच्या मते सर्वोत्तम ब्रँड कोणता?" : "तुमच्या मते चांगला ब्रँड कोणता?"} value={isDairy ? d.bestBrand : d.betterBrand} />
