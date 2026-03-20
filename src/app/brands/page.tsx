@@ -175,16 +175,16 @@ export default function BrandManagement() {
 
   const NutrientInput = ({ label, field }: { label: string, field: keyof typeof initialNutrition }) => {
     if (field === 'others') return null;
-    const item = nutrition[field] as NutrientValue;
+    const item = (nutrition[field] as NutrientValue) || { value: "", limit: 'Min' };
     return (
-      <div className="space-y-1 p-2 bg-white rounded border border-primary/10">
+      <div className="space-y-1 p-2 bg-white rounded border border-primary/10 shadow-sm">
         <Label className="text-[10px] uppercase font-bold text-primary">{label}</Label>
         <div className="flex gap-1">
           <Select 
-            value={item?.limit || 'Min'} 
+            value={item.limit || 'Min'} 
             onValueChange={(val: any) => setNutrition({...nutrition, [field]: { ...item, limit: val }})}
           >
-            <SelectTrigger className="h-8 w-16 text-[10px] px-1 bg-slate-50">
+            <SelectTrigger className="h-8 w-16 text-[10px] px-1 bg-slate-50 border-primary/20">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -194,9 +194,9 @@ export default function BrandManagement() {
           </Select>
           <Input 
             type="number" 
-            value={item?.value || ""} 
+            value={item.value || ""} 
             onChange={(e) => setNutrition({...nutrition, [field]: { ...item, value: e.target.value }})} 
-            className="h-8 text-xs flex-1"
+            className="h-8 text-xs flex-1 border-primary/20"
             placeholder="Val"
           />
         </div>
@@ -319,7 +319,7 @@ export default function BrandManagement() {
           <div className="lg:col-span-5 space-y-6">
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-4">
-                <CardTitle className="text-lg">
+                <CardTitle className="text-lg text-primary">
                   {editingId ? "ब्रँड संपादन करा" : "नवीन ब्रँड जोडा"}
                 </CardTitle>
                 {editingId && (
@@ -330,15 +330,15 @@ export default function BrandManagement() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>ब्रँड / कंपनीचे नाव</Label>
-                  <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value || "")} placeholder="उदा. गोदरेज गोल्ड" />
+                  <Label className="text-primary font-bold">ब्रँड / कंपनीचे नाव</Label>
+                  <Input value={newBrandName} onChange={(e) => setNewBrandName(e.target.value || "")} placeholder="उदा. गोदरेज गोल्ड" className="border-primary/20" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase font-bold text-muted-foreground">compounded cattlefeed type</Label>
+                    <Label className="text-[11px] uppercase font-bold text-primary">compounded cattlefeed type</Label>
                     <Select value={compoundedType} onValueChange={setCompoundedType}>
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger className="h-9 border-primary/20">
                         <SelectValue placeholder="निवडा" />
                       </SelectTrigger>
                       <SelectContent>
@@ -348,9 +348,9 @@ export default function BrandManagement() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-[11px] uppercase font-bold text-muted-foreground">खाद्य प्रकार</Label>
+                    <Label className="text-[11px] uppercase font-bold text-primary">खाद्य प्रकार</Label>
                     <Select value={feedType} onValueChange={setFeedType}>
-                      <SelectTrigger className="h-9">
+                      <SelectTrigger className="h-9 border-primary/20">
                         <SelectValue placeholder="प्रकार निवडा" />
                       </SelectTrigger>
                       <SelectContent>
@@ -365,21 +365,22 @@ export default function BrandManagement() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1 text-xs"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
-                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value || "")} placeholder="किग्रॅ" />
+                    <Label className="flex items-center gap-1 text-xs text-primary font-bold"><Package className="h-3 w-3" /> बेस वजन (किग्रॅ)</Label>
+                    <Input type="number" value={bagWeight} onChange={(e) => setBagWeight(e.target.value || "")} placeholder="किग्रॅ" className="border-primary/20" />
                   </div>
                   <div className="space-y-2">
-                    <Label className="flex items-center gap-1 text-xs"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
-                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value || "")} placeholder="₹" />
+                    <Label className="flex items-center gap-1 text-xs text-primary font-bold"><IndianRupee className="h-3 w-3" /> बेस किंमत (₹)</Label>
+                    <Input type="number" value={price} onChange={(e) => setPrice(e.target.value || "")} placeholder="₹" className="border-primary/20" />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs">उपलब्ध पॅकिंग (उदा. 50, 25, 10)</Label>
+                  <Label className="text-xs text-primary font-bold">उपलब्ध पॅकिंग (उदा. 50, 25, 10)</Label>
                   <Input 
                     value={availableWeights} 
                     onChange={(e) => setAvailableWeights(e.target.value || "")} 
                     placeholder="वजन स्वल्पविराम देऊन लिहा" 
+                    className="border-primary/20"
                   />
                 </div>
 
@@ -387,7 +388,7 @@ export default function BrandManagement() {
                   <Label className="text-primary font-bold block mb-2 text-sm uppercase flex items-center gap-2">
                     <FlaskConical className="h-4 w-4" /> पोषण मूल्ये (Nutrient Composition)
                   </Label>
-                  <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border">
+                  <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border border-primary/10">
                     <NutrientInput label="Crude Protein (%)" field="protein" />
                     <NutrientInput label="Crude Fat (%)" field="fat" />
                     <NutrientInput label="Crude Fiber (%)" field="fiber" />
@@ -400,15 +401,15 @@ export default function BrandManagement() {
                     <NutrientInput label="Moisture (%)" field="moisture" />
                   </div>
                   <div className="mt-2 space-y-1">
-                    <Label className="text-[10px]">इतर पोषक मूल्ये</Label>
-                    <Input value={nutrition.others} onChange={(e) => setNutrition({...nutrition, others: e.target.value})} className="h-8 text-xs" placeholder="इतर..." />
+                    <Label className="text-[10px] text-primary font-bold">इतर पोषक मूल्ये</Label>
+                    <Input value={nutrition.others} onChange={(e) => setNutrition({...nutrition, others: e.target.value})} className="h-8 text-xs border-primary/20" placeholder="इतर..." />
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
                     <Label className="text-primary font-bold text-sm">मुख्य घटक (Ingredients)</Label>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient} className="h-7 text-[10px]">
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient} className="h-7 text-[10px] border-primary text-primary">
                       <Plus className="h-3 w-3 mr-1" /> जोडा
                     </Button>
                   </div>
@@ -419,13 +420,13 @@ export default function BrandManagement() {
                           placeholder="उदा. मका (Maize)" 
                           value={ing.ingredient} 
                           onChange={(e) => handleIngredientChange(idx, "ingredient", e.target.value)}
-                          className="h-8 flex-1 text-xs"
+                          className="h-8 flex-1 text-xs border-primary/20"
                         />
                         <Input 
                           placeholder="%" 
                           value={ing.percentage} 
                           onChange={(e) => handleIngredientChange(idx, "percentage", e.target.value)}
-                          className="h-8 w-14 text-xs"
+                          className="h-8 w-14 text-xs border-primary/20"
                           type="number"
                         />
                         <Button type="button" variant="ghost" size="icon" className="h-8 w-8 text-destructive" onClick={() => handleRemoveIngredient(idx)}>
@@ -439,7 +440,7 @@ export default function BrandManagement() {
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
                     <Label className="text-primary font-bold text-sm">ॲड पॉइंट्स (इतर)</Label>
-                    <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-[10px]">
+                    <Button type="button" variant="outline" size="sm" onClick={handleAddPoint} className="h-7 text-[10px] border-primary text-primary">
                       <PlusCircle className="h-3 w-3 mr-1" /> जोडा
                     </Button>
                   </div>
@@ -449,12 +450,12 @@ export default function BrandManagement() {
                         <Button type="button" variant="ghost" size="icon" className="absolute top-1 right-1 h-6 w-6 text-destructive" onClick={() => handleRemovePoint(idx)}>
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
-                        <Label className="text-[10px]">मुद्दा {idx + 1}</Label>
+                        <Label className="text-[10px] text-primary">मुद्दा {idx + 1}</Label>
                         <Textarea 
                           placeholder="उदा. उच्च दूध वाढ, वाजवी किंमत" 
                           value={pt.point} 
                           onChange={(e) => handlePointChange(idx, e.target.value)}
-                          className="h-16 text-xs"
+                          className="h-16 text-xs border-primary/20"
                         />
                       </div>
                     ))}
@@ -467,7 +468,7 @@ export default function BrandManagement() {
                       रद्द
                     </Button>
                   )}
-                  <Button type="button" className="flex-1 bg-primary shadow-md" onClick={handleSaveBrand}>
+                  <Button type="button" className="flex-1 bg-primary shadow-md hover:bg-primary/90" onClick={handleSaveBrand}>
                     <Save className="mr-2 h-4 w-4" /> {editingId ? "अपडेट" : "जतन करा"}
                   </Button>
                 </div>
@@ -478,7 +479,7 @@ export default function BrandManagement() {
           <div className="lg:col-span-7">
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <CardTitle className="text-lg">मास्टर ब्रँड यादी ({filteredBrands.length})</CardTitle>
+                <CardTitle className="text-lg text-primary">मास्टर ब्रँड यादी ({filteredBrands.length})</CardTitle>
                 
                 <div className="flex items-center gap-2 bg-primary/5 p-2 rounded-lg border border-primary/20 min-w-[250px]">
                   <Filter className="h-4 w-4 text-primary" />
@@ -515,8 +516,8 @@ export default function BrandManagement() {
                         </div>
                         <h3 className="font-bold text-base text-primary leading-tight pr-12">{brand.name}</h3>
                         <div className="flex gap-1 mt-1">
-                          <Badge variant="outline" className="text-[8px] h-3.5">{brand.compoundedType}</Badge>
-                          <Badge variant="outline" className="text-[8px] h-3.5">{brand.feedType}</Badge>
+                          <Badge variant="outline" className="text-[8px] h-3.5 border-primary/30 text-primary">{brand.compoundedType}</Badge>
+                          <Badge variant="outline" className="text-[8px] h-3.5 border-primary/30 text-primary">{brand.feedType}</Badge>
                         </div>
                         <div className="flex justify-between items-center text-xs mt-3 border-t pt-2">
                           <p className="font-bold text-primary">₹{brand.price}</p>

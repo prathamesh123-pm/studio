@@ -167,7 +167,7 @@ export default function SurveysList() {
                 {s.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
               </div>
               <div>
-                <h3 className="font-bold text-base leading-tight">
+                <h3 className="font-bold text-base leading-tight text-primary">
                   {s.data.dairyName || s.data.farmerName}
                 </h3>
                 <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
@@ -400,7 +400,7 @@ export default function SurveysList() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
             <Input 
               placeholder="शोध (नाव, गाव...)" 
-              className="pl-9 h-9 text-sm bg-white"
+              className="pl-9 h-9 text-sm bg-white border-primary/20"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
@@ -408,10 +408,10 @@ export default function SurveysList() {
         </header>
 
         <Tabs defaultValue="all" className="w-full no-print">
-          <TabsList className="grid w-full grid-cols-3 mb-6 h-10 bg-muted/50 p-1">
-            <TabsTrigger value="all" className="text-xs gap-1.5">सर्व</TabsTrigger>
-            <TabsTrigger value="dairy" className="text-xs gap-1.5">संकलन केंद्र</TabsTrigger>
-            <TabsTrigger value="farmer" className="text-xs gap-1.5">शेतकरी ब्रँड</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-3 mb-6 h-10 bg-primary/5 p-1 border border-primary/10">
+            <TabsTrigger value="all" className="text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white">सर्व</TabsTrigger>
+            <TabsTrigger value="dairy" className="text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white">संकलन केंद्र</TabsTrigger>
+            <TabsTrigger value="farmer" className="text-xs gap-1.5 data-[state=active]:bg-primary data-[state=active]:text-white">शेतकरी ब्रँड</TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-1 mt-0">
@@ -429,8 +429,8 @@ export default function SurveysList() {
           <DialogContent className="max-w-[98vw] md:max-w-[210mm] max-h-[95vh] overflow-y-auto p-0 border-2 dialog-content-print shadow-none">
             <DialogHeader className="p-3 md:p-4 border-b bg-muted/30 no-print sticky top-0 z-50">
               <div className="flex items-center justify-between gap-2 w-full">
-                <DialogTitle className="text-xs md:text-lg font-bold truncate flex-1">अहवाल</DialogTitle>
-                <Button variant="default" size="sm" onClick={() => window.print()} className="bg-black text-white font-bold h-8 text-[10px] md:text-sm px-3 shrink-0">
+                <DialogTitle className="text-xs md:text-lg font-bold truncate flex-1 text-primary">अहवाल</DialogTitle>
+                <Button variant="default" size="sm" onClick={() => window.print()} className="bg-primary hover:bg-primary/90 text-white font-bold h-8 text-[10px] md:text-sm px-3 shrink-0 shadow-md">
                   <Printer className="h-3.5 w-3.5 mr-1" /> प्रिंट अहवाल
                 </Button>
               </div>

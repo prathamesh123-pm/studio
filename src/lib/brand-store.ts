@@ -1,4 +1,3 @@
-
 export interface NutrientValue {
   value: string;
   limit: 'Min' | 'Max';
