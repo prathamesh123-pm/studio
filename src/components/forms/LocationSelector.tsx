@@ -14,29 +14,19 @@ interface LocationSelectorProps {
 export function LocationSelector({ onLocationChange, defaultDistrict = "", defaultTaluka = "" }: LocationSelectorProps) {
   const [district, setDistrict] = useState(defaultDistrict);
   const [taluka, setTaluka] = useState(defaultTaluka);
-  const [talukas, setTalukas] = useState<string[]>([]);
 
-  // Sync internal state with props if they change externally (e.g., when editing a survey)
+  // Update local state when props change, but don't trigger callback
   useEffect(() => {
-    if (defaultDistrict !== district) {
-      setDistrict(defaultDistrict);
-    }
-    if (defaultTaluka !== taluka) {
-      setTaluka(defaultTaluka);
-    }
-  }, [defaultDistrict, defaultTaluka]);
+    if (defaultDistrict !== undefined) setDistrict(defaultDistrict);
+  }, [defaultDistrict]);
 
   useEffect(() => {
-    if (district) {
-      setTalukas(MAHARASHTRA_LOCATIONS[district] || []);
-    } else {
-      setTalukas([]);
-    }
-  }, [district]);
+    if (defaultTaluka !== undefined) setTaluka(defaultTaluka);
+  }, [defaultTaluka]);
 
   const handleDistrictChange = (val: string) => {
     setDistrict(val);
-    setTaluka("");
+    setTaluka(""); // Reset taluka when district changes
     onLocationChange(val, "");
   };
 
@@ -45,10 +35,12 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
     onLocationChange(district, val);
   };
 
+  const talukas = district ? MAHARASHTRA_LOCATIONS[district] || [] : [];
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div className="space-y-2">
-        <Label className="form-label-mr font-bold">तुमचा जिल्हा निवडा</Label>
+        <Label className="text-sm font-bold text-primary">तुमचा जिल्हा निवडा:</Label>
         <Select value={district} onValueChange={handleDistrictChange}>
           <SelectTrigger className="h-10 border-primary/20">
             <SelectValue placeholder="जिल्हा निवडा" />
@@ -62,7 +54,7 @@ export function LocationSelector({ onLocationChange, defaultDistrict = "", defau
       </div>
 
       <div className="space-y-2">
-        <Label className="form-label-mr font-bold">तुमचा तालुका निवडा</Label>
+        <Label className="text-sm font-bold text-primary">तुमचा तालुका निवडा:</Label>
         <Select value={taluka} onValueChange={handleTalukaChange} disabled={!district}>
           <SelectTrigger className="h-10 border-primary/20">
             <SelectValue placeholder="तालुका निवडा" />
