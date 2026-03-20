@@ -95,7 +95,7 @@ export default function SurveysList() {
     'MineralMix': 'खनिज मिश्रण',
     'Cash': 'रोखीने',
     'Credit': 'उधारीने',
-    'VeryGood': 'होय',
+    'VeryGood': 'होय / उत्कृष्ट',
     'Okay': 'ठीक आहे',
     'NotSatisfied': 'समाधानी नाही',
     'LocalShop': 'स्थानिक दुकान',
@@ -107,7 +107,12 @@ export default function SurveysList() {
     'HighPrice': 'किंमत जास्त आहे',
     'LateSupply': 'पुरवठा उशिरा होतो',
     'Adulteration': 'भेसळ वाटते',
-    'DigestionIssues': 'पचनाचे त्रास'
+    'DigestionIssues': 'पचनाचे त्रास',
+    'होय': 'होय',
+    'नाही': 'नाही',
+    'कधीकधी': 'कधीकधी',
+    'थोड्या प्रमाणात': 'थोड्या प्रमाणात',
+    'मध्यम': 'मध्यम'
   };
 
   const translate = (val: any) => {
@@ -301,7 +306,7 @@ export default function SurveysList() {
           <Table className="border border-black table-fixed">
             <TableBody>
               <DataRow label="पशुखाद्याबाबत मुख्य समस्या / तक्रारी" value={isDairy ? d.mainProblem : d.problems} />
-              {(d.otherProblem || d.otherProblem === "") && <DataRow label="इतर काही तक्रार असल्यास" value={d.otherProblem} />}
+              <DataRow label="इतर काही तक्रार असल्यास" value={d.otherProblem} />
               <DataRow label="आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
               <DataRow label="नवीन ब्रँडचे नमुना ट्रायल घेऊन पाहणार का?" value={d.sampleTrial} />
               {d.customPoints?.length > 0 && <DataRow label="इतर काही महत्त्वाचे मुद्दे (Add Points)" value={d.customPoints.map((p: any) => p.point).join(", ")} />}
