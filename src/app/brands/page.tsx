@@ -270,7 +270,7 @@ export default function BrandManagement() {
           </TableBody>
         </Table>
         {brand.nutrition?.others && (
-          <div className="p-2 border border-black border-t-0 text-[10pt] font-black">इतर: {brand.nutrition.others}</div>
+          <div className="p-2 border border-black border-t-0 text-[10pt] font-black text-black">इतर: {brand.nutrition.others}</div>
         )}
       </section>
 
@@ -541,8 +541,8 @@ export default function BrandManagement() {
             </DialogTitle>
           </DialogHeader>
           <div className="hidden print:block text-center border-b-2 border-black pb-1 mb-4">
-            <h1 className="text-[14pt] font-black uppercase">ब्रँड तपशील अहवाल</h1>
-            <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+            <h1 className="text-[14pt] font-black uppercase text-black">ब्रँड तपशील अहवाल</h1>
+            <p className="text-[10pt] font-black text-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           </div>
           {viewingBrand && <DetailedBrandTable brand={viewingBrand} />}
           <div className="mt-6 flex justify-end no-print">
@@ -567,8 +567,8 @@ export default function BrandManagement() {
           </DialogHeader>
           
           <div className="hidden print:block text-center border-b-2 border-black pb-1 mb-4">
-            <h1 className="text-[14pt] font-black uppercase">मास्टर ब्रँड अहवाल</h1>
-            <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
+            <h1 className="text-[14pt] font-black uppercase text-black">मास्टर ब्रँड अहवाल</h1>
+            <p className="text-[10pt] font-black text-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           </div>
 
           <div className="grid grid-cols-1 print:grid-cols-1 gap-8">
