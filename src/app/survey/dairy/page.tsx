@@ -32,7 +32,7 @@ import {
 import { useSurveyStore } from "@/lib/survey-store";
 import { useBrandStore, MasterBrand } from "@/lib/brand-store";
 import { useSupplierStore, Supplier } from "@/lib/supplier-store";
-import { Save, Printer, ArrowLeft, Trash2, MapPin, Loader2, PlusCircle, Check, Store, Plus } from "lucide-react";
+import { Save, Printer, ArrowLeft, Trash2, MapPin, Loader2, PlusCircle, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -40,12 +40,12 @@ const dairySchema = z.object({
   dairyName: z.string().min(1, "नाव आवश्यक आहे"),
   ownerName: z.string().min(1, "मालकाचे नाव आवश्यक आहे"),
   contact: z.string().min(10, "संपर्क क्रमांक किमान १० अंकी असावा"),
-  district: z.string(),
-  taluka: z.string(),
+  district: z.string().min(1, "जिल्हा निवडा"),
+  taluka: z.string().min(1, "तालुका निवडा"),
   village: z.string().min(1, "गावाचे नाव आवश्यक आहे"),
-  address: z.string(),
-  milkCollection: z.string(),
-  farmerCount: z.string(),
+  address: z.string().optional(),
+  milkCollection: z.string().optional(),
+  farmerCount: z.string().optional(),
   location: z.string().optional(),
   livestock: z.object({
     totalAnimals: z.string().default("0"),
@@ -57,7 +57,7 @@ const dairySchema = z.object({
   }),
   feedType: z.enum(["ReadyMade", "HomeMade", "Both"]).optional(),
   feedFrequency: z.string().optional(),
-  dailyFeedPerAnimal: z.string(),
+  dailyFeedPerAnimal: z.string().optional(),
   supplements: z.array(z.string()).default([]),
   otherSupplement: z.string().optional(),
   brandsInfo: z.array(z.object({
@@ -65,36 +65,36 @@ const dairySchema = z.object({
     feedType: z.string(),
     bagWeight: z.string(),
     price: z.string(),
-    protein: z.any(),
-    fat: z.any(),
-    fiber: z.any(),
-    ash: z.any(),
-    calcium: z.any(),
-    totalPhosphorus: z.any(),
-    availablePhosphorus: z.any(),
-    aflatoxin: z.any(),
-    urea: z.any(),
-    moisture: z.any(),
+    protein: z.any().optional(),
+    fat: z.any().optional(),
+    fiber: z.any().optional(),
+    ash: z.any().optional(),
+    calcium: z.any().optional(),
+    totalPhosphorus: z.any().optional(),
+    availablePhosphorus: z.any().optional(),
+    aflatoxin: z.any().optional(),
+    urea: z.any().optional(),
+    moisture: z.any().optional(),
     others: z.string().optional(),
   })).default([]),
   purchaseMethod: z.string().optional(),
   creditDays: z.string().optional(),
   suppliers: z.array(z.object({
-    source: z.string(),
+    source: z.string().optional(),
     name: z.string(),
     contact: z.string().optional(),
     address: z.string().optional(),
   })).default([{ source: "", name: "" }]),
   timelySupply: z.enum(["Yes", "No"]).optional(),
-  monthlyExp: z.string(),
-  monthlyBags: z.string(),
+  monthlyExp: z.string().optional(),
+  monthlyBags: z.string().optional(),
   satisfaction: z.string().optional(),
   milkIncrease: z.string().optional(),
-  bestBrand: z.string(),
+  bestBrand: z.string().optional(),
   pelletQuality: z.string().optional(),
   dustContent: z.string().optional(),
   healthObservation: z.string().optional(),
-  warehouseCapacity: z.string(),
+  warehouseCapacity: z.string().optional(),
   hasStorage: z.string().optional(),
   mainProblem: z.array(z.string()).default([]),
   otherProblem: z.string().optional(),
@@ -173,7 +173,7 @@ function DairySurveyForm() {
       form.setValue("surveyorName", savedName);
       form.setValue("surveyorId", savedId);
     }
-  }, [surveyId]);
+  }, [surveyId, getBrands, getSuppliers, getSurveyById]);
 
   const handleGetLocation = () => {
     setLocating(true);
@@ -188,7 +188,10 @@ function DairySurveyForm() {
         form.setValue("location", coords);
         setLocating(false);
       },
-      () => setLocating(false),
+      () => {
+        toast({ variant: "destructive", title: "त्रुटी", description: "लोकेशन मिळवण्यात अडचण आली." });
+        setLocating(false);
+      },
       { enableHighAccuracy: true }
     );
   };
@@ -247,6 +250,10 @@ function DairySurveyForm() {
     }
   };
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   const supplementOptions = [
     { label: "सुका चारा", value: "DryFodder" },
     { label: "हिरवा चारा", value: "GreenFodder" },
@@ -256,7 +263,7 @@ function DairySurveyForm() {
   ];
 
   const complaintOptions = [
-    { label: "दूध उत्पादनात वाढ नाही", value: "NoMilkIncrease" },
+    { label: "दूध उत्पादन वाढ नाही", value: "NoMilkIncrease" },
     { label: "दुधाचे फॅट कमी लागते", value: "LowFat" },
     { label: "जनावर पशुखाद्य खात नाही", value: "AnimalDoesntLike" },
     { label: "पशुखाद्याची किंमत जास्त आहे", value: "HighPrice" },
@@ -274,11 +281,14 @@ function DairySurveyForm() {
           <h1 className="text-xl md:text-2xl font-bold font-headline text-primary">गवळी संकलन केंद्र (डेअरी) सर्वेक्षण फॉर्म</h1>
         </div>
 
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <form onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          console.error(errors);
+          toast({ variant: "destructive", title: "त्रुटी", description: "कृपया सर्व अनिवार्य माहिती भरा." });
+        })} className="space-y-6">
           <section className="form-section bg-primary/5">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2 flex items-center gap-2"><MapPin className="h-5 w-5" /> लोकेशन टॅगिंग (GPS Location)</h3>
             <p className="text-xs text-muted-foreground mb-3">सर्वेक्षणाचे अचूक लोकेशन मिळवण्यासाठी खालील बटण दाबा.</p>
-            <Button type="button" onClick={handleGetLocation} disabled={locating} className="bg-primary h-10">{locating ? <Loader2 className="animate-spin mr-2" /> : <MapPin className="mr-2 h-4 w-4" />}लोकेशन मिळवा</Button>
+            <Button type="button" onClick={handleGetLocation} disabled={locating} className="bg-primary h-10">{locating ? <Loader2 className="animate-spin mr-2 h-4 w-4" /> : <MapPin className="mr-2 h-4 w-4" />}लोकेशन मिळवा</Button>
             {form.watch("location") && <div className="mt-2 text-xs font-bold text-green-700 bg-green-50 p-2 rounded border border-green-200">नोंदवलेले लोकेशन: {form.watch("location")}</div>}
           </section>
 
@@ -295,8 +305,8 @@ function DairySurveyForm() {
               <LocationSelector onLocationChange={(d, t) => { form.setValue("district", d); form.setValue("taluka", t); }} defaultDistrict={form.getValues("district")} defaultTaluka={form.getValues("taluka")} />
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-1"><Label className="text-xs">दिवसाचे एकूण दूध संकलन किती लिटर होते?</Label><Input {...form.register("milkCollection")} type="number" placeholder="लिटर/दिवस" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">तुमच्या केंद्राशी एकूण किती शेतकरी जोडले आहेत?</Label><Input {...form.register("farmerCount")} type="number" placeholder="शेतकरी संख्या" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">दिवसाचे एकूण दूध संकलन किती लिटर होते?</Label><Input {...form.register("milkCollection")} placeholder="लिटर/दिवस" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">तुमच्या केंद्राशी एकूण किती शेतकरी जोडले आहेत?</Label><Input {...form.register("farmerCount")} placeholder="शेतकरी संख्या" className="h-10" /></div>
             </div>
           </section>
 
@@ -304,10 +314,10 @@ function DairySurveyForm() {
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती (Livestock Data)</h3>
             <p className="text-xs text-muted-foreground mb-3">तुमच्याकडे सध्या उपलब्ध असलेल्या जनावरांची संख्या लिहा:</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-1"><Label className="text-xs">एकूण जनावरांची संख्या</Label><Input {...form.register("livestock.totalAnimals")} type="number" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">गायींची संख्या</Label><Input {...form.register("livestock.cows")} type="number" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">म्हशींची संख्या</Label><Input {...form.register("livestock.buffaloes")} type="number" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">वासरांची संख्या</Label><Input {...form.register("livestock.calves")} type="number" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">एकूण जनावरांची संख्या</Label><Input {...form.register("livestock.totalAnimals")} className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">गायींची संख्या</Label><Input {...form.register("livestock.cows")} className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">म्हशींची संख्या</Label><Input {...form.register("livestock.buffaloes")} className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">वासरांची संख्या</Label><Input {...form.register("livestock.calves")} className="h-10" /></div>
             </div>
           </section>
 
@@ -323,8 +333,8 @@ function DairySurveyForm() {
                 </RadioGroup>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1"><Label className="text-xs">दिवसातून किती वेळा पशुखाद्य देता?</Label><Input {...form.register("feedFrequency")} type="number" placeholder="उदा. २ वेळा" className="h-10" /></div>
-                <div className="space-y-1"><Label className="text-xs">प्रत्येक जनावराला दररोज किती किलो पशुखाद्य देता?</Label><Input {...form.register("dailyFeedPerAnimal")} type="number" placeholder="उदा. ४ किलो" className="h-10" /></div>
+                <div className="space-y-1"><Label className="text-xs">दिवसातून किती वेळा पशुखाद्य देता?</Label><Input {...form.register("feedFrequency")} placeholder="उदा. २ वेळा" className="h-10" /></div>
+                <div className="space-y-1"><Label className="text-xs">प्रत्येक जनावराला दररोज किती किलो पशुखाद्य देता?</Label><Input {...form.register("dailyFeedPerAnimal")} placeholder="उदा. ४ किलो" className="h-10" /></div>
               </div>
               <div className="space-y-2">
                 <Label className="text-sm font-bold">वापरत असलेले इतर पूरक खाद्य (Additives):</Label>
@@ -380,7 +390,7 @@ function DairySurveyForm() {
                 {brandFields.map((f, i) => (
                   <TableRow key={f.id} className="hover:bg-muted/20">
                     <TableCell><Input {...form.register(`brandsInfo.${i}.name`)} className="h-9 text-xs" /></TableCell>
-                    <TableCell><Input {...form.register(`brandsInfo.${i}.price`)} className="h-9 text-xs w-20" type="number" /></TableCell>
+                    <TableCell><Input {...form.register(`brandsInfo.${i}.price`)} className="h-9 text-xs w-20" /></TableCell>
                     <TableCell><Input {...form.register(`brandsInfo.${i}.protein.value` as any)} className="h-9 text-xs w-14" /></TableCell>
                     <TableCell><Input {...form.register(`brandsInfo.${i}.fat.value` as any)} className="h-9 text-xs w-14" /></TableCell>
                     <TableCell><Input {...form.register(`brandsInfo.${i}.fiber.value` as any)} className="h-9 text-xs w-14" /></TableCell>
@@ -394,7 +404,7 @@ function DairySurveyForm() {
               </TableBody>
             </Table>
             <div className="mt-3 flex justify-end">
-              <Button type="button" variant="outline" size="sm" onClick={() => appendBrand({ name: "", feedType: "", bagWeight: "", price: "", protein: { value: "", limit: 'Min' }, fat: { value: "", limit: 'Min' }, fiber: { value: "", limit: 'Max' }, ash: { value: "", limit: 'Max' }, calcium: { value: "", limit: 'Min' }, totalPhosphorus: { value: "", limit: 'Min' }, availablePhosphorus: { value: "", limit: 'Min' }, aflatoxin: { value: "", limit: 'Max' }, urea: { value: "", limit: 'Max' }, moisture: { value: "", limit: 'Max' } })} className="h-8 text-[10px]"><Plus className="mr-1 h-3 w-3" />ब्रँड मॅन्युअली जोडा</Button>
+              <Button type="button" variant="outline" size="sm" onClick={() => appendBrand({ name: "", feedType: "", bagWeight: "", price: "" })} className="h-8 text-[10px]"><Plus className="mr-1 h-3 w-3" />ब्रँड मॅन्युअली जोडा</Button>
             </div>
           </section>
 
@@ -409,7 +419,7 @@ function DairySurveyForm() {
                 </RadioGroup>
                 <div className="flex items-center gap-3 bg-muted/30 p-3 rounded border">
                   <Label className="text-xs font-bold text-primary">जर उधारीने असेल, तर किती दिवसांची उधारी मिळते?</Label>
-                  <Input {...form.register("creditDays")} type="number" className="h-9 w-24 bg-white" placeholder="दिवस" />
+                  <Input {...form.register("creditDays")} className="h-9 w-24 bg-white" placeholder="दिवस" />
                 </div>
               </div>
               <div className="space-y-4">
@@ -432,9 +442,9 @@ function DairySurveyForm() {
                         <div className="space-y-1"><Label className="text-[10px]">पुरवठादाराचे नाव</Label><Input {...form.register(`suppliers.${i}.name`)} placeholder="नाव" className="h-9 text-xs" /></div>
                         <div className="space-y-1"><Label className="text-[10px]">मोबाईल नंबर</Label><Input {...form.register(`suppliers.${i}.contact`)} placeholder="संपर्क" className="h-9 text-xs" /></div>
                       </div>
+                      <div className="space-y-1"><Label className="text-[10px]">पत्ता</Label><Input {...form.register(`suppliers.${i}.address`)} placeholder="पत्ता" className="h-9 text-xs" /></div>
                     </div>
                   ))}
-                  {supplierFields.length === 0 && <p className="text-[10px] text-muted-foreground italic">अद्याप कोणताही पुरवठादार जोडलेला नाही.</p>}
                 </div>
               </div>
             </div>
@@ -443,8 +453,8 @@ function DairySurveyForm() {
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">७-८-९-१०. समाधान, गुणवत्ता व तक्रारी</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div className="space-y-1"><Label className="text-xs">पशुखाद्यावर होणारा एकूण मासिक खर्च किती आहे (₹)?</Label><Input {...form.register("monthlyExp")} type="number" placeholder="₹ दर महा" className="h-10" /></div>
-              <div className="space-y-1"><Label className="text-xs">महिन्याला साधारणपणे किती पोती लागतात?</Label><Input {...form.register("monthlyBags")} type="number" placeholder="पोती संख्या" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">पशुखाद्यावर होणारा एकूण मासिक खर्च किती आहे (₹)?</Label><Input {...form.register("monthlyExp")} placeholder="₹ दर महा" className="h-10" /></div>
+              <div className="space-y-1"><Label className="text-xs">महिन्याला साधारणपणे किती पोती लागतात?</Label><Input {...form.register("monthlyBags")} placeholder="पोती संख्या" className="h-10" /></div>
               <div className="space-y-1"><Label className="text-xs">तुमच्या मते सध्याचा सर्वोत्तम ब्रँड कोणता आहे?</Label><Input {...form.register("bestBrand")} placeholder="ब्रँडचे नाव" className="h-10" /></div>
               <div className="space-y-1">
                 <Label className="text-xs">पशुखाद्याची कॉलिटी योग्य आहे का?</Label>
@@ -498,7 +508,6 @@ function DairySurveyForm() {
                   <Textarea {...form.register(`customPoints.${i}.point` as const)} placeholder="येथे अतिरिक्त माहिती लिहा..." className="bg-white" />
                 </div>
               ))}
-              {pointFields.length === 0 && <p className="text-xs text-muted-foreground italic text-center py-4">अद्याप कोणताही अतिरिक्त मुद्दा जोडलेला नाही.</p>}
             </div>
           </section>
 
@@ -511,7 +520,7 @@ function DairySurveyForm() {
           </section>
 
           <div className="flex justify-center md:justify-end gap-3 no-print pt-6 border-t">
-            <Button type="button" variant="outline" onClick={() => window.print()} className="h-10 px-4 md:px-6 border-primary text-primary hover:bg-primary/5 text-xs md:text-sm">
+            <Button type="button" variant="outline" onClick={handlePrint} className="h-10 px-4 md:px-6 border-primary text-primary hover:bg-primary/5 text-xs md:text-sm">
               <Printer className="mr-1 md:mr-2 h-4 w-4 md:h-5 md:w-5" />अहवाल प्रिंट करा
             </Button>
             <Button type="submit" className="bg-primary h-10 px-6 md:px-8 shadow-lg hover:bg-primary/90 text-xs md:text-sm">

@@ -61,12 +61,15 @@
     visibility: hidden;
   }
 
+  /* Target both the specific dialog content and any elements with report-container-print */
   .dialog-content-print,
-  .dialog-content-print * {
+  .dialog-content-print *,
+  .report-container-print,
+  .report-container-print * {
     visibility: visible !important;
   }
 
-  .dialog-content-print {
+  .dialog-content-print, .report-container-print {
     position: absolute !important;
     top: 0 !important;
     left: 0 !important;
@@ -106,7 +109,7 @@
   }
 
   th {
-    background-color: transparent !important; /* Avoid black backgrounds */
+    background-color: #f8fafc !important;
     text-align: left !important;
     font-weight: 900 !important;
   }
@@ -132,7 +135,7 @@
     font-weight: 700 !important;
   }
   
-  .bg-slate-50, .bg-slate-100 {
-    background-color: #f1f5f9 !important; /* Ensure light gray in print, not black */
+  .bg-slate-50, .bg-slate-100, .bg-muted {
+    background-color: #f1f5f9 !important;
   }
 }
