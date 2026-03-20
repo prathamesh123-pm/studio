@@ -45,7 +45,6 @@ const farmerSchema = z.object({
   dailyQtyPerAnimal: z.string(),
   frequency: z.string().optional(),
   otherFeeds: z.array(z.string()).default([]),
-  otherFeedText: z.string().optional(),
   selectionReason: z.array(z.string()).default([]),
   startMethod: z.string().optional(),
   quality: z.string().optional(),
@@ -64,7 +63,6 @@ const farmerSchema = z.object({
     name: z.string(),
     contact: z.string().optional(),
     address: z.string().optional(),
-    source: z.string().optional(),
   })).default([{ name: "" }]),
   hasCredit: z.string().optional(),
   previousBrands: z.string(),
@@ -72,8 +70,6 @@ const farmerSchema = z.object({
   switchReason: z.array(z.string()).default([]),
   easyAvailability: z.string().optional(),
   repVisit: z.string().optional(),
-  samplesInfo: z.string().optional(),
-  knowsIngredients: z.string().optional(),
   packNutrition: z.any(),
   rating: z.string(),
   problems: z.array(z.string()).default([]),
@@ -197,9 +193,10 @@ function FarmerSurveyForm() {
       } else {
         addSurvey({ type: "farmer", surveyorName: data.surveyorName, surveyorId: data.surveyorId, data });
       }
+      toast({ title: "यशस्वी", description: "शेतकरी सर्वेक्षण रिपोर्ट जतन झाला आहे." });
       router.push("/surveys");
     } catch (e) {
-      toast({ variant: "destructive", title: "त्रुटी", description: "काहीतरी चूक झाली." });
+      toast({ variant: "destructive", title: "त्रुटी", description: "माहिती जतन करताना अडचण आली." });
     }
   };
 

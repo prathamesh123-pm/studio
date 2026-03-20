@@ -35,7 +35,6 @@ import { useSupplierStore, Supplier } from "@/lib/supplier-store";
 import { Save, Printer, ArrowLeft, Trash2, MapPin, Loader2, PlusCircle, Check, Store, Plus } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
 
 const dairySchema = z.object({
   dairyName: z.string().min(1, "नाव आवश्यक आहे"),
@@ -85,7 +84,6 @@ const dairySchema = z.object({
     name: z.string(),
     contact: z.string().optional(),
     address: z.string().optional(),
-    otherSource: z.string().optional(),
   })).default([{ source: "", name: "" }]),
   timelySupply: z.enum(["Yes", "No"]).optional(),
   monthlyExp: z.string(),
@@ -242,9 +240,10 @@ function DairySurveyForm() {
       } else {
         addSurvey({ type: "dairy", surveyorName: data.surveyorName, surveyorId: data.surveyorId, data });
       }
+      toast({ title: "यशस्वी", description: "डेअरी सर्वेक्षण रिपोर्ट जतन झाला आहे." });
       router.push("/surveys");
     } catch (e) {
-      toast({ variant: "destructive", title: "त्रुटी", description: "काहीतरी चूक झाली." });
+      toast({ variant: "destructive", title: "त्रुटी", description: "माहिती जतन करताना अडचण आली." });
     }
   };
 
@@ -305,7 +304,7 @@ function DairySurveyForm() {
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">२. पशुधन माहिती (Livestock Data)</h3>
             <p className="text-xs text-muted-foreground mb-3">तुमच्याकडे सध्या उपलब्ध असलेल्या जनावरांची संख्या लिहा:</p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="space-y-1"><Label className="text-xs">एकूण जनावरे</Label><Input {...form.register("livestock.totalAnimals")} type="number" /></div>
+              <div className="space-y-1"><Label className="text-xs">एकूण जनावरांची संख्या</Label><Input {...form.register("livestock.totalAnimals")} type="number" /></div>
               <div className="space-y-1"><Label className="text-xs">गायींची संख्या</Label><Input {...form.register("livestock.cows")} type="number" /></div>
               <div className="space-y-1"><Label className="text-xs">म्हशींची संख्या</Label><Input {...form.register("livestock.buffaloes")} type="number" /></div>
               <div className="space-y-1"><Label className="text-xs">वासरांची संख्या</Label><Input {...form.register("livestock.calves")} type="number" /></div>
@@ -450,7 +449,7 @@ function DairySurveyForm() {
               <div className="space-y-1">
                 <Label className="text-xs">पशुखाद्याची कॉलिटी योग्य आहे का?</Label>
                 <Select onValueChange={(v) => form.setValue("pelletQuality", v)} value={form.watch("pelletQuality")}>
-                  <SelectTrigger className="h-9"><SelectValue placeholder="तुमचे मत निवडा" /></SelectTrigger>
+                  <SelectTrigger className="h-9"><SelectValue placeholder="निवडा" /></SelectTrigger>
                   <SelectContent><SelectItem value="होय">होय, उत्तम आहे</SelectItem><SelectItem value="नाही">नाही, समाधानकारक नाही</SelectItem><SelectItem value="मध्यम">मध्यम स्वरूपाची आहे</SelectItem></SelectContent>
                 </Select>
               </div>
