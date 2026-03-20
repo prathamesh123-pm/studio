@@ -367,8 +367,13 @@ export default function SurveysList() {
                   <NutrientRow desc="Crude protein" data={d.packNutrition?.protein} />
                   <NutrientRow desc="Crude fat" data={d.packNutrition?.fat} />
                   <NutrientRow desc="Crude fiber" data={d.packNutrition?.fiber} />
+                  <NutrientRow desc="Acid insoluble ash" data={d.packNutrition?.ash} />
                   <NutrientRow desc="Calcium" data={d.packNutrition?.calcium} />
-                  <NutrientRow desc="Total phosphorus" data={d.packNutrition?.phosphorus} />
+                  <NutrientRow desc="Total phosphorus" data={d.packNutrition?.totalPhosphorus} />
+                  <NutrientRow desc="Available phosphorus" data={d.packNutrition?.availablePhosphorus} />
+                  <NutrientRow desc="Aflatoxin B1" data={d.packNutrition?.aflatoxin} />
+                  <NutrientRow desc="Urea" data={d.packNutrition?.urea} />
+                  <NutrientRow desc="Moisture" data={d.packNutrition?.moisture} />
                 </TableBody>
               </Table>
             </div>
@@ -407,7 +412,7 @@ export default function SurveysList() {
               <DataRow label="पशुखाद्याबाबत मुख्य समस्या काय आहे?" value={isDairy ? d.mainProblem : d.problems} />
               <DataRow label="आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
               {isDairy && <DataRow label="नवीन ब्रँडचे सॅम्पल वापरून पाहाल का?" value={d.sampleTrial} />}
-            </TableRow>
+            </TableBody>
           </Table>
         </section>
 

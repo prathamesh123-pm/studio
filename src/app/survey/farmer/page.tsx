@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
@@ -70,13 +69,16 @@ const farmerSchema = z.object({
   samplesInfo: z.string().optional(),
   knowsIngredients: z.string().optional(),
   packNutrition: z.object({
-    protein: z.string(),
-    fat: z.string(),
-    fiber: z.string(),
-    calcium: z.string(),
-    phosphorus: z.string(),
-    salt: z.string().optional(),
-    mineralMix: z.string().optional(),
+    protein: z.any(),
+    fat: z.any(),
+    fiber: z.any(),
+    ash: z.any(),
+    calcium: z.any(),
+    totalPhosphorus: z.any(),
+    availablePhosphorus: z.any(),
+    aflatoxin: z.any(),
+    urea: z.any(),
+    moisture: z.any(),
   }),
   rating: z.string(),
   problems: z.array(z.string()).default([]),
@@ -115,7 +117,18 @@ function FarmerSurveyForm() {
       problems: [],
       suppliers: [{ name: "" }],
       customPoints: [],
-      packNutrition: { protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "" },
+      packNutrition: {
+        protein: { value: "", limit: "Min" },
+        fat: { value: "", limit: "Min" },
+        fiber: { value: "", limit: "Max" },
+        ash: { value: "", limit: "Max" },
+        calcium: { value: "", limit: "Min" },
+        totalPhosphorus: { value: "", limit: "Min" },
+        availablePhosphorus: { value: "", limit: "Min" },
+        aflatoxin: { value: "", limit: "Max" },
+        urea: { value: "", limit: "Max" },
+        moisture: { value: "", limit: "Max" },
+      },
       surveyDate: new Date().toISOString().split('T')[0],
       location: "",
       surveyorName: "",
@@ -147,7 +160,6 @@ function FarmerSurveyForm() {
         if (existing.data.customPoints) replacePoints(existing.data.customPoints);
       }
     } else {
-      // Set defaults from profile
       form.setValue("surveyorName", savedName);
       form.setValue("surveyorId", savedId);
     }
@@ -160,17 +172,11 @@ function FarmerSurveyForm() {
     form.setValue("currentBrand", selected.name);
     form.setValue("bagPrice", selected.price);
     form.setValue("bagWeight", selected.bagWeight);
-    form.setValue("packNutrition.protein", selected.nutrition.protein);
-    form.setValue("packNutrition.fat", selected.nutrition.fat);
-    form.setValue("packNutrition.fiber", selected.nutrition.fiber);
-    form.setValue("packNutrition.calcium", selected.nutrition.calcium);
-    form.setValue("packNutrition.phosphorus", selected.nutrition.phosphorus);
-    form.setValue("packNutrition.salt", selected.nutrition.salt);
-    form.setValue("packNutrition.mineralMix", selected.nutrition.mineralMix);
+    form.setValue("packNutrition", selected.nutrition);
 
     toast({ 
       title: "ब्रँड माहिती अपडेट झाली", 
-      description: `${selected.name} चे सर्व तपशील आपोआप भरले गेले आहेत.` 
+      description: `${selected.name} चे सर्व १० पोषक घटक आपोआप भरले गेले आहेत.` 
     });
   };
 
@@ -224,6 +230,26 @@ function FarmerSurveyForm() {
     } catch (e) {
       toast({ variant: "destructive", title: "त्रुटी", description: "काहीतरी चूक झाली." });
     }
+  };
+
+  const NutrientInput = ({ label, field }: { label: string, field: string }) => {
+    return (
+      <div className="space-y-1">
+        <Label className="text-[10px]">{label}</Label>
+        <div className="flex gap-1">
+          <Input 
+            {...form.register(`packNutrition.${field}.limit` as any)} 
+            className="h-7 w-12 text-[10px] px-1" 
+            placeholder="Min/Max"
+          />
+          <Input 
+            {...form.register(`packNutrition.${field}.value` as any)} 
+            className="h-7 flex-1 text-[10px]" 
+            placeholder="Value"
+          />
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -601,36 +627,18 @@ function FarmerSurveyForm() {
                   <div className="flex items-center space-x-2"><RadioGroupItem value="No" id="ki2" /><Label htmlFor="ki2">नाही</Label></div>
                 </RadioGroup>
               </div>
-              <Label className="text-sm font-bold block mt-4">पॅकवर दिलेले मुख्य घटक (%)</Label>
-              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-                <div className="space-y-1">
-                  <Label className="text-[10px]">प्रोटीन</Label>
-                  <Input {...form.register("packNutrition.protein")} placeholder="%" className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">फॅट</Label>
-                  <Input {...form.register("packNutrition.fat")} placeholder="%" className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">फायबर</Label>
-                  <Input {...form.register("packNutrition.fiber")} placeholder="%" className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">कॅल्शियम</Label>
-                  <Input {...form.register("packNutrition.calcium")} placeholder="%" className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">फॉस्फरस</Label>
-                  <Input {...form.register("packNutrition.phosphorus")} placeholder="%" className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">मीठ</Label>
-                  <Input {...form.register("packNutrition.salt")} placeholder="%" className="h-8 text-xs" />
-                </div>
-                <div className="space-y-1">
-                  <Label className="text-[10px]">मिनरल</Label>
-                  <Input {...form.register("packNutrition.mineralMix")} placeholder="%" className="h-8 text-xs" />
-                </div>
+              <Label className="text-sm font-bold block mt-4 text-accent">पॅकवर दिलेले मुख्य घटक (%)</Label>
+              <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 bg-accent/5 p-4 rounded-lg border border-accent/10">
+                <NutrientInput label="Protein (%)" field="protein" />
+                <NutrientInput label="Fat (%)" field="fat" />
+                <NutrientInput label="Fiber (%)" field="fiber" />
+                <NutrientInput label="Ash (%)" field="ash" />
+                <NutrientInput label="Calcium (%)" field="calcium" />
+                <NutrientInput label="Total Phos (%)" field="totalPhosphorus" />
+                <NutrientInput label="Avail Phos (%)" field="availablePhosphorus" />
+                <NutrientInput label="Aflatoxin (ppb)" field="aflatoxin" />
+                <NutrientInput label="Urea (%)" field="urea" />
+                <NutrientInput label="Moisture (%)" field="moisture" />
               </div>
             </div>
           </section>
