@@ -53,6 +53,9 @@ const farmerSchema = z.object({
   healthImprovement: z.string().optional(),
   likesFeed: z.string().optional(),
   fatDiff: z.string().optional(),
+  pelletQuality: z.string().optional(),
+  dustContent: z.string().optional(),
+  healthObservation: z.string().optional(),
   bagPrice: z.string(),
   bagWeight: z.string(),
   monthlyBags: z.string(),
@@ -170,7 +173,7 @@ function FarmerSurveyForm() {
     const selected = masterSuppliers.find(s => s.id === supplierId);
     if (selected) {
       form.setValue(`suppliers.${index}.name`, selected.shopName);
-      form.setValue(`suppliers.${index}.source`, selected.supplierType);
+      // Optional: Set source if available in master list
     }
   };
 
@@ -299,10 +302,27 @@ function FarmerSurveyForm() {
           <section className="form-section">
             <h3 className="text-lg font-bold mb-4 text-primary border-b pb-2">६-७-८-९-१०. तुलना व रेटिंग</h3>
             <div className="space-y-4">
-              <Input {...form.register("previousBrands")} placeholder="पूर्वीचे ब्रँड" />
-              <Input {...form.register("betterBrand")} placeholder="चांगला ब्रँड कोणता वाटतो?" />
+              <div className="space-y-2">
+                <Label className="text-sm">तुमच्या मते चांगला ब्रँड कोणता?</Label>
+                <Input {...form.register("betterBrand")} placeholder="उदा. गोदरेज" />
+              </div>
               <div className="flex items-center gap-4"><Label>रेटिंग:</Label><Input {...form.register("rating")} type="range" min="1" max="5" className="w-40" /></div>
               
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t pt-4">
+                <div className="space-y-2">
+                  <Label className="text-sm">पशुखाद्याच्या पेलेटची कडकपणा व आकार योग्य आहे का?</Label>
+                  <Select onValueChange={(v) => form.setValue("pelletQuality", v)} value={form.watch("pelletQuality")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="मध्यम">मध्यम</SelectItem></SelectContent></Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">पोत्यामध्ये धुळीचे (Powder) प्रमाण जास्त असते का?</Label>
+                  <Select onValueChange={(v) => form.setValue("dustContent", v)} value={form.watch("dustContent")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="कधीकधी">कधीकधी</SelectItem></SelectContent></Select>
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label className="text-sm">खाद्य सुरू केल्यावर जनावरांच्या शरीराची चकाकी किंवा स्फूर्तीमध्ये फरक जाणवला का?</Label>
+                  <Select onValueChange={(v) => form.setValue("healthObservation", v)} value={form.watch("healthObservation")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="थोड्या प्रमाणात">थोड्या प्रमाणात</SelectItem></SelectContent></Select>
+                </div>
+              </div>
+
               <div className="space-y-2 border-t pt-4">
                 <Label className="text-sm font-bold text-primary">मुख्य तक्रारी (Main Complaints)</Label>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

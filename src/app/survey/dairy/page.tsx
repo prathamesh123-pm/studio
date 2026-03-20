@@ -91,6 +91,9 @@ const dairySchema = z.object({
   satisfaction: z.string().optional(),
   milkIncrease: z.string().optional(),
   bestBrand: z.string(),
+  pelletQuality: z.string().optional(),
+  dustContent: z.string().optional(),
+  healthObservation: z.string().optional(),
   warehouseCapacity: z.string(),
   hasStorage: z.string().optional(),
   mainProblem: z.array(z.string()).default([]),
@@ -633,7 +636,22 @@ function DairySurveyForm() {
                     <div className="flex items-center space-x-1"><RadioGroupItem value="No" id="mi2" /><Label htmlFor="mi2">नाही</Label></div>
                   </RadioGroup>
                 </div>
-                <Input {...form.register("bestBrand")} placeholder="तुमच्या मते चांगला ब्रँड" />
+                <div className="space-y-2">
+                  <Label className="text-sm">तुमच्या मते चांगला ब्रँड कोणता?</Label>
+                  <Input {...form.register("bestBrand")} placeholder="उदा. गोदरेज" />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">पशुखाद्याच्या पेलेटची कडकपणा व आकार योग्य आहे का?</Label>
+                  <Select onValueChange={(v) => form.setValue("pelletQuality", v)} value={form.watch("pelletQuality")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="मध्यम">मध्यम</SelectItem></SelectContent></Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">पोत्यामध्ये धुळीचे (Powder) प्रमाण जास्त असते का?</Label>
+                  <Select onValueChange={(v) => form.setValue("dustContent", v)} value={form.watch("dustContent")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="कधीकधी">कधीकधी</SelectItem></SelectContent></Select>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm">खाद्य सुरू केल्यावर जनावरांच्या शरीराची चकाकी किंवा स्फूर्तीमध्ये फरक जाणवला का?</Label>
+                  <Select onValueChange={(v) => form.setValue("healthObservation", v)} value={form.watch("healthObservation")}><SelectTrigger><SelectValue placeholder="निवडा" /></SelectTrigger><SelectContent><SelectItem value="होय">होय</SelectItem><SelectItem value="नाही">नाही</SelectItem><SelectItem value="थोड्या प्रमाणात">थोड्या प्रमाणात</SelectItem></SelectContent></Select>
+                </div>
               </div>
             </section>
           </div>
