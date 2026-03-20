@@ -61,7 +61,6 @@
     visibility: hidden;
   }
 
-  /* Target both the specific dialog content and any elements with report-container-print */
   .dialog-content-print,
   .dialog-content-print *,
   .report-container-print,

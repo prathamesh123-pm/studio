@@ -33,7 +33,6 @@ import {
   TableBody,
   TableCell,
   TableHead,
-  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
@@ -223,7 +222,7 @@ export default function SurveysList() {
               <DataRow label={isDairy ? "तुमची खरेदी करण्याची पद्धत काय आहे (रोख/उधारी)?" : "एका पोत्याची सध्याची किंमत किती आहे (₹)?"} value={isDairy ? d.purchaseMethod : d.bagPrice} />
               {isDairy && <DataRow label="जर उधारीने असेल, तर किती दिवसांची उधारी मिळते?" value={d.creditDays} />}
               {!isDairy && <DataRow label="एका पोत्याचे एकूण वजन किती किलो आहे?" value={d.bagWeight} />}
-              <DataRow label="महिन्याला साधारणपणे किती पोती पशुखाद्य लागते?" value={d.monthlyBags} />
+              <DataRow label="महिन्याला साधारणपणे किती पोती पशुखाद्य लागते?" value={isDairy ? d.monthlyBags : d.monthlyBags} />
               <DataRow label="पशुखाद्य पुरवठादार माहिती (नाव, मोबाईल व पत्ता)" value={d.suppliers?.map((s: any) => `${s.name}${s.contact ? ` (मोबाईल: ${s.contact})` : ''}${s.address ? `, पत्ता: ${s.address}` : ''}`).join(" | ")} />
               {!isDairy && <DataRow label="तुमचा पशुखाद्य खरेदीचा मुख्य स्त्रोत कोणता आहे?" value={d.purchaseSource} />}
               {!isDairy && <DataRow label="तुम्हाला खरेदीमध्ये उधारीची सुविधा उपलब्ध आहे का?" value={d.hasCredit} />}
