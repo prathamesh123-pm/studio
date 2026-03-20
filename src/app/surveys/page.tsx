@@ -71,7 +71,7 @@ export default function SurveysList() {
 
   const translations: Record<string, string> = {
     'Yes': 'होय', 'No': 'नाही', 'ReadyMade': 'रेडीमेड', 'HomeMade': 'घरगुती मिश्रण', 'Both': 'दोन्ही',
-    'DryFodder': 'सुका चारा', 'GreenFodder': 'हिरवा चारा', 'Khala': 'खळ', 'Maize': 'मका', 'MineralMix': 'खनिज मिश्रण',
+    'DryFodder': 'सुका चारा', 'GreenFodder': 'हिरवा चारा', 'Khala': 'खळ (पेंड)', 'Maize': 'मका', 'MineralMix': 'खनिज मिश्रण',
     'Cash': 'रोखीने', 'Credit': 'उधारीने', 'VeryGood': 'उत्कृष्ट', 'Okay': 'ठीक आहे', 'NotSatisfied': 'समाधानी नाही',
     'LocalShop': 'स्थानिक दुकान', 'Dealer': 'डीलर', 'Other': 'इतर', 'होय': 'होय', 'नाही': 'नाही',
     'कधीकधी': 'कधीकधी', 'थोड्या प्रमाणात': 'थोड्या प्रमाणात', 'मध्यम': 'मध्यम', 'Quality': 'चांगली गुणवत्ता',
@@ -108,7 +108,7 @@ export default function SurveysList() {
   };
 
   const NutrientTable = ({ nutrition }: { nutrition: any }) => {
-    if (!nutrition) return <div className="p-2 text-[8pt] italic border border-black border-t-0">माहिती नाही</div>;
+    if (!nutrition) return <div className="p-2 text-[8pt] italic border border-black border-t-0">माहिती उपलब्ध नाही</div>;
     return (
       <Table className="border border-black table-fixed border-t-0">
         <TableBody>
@@ -147,12 +147,12 @@ export default function SurveysList() {
           <h4 className="text-[9pt] font-black mb-0 border-b-2 border-black pb-0.5 bg-slate-100 px-2 uppercase">१. सामान्य व लोकेशन माहिती</h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label={isDairy ? "डेअरी नाव" : "शेतकऱ्याचे नाव"} value={isDairy ? d.dairyName : d.farmerName} />
-              <DataRow label={isDairy ? "मालकाचे नाव" : "मोबाईल नंबर"} value={isDairy ? d.ownerName : d.mobile} />
+              <DataRow label={isDairy ? "दूध संकलन केंद्राचे (डेअरी) नाव" : "शेतकऱ्याचे पूर्ण नाव"} value={isDairy ? d.dairyName : d.farmerName} />
+              <DataRow label={isDairy ? "डेअरी मालकाचे नाव" : "संपर्क मोबाईल नंबर"} value={isDairy ? d.ownerName : d.mobile} />
               <DataRow label="गाव / तालुका / जिल्हा" value={`${d.village}, ${d.taluka}, ${d.district}`} />
-              <DataRow label="जीपीएस लोकेशन" value={d.location} />
-              {isDairy && <DataRow label="दूध संकलन (लिटर/दिवस)" value={d.milkCollection} />}
-              {isDairy && <DataRow label="शेतकरी संख्या" value={d.farmerCount} />}
+              <DataRow label="जीपीएस लोकेशन (GPS)" value={d.location} />
+              {isDairy && <DataRow label="दिवसाचे एकूण दूध संकलन (लिटर)" value={d.milkCollection} />}
+              {isDairy && <DataRow label="जोडलेल्या शेतकऱ्यांची संख्या" value={d.farmerCount} />}
             </TableBody>
           </Table>
         </section>
@@ -162,7 +162,7 @@ export default function SurveysList() {
           <div className="border border-black border-t-0">
             <div className="grid grid-cols-4 border-b border-black">
               <div className="p-1.5 border-r border-black bg-slate-50 flex flex-col items-center">
-                <span className="text-[7pt] font-bold uppercase">एकूण</span>
+                <span className="text-[7pt] font-bold uppercase">एकूण जनावरे</span>
                 <span className="font-black text-[10pt]">{isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span>
               </div>
               <div className="p-1.5 border-r border-black bg-slate-50 flex flex-col items-center">
@@ -185,11 +185,11 @@ export default function SurveysList() {
           <h4 className="text-[9pt] font-black mb-0 border-b-2 border-black pb-0.5 bg-slate-100 px-2 uppercase">३. पशुखाद्य वापर माहिती</h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label={isDairy ? "पशुखाद्य प्रकार" : "सध्या वापरत असलेला ब्रँड"} value={isDairy ? d.feedType : d.currentBrand} />
-              {!isDairy && <DataRow label="किती काळापासून वापरत आहात?" value={d.usageDuration} />}
-              <DataRow label="खाद्य दिवसातून किती वेळा देता?" value={isDairy ? d.feedFrequency : d.frequency} />
-              <DataRow label="प्रति जनावर किलो" value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
-              <DataRow label="इतर खाद्य / पूरक खाद्य" value={isDairy ? d.supplements : d.otherFeeds} />
+              <DataRow label={isDairy ? "वापरत असलेल्या पशुखाद्याचा प्रकार" : "सध्या वापरत असलेला पशुखाद्य ब्रँड"} value={isDairy ? d.feedType : d.currentBrand} />
+              {!isDairy && <DataRow label="किती काळापासून हा ब्रँड वापरत आहात?" value={d.usageDuration} />}
+              <DataRow label="दिवसातून किती वेळा पशुखाद्य देता?" value={isDairy ? d.feedFrequency : d.frequency} />
+              <DataRow label="प्रत्येक जनावराला दररोज किती किलो खाद्य देता?" value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
+              <DataRow label="वापरत असलेले इतर पूरक खाद्य" value={isDairy ? d.supplements : d.otherFeeds} />
             </TableBody>
           </Table>
         </section>
@@ -199,13 +199,13 @@ export default function SurveysList() {
           <div className="border border-black border-t-0">
             {isDairy ? d.brandsInfo?.map((b: any, i: number) => (
               <div key={i} className="border-b last:border-0 border-black">
-                <div className="bg-slate-50 p-1 font-black text-center text-[8.5pt] border-b border-black">{i+1}. {b.name} (₹{b.price})</div>
+                <div className="bg-slate-50 p-1 font-black text-center text-[8.5pt] border-b border-black">{i+1}. {b.name} (किंमत: ₹{b.price})</div>
                 <NutrientTable nutrition={b} />
               </div>
             )) : <NutrientTable nutrition={d.packNutrition} />}
             {!isDairy && <Table className="border-t border-black"><TableBody>
-              <DataRow label="ब्रँड निवडण्याचे मुख्य कारण" value={d.selectionReason} />
-              <DataRow label="मार्गदर्शन कोणाचे घेतले?" value={d.startMethod} />
+              <DataRow label="ब्रँड निवडण्याचे मुख्य कारण काय होते?" value={d.selectionReason} />
+              <DataRow label="ब्रँड सुरू करण्यासाठी कोणाचे मार्गदर्शन घेतले?" value={d.startMethod} />
               <DataRow label="सध्याच्या पशुखाद्याची गुणवत्ता कशी वाटते?" value={d.quality} />
             </TableBody></Table>}
           </div>
@@ -215,32 +215,34 @@ export default function SurveysList() {
           <h4 className="text-[9pt] font-black mb-0 border-b-2 border-black pb-0.5 bg-slate-100 px-2 uppercase">५-७. खरेदी, खर्च व पुरवठा माहिती</h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label={isDairy ? "खरेदी पद्धत (रोख/उधारी)" : "पोत्याची किंमत (₹)"} value={isDairy ? d.purchaseMethod : d.bagPrice} />
-              {isDairy && <DataRow label="उधारीचे दिवस" value={d.creditDays} />}
-              {!isDairy && <DataRow label="पोत्याचे वजन (किग्रॅ)" value={d.bagWeight} />}
-              <DataRow label="महिन्याला लागणारी पोती" value={d.monthlyBags} />
-              <DataRow label="पुरवठादार माहिती (नाव, मोबाईल, पत्ता)" value={d.suppliers?.map((s: any) => `${s.name}${s.contact ? ` (${s.contact})` : ''}${s.address ? `, ${s.address}` : ''}`).join(" | ")} />
-              {!isDairy && <DataRow label="खरेदीचा मुख्य स्त्रोत" value={d.purchaseSource} />}
-              {!isDairy && <DataRow label="उधारीची सुविधा आहे का?" value={d.hasCredit} />}
+              <DataRow label={isDairy ? "तुमची खरेदी करण्याची पद्धत काय आहे?" : "एका पोत्याची किंमत किती आहे (₹)?"} value={isDairy ? d.purchaseMethod : d.bagPrice} />
+              {isDairy && <DataRow label="उधारी मिळत असल्यास किती दिवसांची मिळते?" value={d.creditDays} />}
+              {!isDairy && <DataRow label="एका पोत्याचे वजन किती किलो आहे?" value={d.bagWeight} />}
+              <DataRow label="महिन्याला साधारणपणे किती पोती लागतात?" value={d.monthlyBags} />
+              <DataRow label="पुरवठादार माहिती (नाव, संपर्क व पत्ता)" value={d.suppliers?.map((s: any) => `${s.name}${s.contact ? ` (${s.contact})` : ''}${s.address ? `, ${s.address}` : ''}`).join(" | ")} />
+              {!isDairy && <DataRow label="पशुखाद्य खरेदीचा मुख्य स्त्रोत कोणता आहे?" value={d.purchaseSource} />}
+              {!isDairy && <DataRow label="खरेदीमध्ये उधारीची सुविधा उपलब्ध आहे का?" value={d.hasCredit} />}
             </TableBody>
           </Table>
         </section>
 
         <section className="break-inside-avoid">
-          <h4 className="text-[9pt] font-black mb-0 border-b-2 border-black pb-0.5 bg-slate-100 px-2 uppercase">८-९. गुणवत्ता व समाधान</h4>
+          <h4 className="text-[9pt] font-black mb-0 border-b-2 border-black pb-0.5 bg-slate-100 px-2 uppercase">८-९. गुणवत्ता, समाधान व तुलना</h4>
           <Table className="border border-black table-fixed">
             <TableBody>
               <DataRow label="पशुखाद्याची कॉलिटी योग्य आहे का?" value={d.pelletQuality} />
-              <DataRow label="धुळीचे प्रमाण जास्त असते का?" value={d.dustContent} />
+              <DataRow label="पोत्यामध्ये धुळीचे प्रमाण जास्त असते का?" value={d.dustContent} />
               <DataRow label="आरोग्यात / स्फूर्तीमध्ये फरक जाणवला का?" value={d.healthObservation} />
-              <DataRow label="दूध उत्पादन वाढले का?" value={d.milkIncrease} />
-              {!isDairy && <DataRow label="आरोग्य सुधारले का?" value={d.healthImprovement} />}
-              {!isDairy && <DataRow label="फॅटमध्ये फरक जाणवला का?" value={d.fatDiff} />}
-              <DataRow label="समाधानी आहात का?" value={isDairy ? d.satisfaction : d.likesFeed} />
-              <DataRow label="तुमच्या मते चांगला ब्रँड कोणता?" value={isDairy ? d.bestBrand : d.betterBrand} />
-              {!isDairy && <DataRow label="यापूर्वी वापरलेले ब्रँड्स" value={d.previousBrands} />}
-              {!isDairy && <DataRow label="ब्रँड बदलण्याचे कारण" value={d.switchReason} />}
-              {!isDairy && <DataRow label="एकूण रेटिंग (1-5)" value={`${d.rating}/5`} />}
+              <DataRow label="दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
+              {!isDairy && <DataRow label="जनावरांचे आरोग्य सुधारले का?" value={d.healthImprovement} />}
+              {!isDairy && <DataRow label="दुधाच्या फॅटमध्ये फरक जाणवला का?" value={d.fatDiff} />}
+              <DataRow label="तुम्ही सध्या पूर्णपणे समाधानी आहात का?" value={isDairy ? d.satisfaction : d.likesFeed} />
+              <DataRow label="तुमच्या मते सध्याचा सर्वोत्तम ब्रँड कोणता?" value={isDairy ? d.bestBrand : d.betterBrand} />
+              {!isDairy && <DataRow label="तुम्ही यापूर्वी वापरलेले इतर ब्रँड्स कोणते?" value={d.previousBrands} />}
+              {!isDairy && <DataRow label="भविष्यात ब्रँड बदलण्याचे मुख्य कारण काय असेल?" value={d.switchReason} />}
+              {!isDairy && <DataRow label="सध्याच्या ब्रँडसाठी तुमचे रेटिंग (1-5)" value={`${d.rating}/5`} />}
+              {!isDairy && <DataRow label="पशुखाद्य गावात सहजरीत्या उपलब्ध होते का?" value={d.easyAvailability} />}
+              {!isDairy && <DataRow label="कंपनीचे प्रतिनिधी नियमित भेट देतात का?" value={d.repVisit} />}
             </TableBody>
           </Table>
         </section>
@@ -249,12 +251,12 @@ export default function SurveysList() {
           <h4 className="text-[9pt] font-black mb-0 border-b-2 border-black pb-0.5 bg-slate-100 px-2 uppercase">१०-११. समस्या, सूचना व अ‍ॅड पॉइंट्स</h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label="मुख्य तक्रारी / समस्या" value={isDairy ? d.mainProblem : d.problems} />
-              <DataRow label="इतर तक्रारी" value={d.otherProblem} />
-              <DataRow label="सुधारणा सूचना" value={d.improvements} />
-              <DataRow label="आदर्श पशुखाद्य गुण" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
-              {!isDairy && <DataRow label="स्वस्त ब्रँड मिळाल्यास बदलणार का?" value={d.switchIfCheaper} />}
-              <DataRow label="नमुना ट्रायल पाहाल का?" value={d.sampleTrial} />
+              <DataRow label="पशुखाद्याबाबत मुख्य तक्रारी / समस्या" value={isDairy ? d.mainProblem : d.problems} />
+              <DataRow label="इतर विशेष तक्रारी असल्यास येथे नमूद करा" value={d.otherProblem} />
+              <DataRow label="पशुखाद्यात काही सुधारणा सुचवू इच्छिता का?" value={d.improvements} />
+              <DataRow label="तुमच्या मते आदर्श पशुखाद्यात कोणते गुण असावेत?" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
+              {!isDairy && <DataRow label="स्वस्त ब्रँड मिळाल्यास तुम्ही बदलणार का?" value={d.switchIfCheaper} />}
+              <DataRow label="नवीन ब्रँडचे नमुना ट्रायल घेऊन पाहणार का?" value={d.sampleTrial} />
               {d.customPoints?.length > 0 && <DataRow label="इतर महत्त्वाचे मुद्दे (अ‍ॅड पॉइंट्स)" value={d.customPoints.map((p: any) => p.point).join(", ")} />}
             </TableBody>
           </Table>
@@ -294,12 +296,12 @@ export default function SurveysList() {
       <div className="container mx-auto px-4 py-6 max-w-4xl">
         <header className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-primary">माझी सर्वेक्षणे</h1>
-          <Input placeholder="नाव, गाव..." className="max-w-xs h-9" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+          <Input placeholder="नाव किंवा गाव शोधा..." className="max-w-xs h-9" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
         </header>
 
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="all">सर्व</TabsTrigger>
+            <TabsTrigger value="all">सर्व सर्वेक्षणे</TabsTrigger>
             <TabsTrigger value="dairy">डेअरी</TabsTrigger>
             <TabsTrigger value="farmer">शेतकरी</TabsTrigger>
           </TabsList>
@@ -311,8 +313,8 @@ export default function SurveysList() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="max-w-[210mm] max-h-[95vh] overflow-y-auto p-0 border-2 dialog-content-print">
             <div className="sticky top-0 z-50 p-3 bg-muted border-b flex justify-between items-center no-print">
-              <DialogTitle>अहवाल पूर्वावलोकन</DialogTitle>
-              <Button size="sm" onClick={() => window.print()} className="bg-primary"><Printer className="h-4 w-4 mr-1" /> प्रिंट / PDF</Button>
+              <DialogTitle>अहवाल पूर्वावलोकन (Preview)</DialogTitle>
+              <Button size="sm" onClick={() => window.print()} className="bg-primary"><Printer className="h-4 w-4 mr-1" /> प्रिंट अहवाल / PDF</Button>
             </div>
             <div className="p-6 bg-white">{selectedSurvey && renderDetailedReport(selectedSurvey)}</div>
           </DialogContent>
