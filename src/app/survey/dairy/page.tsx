@@ -646,7 +646,7 @@ function DairySurveyForm() {
                   </RadioGroup>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm">तुमच्या मते चांगला ब्रँड कोणता?</Label>
+                  <Label className="text-sm">तुमच्या मते सर्वोत्तम ब्रँड कोणता?</Label>
                   <Input {...form.register("bestBrand")} placeholder="उदा. गोदरेज" />
                 </div>
                 <div className="space-y-2">
