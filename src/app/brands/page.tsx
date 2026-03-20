@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useMemo } from "react";
@@ -28,6 +29,7 @@ import {
   TableBody,
   TableCell,
   TableHead,
+  TableHeader,
   TableRow,
 } from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,7 +49,8 @@ export default function BrandManagement() {
   const [availableWeights, setAvailableWeights] = useState("");
   const [price, setPrice] = useState("");
   const [nutrition, setNutrition] = useState({
-    protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
+    protein: "", fat: "", fiber: "", ash: "", calcium: "", 
+    totalPhosphorus: "", availablePhosphorus: "", aflatoxin: "", urea: "", moisture: "", others: ""
   });
   const [ingredients, setIngredients] = useState([{ ingredient: "", percentage: "" }]);
   const [customPoints, setCustomPoints] = useState<Array<{ point: string }>>([]);
@@ -97,7 +100,8 @@ export default function BrandManagement() {
     setAvailableWeights(brand.availableWeights || "");
     setPrice(brand.price || "");
     setNutrition(brand.nutrition || {
-      protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: ""
+      protein: "", fat: "", fiber: "", ash: "", calcium: "", 
+      totalPhosphorus: "", availablePhosphorus: "", aflatoxin: "", urea: "", moisture: "", others: ""
     });
     setIngredients(brand.ingredients || [{ ingredient: "", percentage: "" }]);
     setCustomPoints(brand.customPoints?.map(p => ({ point: p.point })) || []);
@@ -151,7 +155,10 @@ export default function BrandManagement() {
     setBagWeight("");
     setAvailableWeights("");
     setPrice("");
-    setNutrition({ protein: "", fat: "", fiber: "", calcium: "", phosphorus: "", salt: "", mineralMix: "", others: "" });
+    setNutrition({ 
+      protein: "", fat: "", fiber: "", ash: "", calcium: "", 
+      totalPhosphorus: "", availablePhosphorus: "", aflatoxin: "", urea: "", moisture: "", others: "" 
+    });
     setIngredients([{ ingredient: "", percentage: "" }]);
     setCustomPoints([]);
     setEditingId(null);
@@ -165,6 +172,15 @@ export default function BrandManagement() {
       <TableCell className="py-2 px-3 text-[11pt] h-auto leading-tight text-black font-black">
         {value || '-'}
       </TableCell>
+    </TableRow>
+  );
+
+  const NutrientRow = ({ desc, minMax, uom, value }: { desc: string, minMax: string, uom: string, value: string }) => (
+    <TableRow className="border-b border-black">
+      <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black">{desc}</TableCell>
+      <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{minMax}</TableCell>
+      <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center">{uom}</TableCell>
+      <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center">{value || '-'}</TableCell>
     </TableRow>
   );
 
@@ -184,25 +200,38 @@ export default function BrandManagement() {
       </section>
 
       <section className="break-inside-avoid">
-        <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">२. पोषण मूल्ये (%)</h4>
+        <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">२. पोषण मूल्ये (Nutrient Composition)</h4>
         <Table className="border border-black rounded-none overflow-hidden table-fixed">
+          <TableHeader className="bg-slate-50 border-b border-black">
+            <TableRow>
+              <TableHead className="text-[10pt] font-black text-black border-r border-black">Description</TableHead>
+              <TableHead className="text-[10pt] font-black text-black border-r border-black text-center">Min/Max</TableHead>
+              <TableHead className="text-[10pt] font-black text-black border-r border-black text-center">UOM</TableHead>
+              <TableHead className="text-[10pt] font-black text-black text-center">Value</TableHead>
+            </TableRow>
+          </TableHeader>
           <TableBody>
-            <BrandDataRow label="प्रोटीन (%)" value={brand.nutrition.protein ? `${brand.nutrition.protein}%` : '-'} />
-            <BrandDataRow label="फॅट (%)" value={brand.nutrition.fat ? `${brand.nutrition.fat}%` : '-'} />
-            <BrandDataRow label="फायबर (%)" value={brand.nutrition.fiber ? `${brand.nutrition.fiber}%` : '-'} />
-            <BrandDataRow label="कॅल्शियम (%)" value={brand.nutrition.calcium ? `${brand.nutrition.calcium}%` : '-'} />
-            <BrandDataRow label="फॉस्फरस (%)" value={brand.nutrition.phosphorus ? `${brand.nutrition.phosphorus}%` : '-'} />
-            <BrandDataRow label="मीठ (%)" value={brand.nutrition.salt ? `${brand.nutrition.salt}%` : '-'} />
-            <BrandDataRow label="मिनरल (%)" value={brand.nutrition.mineralMix ? `${brand.nutrition.mineralMix}%` : '-'} />
-            <BrandDataRow label="इतर पोषण मूल्ये" value={brand.nutrition.others} />
+            <NutrientRow desc="Crude protein" minMax="Min" uom="%" value={brand.nutrition.protein} />
+            <NutrientRow desc="Crude fat" minMax="Min" uom="%" value={brand.nutrition.fat} />
+            <NutrientRow desc="Crude fiber" minMax="Max" uom="%" value={brand.nutrition.fiber} />
+            <NutrientRow desc="Acid insoluble ash" minMax="Max" uom="%" value={brand.nutrition.ash} />
+            <NutrientRow desc="Calcium" minMax="Min" uom="%" value={brand.nutrition.calcium} />
+            <NutrientRow desc="Total phosphorus" minMax="Min" uom="%" value={brand.nutrition.totalPhosphorus} />
+            <NutrientRow desc="Available phosphorus" minMax="Min" uom="%" value={brand.nutrition.availablePhosphorus} />
+            <NutrientRow desc="Aflatoxin B1" minMax="Max" uom="ppb" value={brand.nutrition.aflatoxin} />
+            <NutrientRow desc="Urea" minMax="Max" uom="%" value={brand.nutrition.urea} />
+            <NutrientRow desc="Moisture" minMax="Max" uom="%" value={brand.nutrition.moisture} />
           </TableBody>
         </Table>
+        {brand.nutrition.others && (
+          <div className="p-2 border border-black border-t-0 text-[10pt] font-black">इतर: {brand.nutrition.others}</div>
+        )}
       </section>
 
       {brand.ingredients && brand.ingredients.length > 0 && (
         <section className="break-inside-avoid">
-          <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">३. मुख्य घटक</h4>
-          <div className="text-[10.5pt] font-black text-black leading-tight p-3 border border-black border-t-0 bg-white">
+          <h4 className="text-[11pt] font-black mb-0 border-b-2 border-black pb-0.5 text-black uppercase bg-slate-100 px-2">३. मुख्य घटक (Ingredients)</h4>
+          <div className="text-[10.5pt] font-black text-black leading-tight p-3 border border-black border-t-0 bg-white italic">
             {brand.ingredients.map(ing => `${ing.ingredient} (${ing.percentage}%)`).join(", ")}
           </div>
         </section>
@@ -241,7 +270,7 @@ export default function BrandManagement() {
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-4 space-y-6">
+          <div className="lg:col-span-5 space-y-6">
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-row items-center justify-between pb-4">
                 <CardTitle className="text-lg">
@@ -295,26 +324,58 @@ export default function BrandManagement() {
                 </div>
 
                 <div className="pt-4 border-t">
-                  <Label className="text-primary font-bold block mb-2 text-sm">पोषण मूल्ये (%)</Label>
-                  <div className="grid grid-cols-2 gap-3">
-                    {Object.keys(nutrition).map((key) => (
-                      <div key={key} className="space-y-1">
-                        <Label className="text-[10px] capitalize">{key}</Label>
-                        <Input 
-                          type="number" 
-                          value={(nutrition as any)[key] || ""} 
-                          onChange={(e) => setNutrition({...nutrition, [key]: e.target.value})}
-                          placeholder="%"
-                          className="h-8 text-xs"
-                        />
-                      </div>
-                    ))}
+                  <Label className="text-primary font-bold block mb-2 text-sm uppercase">पोषण मूल्ये (Nutrient Composition)</Label>
+                  <div className="grid grid-cols-2 gap-3 bg-slate-50 p-3 rounded-lg border">
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Crude Protein (Min %)</Label>
+                      <Input type="number" value={nutrition.protein} onChange={(e) => setNutrition({...nutrition, protein: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Crude Fat (Min %)</Label>
+                      <Input type="number" value={nutrition.fat} onChange={(e) => setNutrition({...nutrition, fat: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Crude Fiber (Max %)</Label>
+                      <Input type="number" value={nutrition.fiber} onChange={(e) => setNutrition({...nutrition, fiber: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Acid Insoluble Ash (Max %)</Label>
+                      <Input type="number" value={nutrition.ash} onChange={(e) => setNutrition({...nutrition, ash: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Calcium (Min %)</Label>
+                      <Input type="number" value={nutrition.calcium} onChange={(e) => setNutrition({...nutrition, calcium: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Total Phosphorus (Min %)</Label>
+                      <Input type="number" value={nutrition.totalPhosphorus} onChange={(e) => setNutrition({...nutrition, totalPhosphorus: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Available Phosphorus (Min %)</Label>
+                      <Input type="number" value={nutrition.availablePhosphorus} onChange={(e) => setNutrition({...nutrition, availablePhosphorus: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Aflatoxin B1 (Max ppb)</Label>
+                      <Input type="number" value={nutrition.aflatoxin} onChange={(e) => setNutrition({...nutrition, aflatoxin: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Urea (Max %)</Label>
+                      <Input type="number" value={nutrition.urea} onChange={(e) => setNutrition({...nutrition, urea: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-[10px] uppercase">Moisture (Max %)</Label>
+                      <Input type="number" value={nutrition.moisture} onChange={(e) => setNutrition({...nutrition, moisture: e.target.value})} className="h-8 text-xs" />
+                    </div>
+                  </div>
+                  <div className="mt-2 space-y-1">
+                    <Label className="text-[10px]">इतर पोषक मूल्ये</Label>
+                    <Input value={nutrition.others} onChange={(e) => setNutrition({...nutrition, others: e.target.value})} className="h-8 text-xs" placeholder="इतर..." />
                   </div>
                 </div>
 
                 <div className="pt-4 border-t">
                   <div className="flex justify-between items-center mb-2">
-                    <Label className="text-primary font-bold text-sm">घटक (Ingredients)</Label>
+                    <Label className="text-primary font-bold text-sm">मुख्य घटक (Ingredients)</Label>
                     <Button type="button" variant="outline" size="sm" onClick={handleAddIngredient} className="h-7 text-[10px]">
                       <Plus className="h-3 w-3 mr-1" /> जोडा
                     </Button>
@@ -323,7 +384,7 @@ export default function BrandManagement() {
                     {ingredients.map((ing, idx) => (
                       <div key={idx} className="flex gap-2 items-center">
                         <Input 
-                          placeholder="नाव" 
+                          placeholder="उदा. मका (Maize)" 
                           value={ing.ingredient} 
                           onChange={(e) => handleIngredientChange(idx, "ingredient", e.target.value)}
                           className="h-8 flex-1 text-xs"
@@ -358,7 +419,7 @@ export default function BrandManagement() {
                         </Button>
                         <Label className="text-[10px]">मुद्दा {idx + 1}</Label>
                         <Textarea 
-                          placeholder="माहिती लिहा..." 
+                          placeholder="उदा. उच्च दूध वाढ, वाजवी किंमत" 
                           value={pt.point} 
                           onChange={(e) => handlePointChange(idx, e.target.value)}
                           className="h-16 text-xs"
@@ -382,7 +443,7 @@ export default function BrandManagement() {
             </Card>
           </div>
 
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-7">
             <Card className="border-primary/20 shadow-md">
               <CardHeader className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <CardTitle className="text-lg">मास्टर ब्रँड यादी ({filteredBrands.length})</CardTitle>
@@ -437,7 +498,7 @@ export default function BrandManagement() {
       </div>
 
       <Dialog open={!!viewingBrand} onOpenChange={(open) => !open && setViewingBrand(null)}>
-        <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto p-4 dialog-content-print shadow-none">
+        <DialogContent className="max-w-xl max-h-[90vh] overflow-y-auto p-4 dialog-content-print shadow-none">
           <DialogHeader className="mb-2 no-print">
             <DialogTitle className="flex items-center gap-2 text-primary border-b pb-1">
               <Package className="h-5 w-5" /> ब्रँड तपशील
@@ -474,11 +535,11 @@ export default function BrandManagement() {
             <p className="text-[10pt] font-black">तारीख: {new Date().toLocaleDateString('mr-IN')}</p>
           </div>
 
-          <div className="grid grid-cols-1 print:grid-cols-2 gap-4 print:gap-x-4 print:gap-y-6">
+          <div className="grid grid-cols-1 print:grid-cols-1 gap-8">
             {filteredBrands.map((brand, index) => (
-              <div key={brand.id} className="border border-black p-2 rounded-none bg-white shadow-none break-inside-avoid print:mt-1">
-                <h3 className="text-[11pt] font-black text-black border-b-2 border-black mb-1.5 pb-0.5 bg-slate-100 px-2">
-                  {index + 1}. {brand.name}
+              <div key={brand.id} className="border border-black p-4 rounded-none bg-white shadow-none break-inside-avoid print:mt-1">
+                <h3 className="text-[12pt] font-black text-black border-b-2 border-black mb-1.5 pb-0.5 bg-slate-100 px-2 uppercase">
+                  {index + 1}. {brand.name} तपशील
                 </h3>
                 <DetailedBrandTable brand={brand} isPrint={true} />
               </div>

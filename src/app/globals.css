@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -47,11 +48,12 @@
 @media print {
   @page {
     size: A4;
-    margin: 8mm;
+    margin: 5mm;
   }
 
   body {
     background: white !important;
+    color: black !important;
   }
 
   body * {
@@ -99,9 +101,9 @@
 
   th, td {
     border: 1.2px solid #000 !important;
-    padding: 6px 10px !important;
+    padding: 4px 8px !important;
     color: #000 !important;
-    font-size: 10pt !important;
+    font-size: 9.5pt !important;
     vertical-align: middle !important;
     line-height: 1.2 !important;
     font-weight: 900 !important;
@@ -116,17 +118,17 @@
   h1, h2, h3, h4 {
     color: #000 !important;
     font-weight: 900 !important;
-    border-bottom: 2.2px solid #000 !important;
-    margin-bottom: 8px !important;
-    padding-bottom: 4px !important;
+    border-bottom: 2px solid #000 !important;
+    margin-bottom: 6px !important;
+    padding-bottom: 2px !important;
     text-transform: uppercase !important;
-    font-size: 11pt !important;
+    font-size: 10.5pt !important;
   }
 
   .break-inside-avoid {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
-    margin-bottom: 10px !important;
+    margin-bottom: 8px !important;
   }
 
   .text-black, p, span, div, td, th {

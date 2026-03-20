@@ -10,10 +10,13 @@ export interface MasterBrand {
     protein: string;
     fat: string;
     fiber: string;
+    ash: string;
     calcium: string;
-    phosphorus: string;
-    salt: string;
-    mineralMix: string;
+    totalPhosphorus: string;
+    availablePhosphorus: string;
+    aflatoxin: string;
+    urea: string;
+    moisture: string;
     others: string;
   };
   ingredients: Array<{
