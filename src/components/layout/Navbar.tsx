@@ -59,6 +59,10 @@ export function Navbar() {
     setIsOpen(false);
   };
 
+  if (!mounted) return (
+    <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur no-print h-16" />
+  );
+
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 no-print">
       <div className="container mx-auto px-2 md:px-4 flex h-16 items-center justify-between gap-1 md:gap-2">
@@ -94,47 +98,45 @@ export function Navbar() {
             </Button>
           </Link>
 
-          {mounted && (
-            <Dialog open={isOpen} onOpenChange={setIsOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-full h-8 w-8 md:h-9 md:w-9 shrink-0 ml-1">
-                  <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5 text-primary" /> सर्वेक्षक प्रोफाईल सेटिंग्स
-                  </DialogTitle>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="name">सर्वे करणाऱ्याचे पूर्ण नाव</Label>
-                    <Input
-                      id="name"
-                      value={profileName}
-                      onChange={(e) => setProfileName(e.target.value)}
-                      placeholder="उदा. राहुल पाटील"
-                    />
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="id">आयडी नंबर / कर्मचारी क्रमांक</Label>
-                    <Input
-                      id="id"
-                      value={profileId}
-                      onChange={(e) => setProfileId(e.target.value)}
-                      placeholder="उदा. EMP123"
-                    />
-                  </div>
+          <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="icon" className="rounded-full h-8 w-8 md:h-9 md:w-9 shrink-0 ml-1">
+                <User className="h-3.5 w-3.5 md:h-4 md:w-4" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="flex items-center gap-2">
+                  <Settings className="h-5 w-5 text-primary" /> सर्वेक्षक प्रोफाईल सेटिंग्स
+                </DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="name">सर्वे करणाऱ्याचे पूर्ण नाव</Label>
+                  <Input
+                    id="name"
+                    value={profileName}
+                    onChange={(e) => setProfileName(e.target.value)}
+                    placeholder="उदा. राहुल पाटील"
+                  />
                 </div>
-                <DialogFooter>
-                  <Button onClick={handleSaveProfile} className="w-full bg-primary">
-                    <Save className="mr-2 h-4 w-4" /> माहिती सेव्ह करा
-                  </Button>
-                </DialogFooter>
-              </DialogContent>
-            </Dialog>
-          )}
+                <div className="grid gap-2">
+                  <Label htmlFor="id">आयडी नंबर / कर्मचारी क्रमांक</Label>
+                  <Input
+                    id="id"
+                    value={profileId}
+                    onChange={(e) => setProfileId(e.target.value)}
+                    placeholder="उदा. EMP123"
+                  />
+                </div>
+              </div>
+              <DialogFooter>
+                <Button onClick={handleSaveProfile} className="w-full bg-primary">
+                  <Save className="mr-2 h-4 w-4" /> माहिती सेव्ह करा
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </nav>

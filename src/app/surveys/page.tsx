@@ -117,11 +117,11 @@ export default function SurveysList() {
 
   const translate = (val: any) => {
     if (Array.isArray(val)) return val.map(v => translations[v] || v).join(", ");
+    if (val === undefined || val === null || val === "") return "-";
     return translations[val] || val;
   };
 
   const DataRow = ({ label, value, labelWidth = "68%" }: { label: string, value: any, labelWidth?: string }) => {
-    if (value === undefined || value === null || value === "") return null;
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
         <TableHead className="font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black" style={{ width: labelWidth }}>
@@ -132,81 +132,6 @@ export default function SurveysList() {
         </TableCell>
       </TableRow>
     );
-  };
-
-  const NutrientRow = ({ desc, data }: { desc: string, data: any }) => {
-    const limit = data?.limit || (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
-    const val = typeof data === 'object' ? data?.value : data;
-    
-    return (
-      <TableRow className="border-b border-black">
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black" style={{ width: '40%' }}>{desc}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{limit}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center" style={{ width: '20%' }}>{val || '-'}</TableCell>
-      </TableRow>
-    );
-  };
-
-  const renderSurveyList = (filtered: SurveyRecord[]) => {
-    if (filtered.length === 0) {
-      return (
-        <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
-          <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
-          <p className="text-muted-foreground text-sm font-medium">कोणतेही सर्वेक्षण उपलब्ध नाही.</p>
-        </div>
-      );
-    }
-
-    return filtered.map(s => (
-      <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
-        <CardContent className="p-0">
-          <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-            <div className="flex gap-3 items-center">
-              <div className={`p-2 rounded-full shrink-0 ${s.type === 'dairy' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
-                {s.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
-              </div>
-              <div>
-                <h3 className="font-bold text-base leading-tight text-primary">
-                  {s.data.dairyName || s.data.farmerName}
-                </h3>
-                <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
-                  <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}, {s.data.taluka}</span>
-                  <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
-                  <Badge variant={s.type === 'dairy' ? 'default' : 'secondary'} className={`${s.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
-                    {s.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
-                  </Badge>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
-                onClick={() => {
-                  setSelectedSurvey(s);
-                  setIsDialogOpen(true);
-                }}
-              >
-                <Eye className="h-3.5 w-3.5" /> पहा
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" 
-                onClick={() => handleEdit(s)}
-              >
-                <Edit2 className="h-3.5 w-3.5" /> अपडेट
-              </Button>
-              <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
-                <Trash2 className="h-3.5 w-3.5" /> हटवा
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    ));
   };
 
   const renderDetailedReport = (survey: SurveyRecord) => {
@@ -253,10 +178,22 @@ export default function SurveysList() {
           </h4>
           <div className="border border-black border-t-0">
             <div className="grid grid-cols-4 border-b border-black">
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex gap-1">एकूण: <span className="font-black">{isDairy ? d.livestock?.totalAnimals : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span></div>
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex gap-1">गायी: <span className="font-black">{isDairy ? d.livestock?.cows : d.animalCount?.cows}</span></div>
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex gap-1">म्हशी: <span className="font-black">{isDairy ? d.livestock?.buffaloes : d.animalCount?.buffaloes}</span></div>
-              <div className="p-2 bg-gray-50 font-black text-[10pt] flex gap-1">वासरे: <span className="font-black">{isDairy ? d.livestock?.calves : d.animalCount?.calves}</span></div>
+              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex flex-col items-center">
+                <span>एकूण जनावरे</span>
+                <span className="font-black text-[11pt]">{isDairy ? translate(d.livestock?.totalAnimals) : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span>
+              </div>
+              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex flex-col items-center">
+                <span>गायी</span>
+                <span className="font-black text-[11pt]">{isDairy ? translate(d.livestock?.cows) : translate(d.animalCount?.cows)}</span>
+              </div>
+              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex flex-col items-center">
+                <span>म्हशी</span>
+                <span className="font-black text-[11pt]">{isDairy ? translate(d.livestock?.buffaloes) : translate(d.animalCount?.buffaloes)}</span>
+              </div>
+              <div className="p-2 bg-gray-50 font-black text-[10pt] flex flex-col items-center">
+                <span>वासरे</span>
+                <span className="font-black text-[11pt]">{isDairy ? translate(d.livestock?.calves) : translate(d.animalCount?.calves)}</span>
+              </div>
             </div>
             <Table className="table-fixed">
               <TableBody>
@@ -278,46 +215,53 @@ export default function SurveysList() {
               {!isDairy && <DataRow label="हा ब्रँड तुम्ही किती काळापासून वापरत आहात?" value={d.usageDuration} />}
               <DataRow label={isDairy ? "पशुखाद्य दिवसातून किती वेळा देता?" : "दिवसातून किती वेळा देता?"} value={isDairy ? d.feedFrequency : d.frequency} />
               <DataRow label={isDairy ? "प्रति जनावर दररोज पशुखाद्य (किलो)" : "तुम्ही दिवसाला प्रति जनावर किती पशुखाद्य देता? (किलो)"} value={isDairy ? d.dailyFeedPerAnimal : d.dailyQtyPerAnimal} />
-              <DataRow label={isDairy ? "पूरक खाद्य" : "पशुखाद्य सोबत इतर खाद्य"} value={isDairy ? d.supplements : d.otherFeeds} />
+              <DataRow label={isDairy ? "खालीलपैकी कोणते पूरक खाद्य वापरता?" : "पशुखाद्य सोबत इतर खाद्य देता का?"} value={isDairy ? d.supplements : d.otherFeeds} />
               <DataRow label="इतर पूरक खाद्य" value={isDairy ? d.otherSupplement : d.otherFeedText} />
             </TableBody>
           </Table>
         </section>
 
-        {/* ४. पोषण विश्लेषण */}
+        {/* ४. ब्रँड व पोषण विश्लेषण */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ४. पोषण विश्लेषण
+            ४. ब्रँड व पोषण विश्लेषण
           </h4>
           <Table className="border border-black table-fixed">
             <TableHeader className="bg-gray-50">
               <TableRow className="border-b border-black">
-                <TableHead className="text-[9pt] font-black text-black border-r border-black" style={{ width: '40%' }}>Description</TableHead>
-                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>Min/Max</TableHead>
-                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>UOM</TableHead>
-                <TableHead className="text-[9pt] font-black text-black text-center" style={{ width: '20%' }}>Value</TableHead>
+                <TableHead className="text-[8pt] font-black text-black border-r border-black" style={{ width: '30%' }}>ब्रँड नाव</TableHead>
+                <TableHead className="text-[8pt] font-black text-black border-r border-black text-center" style={{ width: '14%' }}>किंमत (₹)</TableHead>
+                <TableHead className="text-[8pt] font-black text-black border-r border-black text-center" style={{ width: '14%' }}>प्रोटीन (%)</TableHead>
+                <TableHead className="text-[8pt] font-black text-black border-r border-black text-center" style={{ width: '14%' }}>फॅट (%)</TableHead>
+                <TableHead className="text-[8pt] font-black text-black border-r border-black text-center" style={{ width: '14%' }}>फायबर (%)</TableHead>
+                <TableHead className="text-[8pt] font-black text-black text-center" style={{ width: '14%' }}>कॅल्शियम (%)</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isDairy ? (
-                d.brandsInfo?.map((b: any, i: number) => (
-                  <React.Fragment key={i}>
-                    <TableRow className="bg-gray-50/50 border-b border-black">
-                      <TableCell colSpan={4} className="py-1 px-2 text-[9pt] font-bold">{b.name} (किंमत: ₹{b.price})</TableCell>
+                d.brandsInfo?.length > 0 ? (
+                  d.brandsInfo.map((b: any, i: number) => (
+                    <TableRow key={i} className="border-b border-black">
+                      <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black">{b.name}</TableCell>
+                      <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{b.price}</TableCell>
+                      <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{b.protein}</TableCell>
+                      <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{b.fat}</TableCell>
+                      <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{b.fiber}</TableCell>
+                      <TableCell className="py-1 px-2 text-[9pt] font-black text-center">{b.calcium}</TableCell>
                     </TableRow>
-                    <NutrientRow desc="Crude protein" data={{ value: b.protein, limit: 'Min' }} />
-                    <NutrientRow desc="Crude fat" data={{ value: b.fat, limit: 'Min' }} />
-                    <NutrientRow desc="Crude fiber" data={{ value: b.fiber, limit: 'Max' }} />
-                    <NutrientRow desc="Calcium" data={{ value: b.calcium, limit: 'Min' }} />
-                  </React.Fragment>
-                ))
+                  ))
+                ) : (
+                  <TableRow><TableCell colSpan={6} className="text-center py-2">माहिती नाही</TableCell></TableRow>
+                )
               ) : (
-                <>
-                  <NutrientRow desc="Crude protein" data={{ value: d.packNutrition?.protein, limit: 'Min' }} />
-                  <NutrientRow desc="Crude fat" data={{ value: d.packNutrition?.fat, limit: 'Min' }} />
-                  <NutrientRow desc="Crude fiber" data={{ value: d.packNutrition?.fiber, limit: 'Max' }} />
-                  <NutrientRow desc="Calcium" data={{ value: d.packNutrition?.calcium, limit: 'Min' }} />
-                </>
+                <TableRow className="border-b border-black">
+                  <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black">{d.currentBrand}</TableCell>
+                  <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{d.bagPrice}</TableCell>
+                  <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{d.packNutrition?.protein}</TableCell>
+                  <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{d.packNutrition?.fat}</TableCell>
+                  <TableCell className="py-1 px-2 text-[9pt] font-black border-r border-black text-center">{d.packNutrition?.fiber}</TableCell>
+                  <TableCell className="py-1 px-2 text-[9pt] font-black text-center">{d.packNutrition?.calcium}</TableCell>
+                </TableRow>
               )}
             </TableBody>
           </Table>
@@ -330,56 +274,96 @@ export default function SurveysList() {
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label="खरेदी पद्धत / स्त्रोत" value={isDairy ? d.purchaseMethod : d.purchaseSource} />
-              <DataRow label="उधारी / दिवस" value={isDairy ? d.creditDays : d.hasCredit} />
-              <DataRow label="पुरवठादार माहिती" value={d.suppliers?.map((s: any) => s.name).join(", ")} />
-              <DataRow label="पुरवठा वेळेवर मिळतो का?" value={isDairy ? d.timelySupply : d.easyAvailability} />
+              <DataRow label={isDairy ? "खरेदी पद्धत" : "हा ब्रँड कुठून खरेदी करता?"} value={isDairy ? d.purchaseMethod : d.purchaseSource} />
+              <DataRow label={isDairy ? "उधारी / दिवस" : "उधारी मिळते का?"} value={isDairy ? d.creditDays : d.hasCredit} />
+              <DataRow label="पुरवठादार माहिती" value={d.suppliers?.map((s: any) => s.name).filter(Boolean).join(", ")} />
+              <DataRow label={isDairy ? "पुरवठा वेळेवर मिळतो का?" : "बाजारात हा ब्रँड सहज मिळतो का?"} value={isDairy ? d.timelySupply : d.easyAvailability} />
+              {!isDairy && <DataRow label="कंपनी प्रतिनिधी गावात भेट देतात का?" value={d.repVisit} />}
+              {!isDairy && <DataRow label="सॅम्पल किंवा माहिती मिळते का?" value={d.samplesInfo} />}
             </TableBody>
           </Table>
         </section>
 
-        {/* ६. खर्च व गुणवत्ता */}
+        {/* ६. तुलनात्मक माहिती (For Farmer) */}
+        {!isDairy && (
+          <section className="break-inside-avoid">
+            <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
+              ६. तुलनात्मक माहिती
+            </h4>
+            <Table className="border border-black table-fixed">
+              <TableBody>
+                <DataRow label="यापूर्वी कोणते ब्रँड वापरले आहेत?" value={d.previousBrands} />
+                <DataRow label="सध्याच्या ब्रँडपेक्षा चांगला ब्रँड कोणता वाटतो?" value={d.betterBrand} />
+                <DataRow label="हा ब्रँड वापरण्याचे कारण काय?" value={d.switchReason} />
+                <DataRow label="तुम्हाला पशुखाद्यामधील घटक माहिती आहेत का?" value={d.knowsIngredients} />
+              </TableBody>
+            </Table>
+          </section>
+        )}
+
+        {/* ७. खर्च, गुणवत्ता व समाधान */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ६. खर्च, गुणवत्ता व समाधान
+            {isDairy ? "६. खर्च, गुणवत्ता व समाधान" : "७. खर्च, गुणवत्ता व समाधान"}
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label="महिन्याला एकूण खर्च / पोती" value={`${d.monthlyExp || '₹0'} / ${d.monthlyBags || '0'} पोती`} />
+              <DataRow label="महिन्याला एकूण खर्च (₹)" value={d.monthlyExp} />
+              <DataRow label="महिन्याला लागणाऱ्या पोत्यांची संख्या" value={d.monthlyBags} />
               <DataRow label="समाधान पातळी / गुणवत्ता" value={isDairy ? d.satisfaction : d.quality} />
               <DataRow label="दूध उत्पादनात वाढ झाली का?" value={d.milkIncrease} />
-              {!isDairy && <TableRow className="border-b border-black">
-                <TableHead className="font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black" style={{ width: '68%' }}>समाधान रेटिंग</TableHead>
-                <TableCell className="py-2 px-3 text-[11pt] font-black">{d.rating}/५</TableCell>
-              </TableRow>}
+              {!isDairy && <DataRow label="जनावरांचे आरोग्य सुधारले का?" value={d.healthImprovement} />}
+              {!isDairy && <DataRow label="जनावरांना हा फीड खायला आवडतो का?" value={d.likesFeed} />}
+              {!isDairy && <DataRow label="दूधातील फॅट मध्ये फरक जाणवला का?" value={d.fatDiff} />}
+              {!isDairy && (
+                <TableRow className="border-b border-black">
+                  <TableHead className="font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black" style={{ width: '68%' }}>समाधान रेटिंग (५ पैकी)</TableHead>
+                  <TableCell className="py-2 px-3 text-[11pt] font-black">{d.rating}/५</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
         </section>
 
-        {/* ७. समस्या व सूचना */}
+        {/* ८. साठवणूक (For Dairy) */}
+        {isDairy && (
+          <section className="break-inside-avoid">
+            <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
+              ९. साठवणूक सुविधा
+            </h4>
+            <Table className="border border-black table-fixed">
+              <TableBody>
+                <DataRow label="गोदाम क्षमता (MT)" value={d.warehouseCapacity} />
+                <DataRow label="साठवणुकीसाठी पुरेशी जागा उपलब्ध आहे का?" value={d.hasStorage} />
+              </TableBody>
+            </Table>
+          </section>
+        )}
+
+        {/* ९. समस्या व सूचना */}
         <section className="break-inside-avoid">
           <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-            ७. समस्या व सूचना
+            {isDairy ? "१०. समस्या व सूचना" : "११. समस्या व सूचना"}
           </h4>
           <Table className="border border-black table-fixed">
             <TableBody>
-              <DataRow label="मुख्य समस्या काय आहे?" value={isDairy ? d.mainProblem : d.problems} />
-              <DataRow label="इतर समस्या" value={d.otherProblem} />
-              <DataRow label="तुमच्या सूचना / मते" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
-              <DataRow label="नवीन ब्रँड सॅम्पल/बदलण्याची तयारी" value={isDairy ? d.sampleTrial : d.switchIfCheaper} />
+              <DataRow label="पशुखाद्याबाबत मुख्य समस्या काय आहे?" value={isDairy ? d.mainProblem : d.problems} />
+              <DataRow label="इतर समस्या / सुधारणा" value={isDairy ? d.otherProblem : d.improvements} />
+              <DataRow label="तुमच्या मते आदर्श पशुखाद्यात काय वैशिष्ट्ये असावीत?" value={isDairy ? d.goodFeedOpinion : d.idealFeedQualities} />
+              <DataRow label="नवीन ब्रँड सॅम्पल मिळाल्यास बदलण्याची तयारी?" value={isDairy ? d.sampleTrial : d.switchIfCheaper} />
             </TableBody>
           </Table>
         </section>
 
-        {/* ८. अ‍ॅड पॉइंट्स */}
+        {/* १०. अ‍ॅड पॉइंट्स */}
         {d.customPoints?.length > 0 && (
           <section className="break-inside-avoid">
             <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2">
-              ८. अ‍ॅड पॉइंट्स (इतर मुद्दे)
+              अ‍ॅड पॉइंट्स (इतर मुद्दे)
             </h4>
-            <div className="border border-black p-2 min-h-[40px] font-black text-[10pt]">
+            <div className="border border-black p-2 min-h-[40px] font-black text-[10pt] bg-white">
               {d.customPoints.map((p: any, idx: number) => (
-                <div key={idx} className="mb-1">• {p.point}</div>
+                <div key={idx} className="mb-1.5">• {p.point}</div>
               ))}
             </div>
           </section>
@@ -416,13 +400,115 @@ export default function SurveysList() {
           </TabsList>
 
           <TabsContent value="all" className="space-y-1 mt-0">
-            {renderSurveyList(filterSurveys())}
+            {filterSurveys().length === 0 ? (
+              <div className="text-center py-16 bg-white rounded-xl border border-dashed shadow-sm">
+                <FileText className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-10" />
+                <p className="text-muted-foreground text-sm font-medium">कोणतेही सर्वेक्षण उपलब्ध नाही.</p>
+              </div>
+            ) : filterSurveys().map(s => (
+              <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex gap-3 items-center">
+                      <div className={`p-2 rounded-full shrink-0 ${s.type === 'dairy' ? 'bg-primary/10 text-primary' : 'bg-accent/10 text-accent'}`}>
+                        {s.type === 'dairy' ? <FileText className="h-5 w-5" /> : <ClipboardList className="h-5 w-5" />}
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base leading-tight text-primary">
+                          {s.data.dairyName || s.data.farmerName}
+                        </h3>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}, {s.data.taluka}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                          <Badge variant={s.type === 'dairy' ? 'default' : 'secondary'} className={`${s.type === 'dairy' ? 'bg-primary' : 'bg-accent'} text-[8px] h-4 px-1.5`}>
+                            {s.type === 'dairy' ? 'संकलन केंद्र' : 'शेतकरी'}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end no-print">
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" onClick={() => { setSelectedSurvey(s); setIsDialogOpen(true); }}>
+                        <Eye className="h-3.5 w-3.5" /> पहा
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" onClick={() => handleEdit(s)}>
+                        <Edit2 className="h-3.5 w-3.5" /> अपडेट
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
+                        <Trash2 className="h-3.5 w-3.5" /> हटवा
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
+
           <TabsContent value="dairy" className="space-y-1 mt-0">
-            {renderSurveyList(filterSurveys('dairy'))}
+            {filterSurveys('dairy').map(s => (
+              <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex gap-3 items-center">
+                      <div className="p-2 rounded-full shrink-0 bg-primary/10 text-primary">
+                        <FileText className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base leading-tight text-primary">{s.data.dairyName}</h3>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" onClick={() => { setSelectedSurvey(s); setIsDialogOpen(true); }}>
+                        <Eye className="h-3.5 w-3.5" /> पहा
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" onClick={() => handleEdit(s)}>
+                        <Edit2 className="h-3.5 w-3.5" /> अपडेट
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
+                        <Trash2 className="h-3.5 w-3.5" /> हटवा
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
+
           <TabsContent value="farmer" className="space-y-1 mt-0">
-            {renderSurveyList(filterSurveys('farmer'))}
+            {filterSurveys('farmer').map(s => (
+              <Card key={s.id} className="bg-white hover:shadow-md transition-all border-primary/10 overflow-hidden mb-3 group">
+                <CardContent className="p-0">
+                  <div className="p-3 md:p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div className="flex gap-3 items-center">
+                      <div className="p-2 rounded-full shrink-0 bg-accent/10 text-accent">
+                        <ClipboardList className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-base leading-tight text-primary">{s.data.farmerName}</h3>
+                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground mt-0.5">
+                          <span className="flex items-center gap-1"><MapPin className="h-3 w-3 text-primary" /> {s.data.village}</span>
+                          <span className="flex items-center gap-1"><Clock className="h-3 w-3" /> {new Date(s.timestamp).toLocaleDateString('mr-IN')}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" onClick={() => { setSelectedSurvey(s); setIsDialogOpen(true); }}>
+                        <Eye className="h-3.5 w-3.5" /> पहा
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 border-primary text-primary hover:bg-primary/10 text-xs" onClick={() => handleEdit(s)}>
+                        <Edit2 className="h-3.5 w-3.5" /> अपडेट
+                      </Button>
+                      <Button variant="outline" size="sm" className="h-8 px-2 gap-1 text-destructive border-destructive hover:bg-destructive/10 text-xs" onClick={() => handleDelete(s.id)}>
+                        <Trash2 className="h-3.5 w-3.5" /> हटवा
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </TabsContent>
         </Tabs>
 
