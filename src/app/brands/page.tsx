@@ -181,7 +181,7 @@ export default function BrandManagement() {
         <Label className="text-[10px] uppercase font-bold text-primary">{label}</Label>
         <div className="flex gap-1">
           <Select 
-            value={item.limit || 'Min'} 
+            value={item?.limit || 'Min'} 
             onValueChange={(val: any) => setNutrition({...nutrition, [field]: { ...item, limit: val }})}
           >
             <SelectTrigger className="h-8 w-16 text-[10px] px-1 bg-slate-50 border-primary/20">
@@ -194,7 +194,7 @@ export default function BrandManagement() {
           </Select>
           <Input 
             type="number" 
-            value={item.value || ""} 
+            value={item?.value || ""} 
             onChange={(e) => setNutrition({...nutrition, [field]: { ...item, value: e.target.value }})} 
             className="h-8 text-xs flex-1 border-primary/20"
             placeholder="Val"
