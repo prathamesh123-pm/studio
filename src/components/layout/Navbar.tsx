@@ -57,7 +57,6 @@ export function Navbar() {
       description: "तुमची माहिती आता सर्व फॉर्ममध्ये आपोआप भरली जाईल.",
     });
     setIsOpen(false);
-    window.dispatchEvent(new Event('profile-updated'));
   };
 
   return (

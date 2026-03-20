@@ -292,35 +292,32 @@ export default function SurveysList() {
           <Table className="border border-black table-fixed">
             <TableHeader className="bg-gray-50">
               <TableRow className="border-b-2 border-black">
-                <TableHead className="text-[9pt] font-black text-black border-r border-black w-[30%]">ब्रँड नाव</TableHead>
-                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">किंमत (₹)</TableHead>
-                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">प्रोटीन (%)</TableHead>
-                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">फॅट (%)</TableHead>
-                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">फायबर (%)</TableHead>
-                <TableHead className="text-[9pt] font-black text-black text-center">कॅल्शियम (%)</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black w-[30%]">Description</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">Min/Max</TableHead>
+                <TableHead className="text-[9pt] font-black text-black border-r border-black text-center">UOM</TableHead>
+                <TableHead className="text-[9pt] font-black text-black text-center">Value</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isDairy ? (
                 d.brandsInfo?.map((b: any, i: number) => (
-                  <TableRow key={i} className="border-b border-black">
-                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black">{b.name}</TableCell>
-                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{b.price}</TableCell>
-                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{typeof b.protein === 'object' ? b.protein.value : b.protein}</TableCell>
-                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{typeof b.fat === 'object' ? b.fat.value : b.fat}</TableCell>
-                    <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{typeof b.fiber === 'object' ? b.fiber.value : b.fiber}</TableCell>
-                    <TableCell className="py-1 px-2 text-[8.5pt] font-black text-center">{typeof b.calcium === 'object' ? b.calcium.value : b.calcium}</TableCell>
-                  </TableRow>
+                  <React.Fragment key={i}>
+                    <TableRow className="bg-gray-50/50">
+                      <TableCell colSpan={4} className="py-1 px-2 text-[9pt] font-bold border-b border-black">{b.name} (किंमत: ₹{b.price})</TableCell>
+                    </TableRow>
+                    <NutrientRow desc="Crude protein" data={b.protein} />
+                    <NutrientRow desc="Crude fat" data={b.fat} />
+                    <NutrientRow desc="Crude fiber" data={b.fiber} />
+                    <NutrientRow desc="Calcium" data={b.calcium} />
+                  </React.Fragment>
                 ))
               ) : (
-                <TableRow className="border-b border-black">
-                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black">{d.currentBrand}</TableCell>
-                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.bagPrice}</TableCell>
-                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.packNutrition?.protein}</TableCell>
-                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.packNutrition?.fat}</TableCell>
-                  <TableCell className="py-1 px-2 text-[8.5pt] font-black border-r border-black text-center">{d.packNutrition?.fiber}</TableCell>
-                  <TableCell className="py-1 px-2 text-[8.5pt] font-black text-center">{d.packNutrition?.calcium}</TableCell>
-                </TableRow>
+                <>
+                  <NutrientRow desc="Crude protein" data={d.packNutrition?.protein} />
+                  <NutrientRow desc="Crude fat" data={d.packNutrition?.fat} />
+                  <NutrientRow desc="Crude fiber" data={d.packNutrition?.fiber} />
+                  <NutrientRow desc="Calcium" data={d.packNutrition?.calcium} />
+                </>
               )}
             </TableBody>
           </Table>
