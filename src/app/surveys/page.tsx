@@ -123,10 +123,10 @@ export default function SurveysList() {
   const DataRow = ({ label, value, labelWidth = "68%" }: { label: string, value: any, labelWidth?: string }) => {
     return (
       <TableRow className="hover:bg-transparent border-b border-black">
-        <TableHead className="font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black print:font-black" style={{ width: labelWidth }}>
+        <TableHead className="font-black bg-slate-50 py-1 px-3 text-[10pt] h-auto border-r border-black leading-tight text-black print:font-black" style={{ width: labelWidth }}>
           {label}
         </TableHead>
-        <TableCell className="py-2 px-3 text-[11pt] h-auto leading-tight text-black font-black">
+        <TableCell className="py-1 px-3 text-[10.5pt] h-auto leading-tight text-black font-black">
           {translate(value)}
         </TableCell>
       </TableRow>
@@ -139,10 +139,10 @@ export default function SurveysList() {
     
     return (
       <TableRow className="border-b border-black">
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black" style={{ width: '40%' }}>{desc}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{limit}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
-        <TableCell className="py-1.5 px-3 text-[10pt] font-black text-center" style={{ width: '20%' }}>{val || '-'}</TableCell>
+        <TableCell className="py-1 px-3 text-[9.5pt] font-black border-r border-black" style={{ width: '40%' }}>{desc}</TableCell>
+        <TableCell className="py-1 px-3 text-[9.5pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{limit}</TableCell>
+        <TableCell className="py-1 px-3 text-[9.5pt] font-black border-r border-black text-center" style={{ width: '20%' }}>{desc.toLowerCase().includes('aflatoxin') ? 'ppb' : '%'}</TableCell>
+        <TableCell className="py-1 px-3 text-[9.5pt] font-black text-center" style={{ width: '20%' }}>{val || '-'}</TableCell>
       </TableRow>
     );
   };
@@ -153,19 +153,19 @@ export default function SurveysList() {
 
     return (
       <div className="space-y-1 py-1 text-black bg-white">
-        <div className="text-center border-b-2 border-black pb-2 mb-2">
-          <h2 className="text-[12pt] font-black uppercase tracking-tight text-black">
+        <div className="text-center border-b-2 border-black pb-1 mb-2">
+          <h2 className="text-[12pt] font-black uppercase tracking-tight text-black leading-tight">
             {isDairy ? "पशुखाद्य सर्वेक्षण अहवाल: दूध संकलन केंद्र / डेअरी" : "पशुखाद्य सर्वेक्षण अहवाल: शेतकरी ब्रँड सर्वेक्षण"}
           </h2>
-          <div className="flex justify-between text-[10pt] font-black px-1 mt-1.5 text-black">
-            <span className="flex items-center gap-1 font-black"><User className="h-4 w-4" /> सर्वेक्षक: {d.surveyorName || survey.surveyorName} ({d.surveyorId || survey.surveyorId})</span>
+          <div className="flex justify-between text-[9pt] font-black px-1 mt-1 text-black">
+            <span className="flex items-center gap-1 font-black"><User className="h-3.5 w-3.5" /> सर्वेक्षक: {d.surveyorName || survey.surveyorName} ({d.surveyorId || survey.surveyorId})</span>
             <span className="font-black">तारीख: {d.surveyDate || new Date(survey.timestamp).toLocaleDateString('mr-IN')}</span>
           </div>
         </div>
 
         {/* १. सामान्य व लोकेशन माहिती */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             १. सामान्य व लोकेशन माहिती
           </h4>
           <Table className="border border-black table-fixed">
@@ -186,26 +186,26 @@ export default function SurveysList() {
 
         {/* २. पशुधन माहिती */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             २. पशुधन माहिती
           </h4>
           <div className="border border-black border-t-0">
             <div className="grid grid-cols-4 border-b border-black">
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex flex-col items-center">
-                <span className="text-black">एकूण</span>
-                <span className="font-black text-[11pt] text-black">{isDairy ? translate(d.livestock?.totalAnimals) : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span>
+              <div className="p-1 border-r border-black bg-slate-50 font-black text-[9.5pt] flex flex-col items-center">
+                <span className="text-black text-[8pt]">एकूण</span>
+                <span className="font-black text-[10.5pt] text-black">{isDairy ? translate(d.livestock?.totalAnimals) : (parseInt(d.animalCount?.cows || '0') + parseInt(d.animalCount?.buffaloes || '0') + parseInt(d.animalCount?.calves || '0'))}</span>
               </div>
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex flex-col items-center">
-                <span className="text-black">गायी</span>
-                <span className="font-black text-[11pt] text-black">{isDairy ? translate(d.livestock?.cows) : translate(d.animalCount?.cows)}</span>
+              <div className="p-1 border-r border-black bg-slate-50 font-black text-[9.5pt] flex flex-col items-center">
+                <span className="text-black text-[8pt]">गायी</span>
+                <span className="font-black text-[10.5pt] text-black">{isDairy ? translate(d.livestock?.cows) : translate(d.animalCount?.cows)}</span>
               </div>
-              <div className="p-2 border-r border-black bg-gray-50 font-black text-[10pt] flex flex-col items-center">
-                <span className="text-black">म्हशी</span>
-                <span className="font-black text-[11pt] text-black">{isDairy ? translate(d.livestock?.buffaloes) : translate(d.animalCount?.buffaloes)}</span>
+              <div className="p-1 border-r border-black bg-slate-50 font-black text-[9.5pt] flex flex-col items-center">
+                <span className="text-black text-[8pt]">म्हशी</span>
+                <span className="font-black text-[10.5pt] text-black">{isDairy ? translate(d.livestock?.buffaloes) : translate(d.animalCount?.buffaloes)}</span>
               </div>
-              <div className="p-2 bg-gray-50 font-black text-[10pt] flex flex-col items-center">
-                <span className="text-black">वासरे</span>
-                <span className="font-black text-[11pt] text-black">{isDairy ? translate(d.livestock?.calves) : translate(d.animalCount?.calves)}</span>
+              <div className="p-1 bg-slate-50 font-black text-[9.5pt] flex flex-col items-center">
+                <span className="text-black text-[8pt]">वासरे</span>
+                <span className="font-black text-[10.5pt] text-black">{isDairy ? translate(d.livestock?.calves) : translate(d.animalCount?.calves)}</span>
               </div>
             </div>
             <Table className="table-fixed">
@@ -219,7 +219,7 @@ export default function SurveysList() {
 
         {/* ३. पशुखाद्य वापर माहिती */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ३. पशुखाद्य वापर माहिती
           </h4>
           <Table className="border border-black table-fixed">
@@ -235,7 +235,7 @@ export default function SurveysList() {
 
         {/* ४. ब्रँड व पोषण विश्लेषण */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ४. {isDairy ? "ब्रँड व पोषण माहिती" : "ब्रँड निवड कारण व परिणाम"}
           </h4>
           {isDairy ? (
@@ -243,14 +243,14 @@ export default function SurveysList() {
               {d.brandsInfo?.length > 0 ? (
                 d.brandsInfo.map((b: any, i: number) => (
                   <div key={i} className="mb-2 last:mb-0 border-b last:border-0 border-black">
-                    <div className="bg-gray-50 p-1 font-black text-center border-b border-black text-[10pt] text-black">ब्रँड {i + 1}: {b.name}</div>
+                    <div className="bg-slate-50 p-1 font-black text-center border-b border-black text-[9.5pt] text-black">ब्रँड {i + 1}: {b.name}</div>
                     <Table className="table-fixed">
-                      <TableHeader className="bg-gray-50">
+                      <TableHeader className="bg-slate-50">
                         <TableRow className="border-b border-black">
-                          <TableHead className="text-[9pt] font-black text-black border-r border-black" style={{ width: '40%' }}>Description</TableHead>
-                          <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>Min/Max</TableHead>
-                          <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>UOM</TableHead>
-                          <TableHead className="text-[9pt] font-black text-black text-center" style={{ width: '20%' }}>Value</TableHead>
+                          <TableHead className="text-[9pt] font-black text-black border-r border-black py-1" style={{ width: '40%' }}>Description</TableHead>
+                          <TableHead className="text-[9pt] font-black text-black border-r border-black text-center py-1" style={{ width: '20%' }}>Min/Max</TableHead>
+                          <TableHead className="text-[9pt] font-black text-black border-r border-black text-center py-1" style={{ width: '20%' }}>UOM</TableHead>
+                          <TableHead className="text-[9pt] font-black text-black text-center py-1" style={{ width: '20%' }}>Value</TableHead>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -269,7 +269,7 @@ export default function SurveysList() {
                   </div>
                 ))
               ) : (
-                <div className="p-4 text-center text-black font-black">माहिती उपलब्ध नाही</div>
+                <div className="p-3 text-center text-black font-black text-[9.5pt]">माहिती उपलब्ध नाही</div>
               )}
             </div>
           ) : (
@@ -287,7 +287,7 @@ export default function SurveysList() {
 
         {/* ५. खरेदी व पुरवठा माहिती */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ५. {isDairy ? "खरेदी पद्धत" : "किंमत व खरेदी"}
           </h4>
           <Table className="border border-black table-fixed">
@@ -303,7 +303,7 @@ export default function SurveysList() {
 
         {/* ६. तुलनात्मक / सेवा माहिती */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ६. {isDairy ? "पुरवठा माहिती" : "ब्रँड तुलना"}
           </h4>
           <Table className="border border-black table-fixed">
@@ -315,9 +315,9 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* ७. खर्च व समाधान */}
+        {/* ७. खर्च व समाधान / सेवा */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ७. {isDairy ? "खर्च माहिती" : "उपलब्धता व सेवा"}
           </h4>
           <Table className="border border-black table-fixed">
@@ -338,9 +338,9 @@ export default function SurveysList() {
           </Table>
         </section>
 
-        {/* ८. गुणवत्ता व परिणाम */}
+        {/* ८. गुणवत्ता व परिणाम / घटक */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ८. {isDairy ? "गुणवत्ता व समाधान" : "घटक माहिती (Nutrients)"}
           </h4>
           {isDairy ? (
@@ -353,14 +353,14 @@ export default function SurveysList() {
             </Table>
           ) : (
             <div className="border border-black border-t-0">
-              <div className="p-2 border-b border-black font-black text-[10pt] bg-gray-50 text-black">घटक माहिती माहीत आहे का? - {translate(d.knowsIngredients)}</div>
+              <div className="p-1 border-b border-black font-black text-[9.5pt] bg-slate-50 text-black">घटक माहिती माहीत आहे का? - {translate(d.knowsIngredients)}</div>
               <Table className="table-fixed">
-                <TableHeader className="bg-gray-50">
+                <TableHeader className="bg-slate-50">
                   <TableRow className="border-b border-black">
-                    <TableHead className="text-[9pt] font-black text-black border-r border-black" style={{ width: '40%' }}>Description</TableHead>
-                    <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>Min/Max</TableHead>
-                    <TableHead className="text-[9pt] font-black text-black border-r border-black text-center" style={{ width: '20%' }}>UOM</TableHead>
-                    <TableHead className="text-[9pt] font-black text-black text-center" style={{ width: '20%' }}>Value</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black py-1" style={{ width: '40%' }}>Description</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black text-center py-1" style={{ width: '20%' }}>Min/Max</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black border-r border-black text-center py-1" style={{ width: '20%' }}>UOM</TableHead>
+                    <TableHead className="text-[9pt] font-black text-black text-center py-1" style={{ width: '20%' }}>Value</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -382,7 +382,7 @@ export default function SurveysList() {
 
         {/* ९. साठवणूक व रेटिंग */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             ९. {isDairy ? "साठवणूक सुविधा (Storage)" : "समाधान रेटिंग"}
           </h4>
           <Table className="border border-black table-fixed">
@@ -394,7 +394,7 @@ export default function SurveysList() {
                 </>
               ) : (
                 <TableRow className="border-b border-black">
-                  <TableHead className="font-black bg-gray-50 py-1.5 px-3 text-[10.5pt] h-auto border-r border-black leading-tight text-black" style={{ width: '68%' }}>समाधान रेटिंग (५ पैकी)</TableHead>
+                  <TableHead className="font-black bg-slate-50 py-1.5 px-3 text-[10pt] h-auto border-r border-black leading-tight text-black" style={{ width: '68%' }}>समाधान रेटिंग (५ पैकी)</TableHead>
                   <TableCell className="py-2 px-3 text-[11pt] font-black text-black">{d.rating}/५</TableCell>
                 </TableRow>
               )}
@@ -404,7 +404,7 @@ export default function SurveysList() {
 
         {/* १०. समस्या व सूचना */}
         <section className="break-inside-avoid">
-          <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+          <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
             १०. समस्या व सूचना
           </h4>
           <Table className="border border-black table-fixed">
@@ -419,12 +419,12 @@ export default function SurveysList() {
         {/* ११. अ‍ॅड पॉइंट्स */}
         {d.customPoints?.length > 0 && (
           <section className="break-inside-avoid">
-            <h4 className="text-[10.5pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-gray-100 px-2 text-black">
+            <h4 className="text-[10pt] font-black mb-0 border-b-2 border-black pb-0.5 uppercase bg-slate-100 px-2 text-black">
               ११. अ‍ॅड पॉइंट्स (इतर मुद्दे)
             </h4>
-            <div className="border border-black p-2 min-h-[40px] font-black text-[10pt] bg-white text-black">
+            <div className="border border-black p-2 min-h-[40px] font-black text-[9.5pt] bg-white text-black leading-tight">
               {d.customPoints.map((p: any, idx: number) => (
-                <div key={idx} className="mb-1.5">• {p.point}</div>
+                <div key={idx} className="mb-1">• {p.point}</div>
               ))}
             </div>
           </section>
