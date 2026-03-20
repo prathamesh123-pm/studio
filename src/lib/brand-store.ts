@@ -1,22 +1,28 @@
 
+export interface NutrientValue {
+  value: string;
+  limit: 'Min' | 'Max';
+}
+
 export interface MasterBrand {
   id: string;
   name: string;
+  compoundedType: string; // Type 1, Type 2
   feedType: string;
   bagWeight: string;
   availableWeights: string;
   price: string;
   nutrition: {
-    protein: string;
-    fat: string;
-    fiber: string;
-    ash: string;
-    calcium: string;
-    totalPhosphorus: string;
-    availablePhosphorus: string;
-    aflatoxin: string;
-    urea: string;
-    moisture: string;
+    protein: NutrientValue;
+    fat: NutrientValue;
+    fiber: NutrientValue;
+    ash: NutrientValue;
+    calcium: NutrientValue;
+    totalPhosphorus: NutrientValue;
+    availablePhosphorus: NutrientValue;
+    aflatoxin: NutrientValue;
+    urea: NutrientValue;
+    moisture: NutrientValue;
     others: string;
   };
   ingredients: Array<{
