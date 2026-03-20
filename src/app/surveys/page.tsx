@@ -95,7 +95,7 @@ export default function SurveysList() {
   );
 
   const NutrientRow = ({ desc, data }: { desc: string, data: any }) => {
-    if (!data) return null;
+    if (!data || (typeof data === 'object' && !data.value)) return null;
     const limit = data.limit || (desc.toLowerCase().includes('fiber') || desc.toLowerCase().includes('ash') || desc.toLowerCase().includes('aflatoxin') || desc.toLowerCase().includes('urea') || desc.toLowerCase().includes('moisture') ? 'Max' : 'Min');
     return (
       <TableRow className="border-b border-black">
@@ -202,7 +202,12 @@ export default function SurveysList() {
                 <div className="bg-slate-50 p-1 font-black text-center text-[8.5pt] border-b border-black">{i+1}. {b.name} (किंमत: ₹{b.price})</div>
                 <NutrientTable nutrition={b} />
               </div>
-            )) : <NutrientTable nutrition={d.packNutrition} />}
+            )) : (
+              <div>
+                <div className="bg-slate-50 p-1 font-black text-center text-[8.5pt] border-b border-black">{d.currentBrand} (पोषण तपशील)</div>
+                <NutrientTable nutrition={d.packNutrition} />
+              </div>
+            )}
             {!isDairy && <Table className="border-t border-black"><TableBody>
               <DataRow label="तुम्ही हाच ब्रँड निवडण्याचे मुख्य कारण काय आहे?" value={d.selectionReason} />
               <DataRow label="हा ब्रँड सुरू करण्यासाठी तुम्हाला कोणाचे मार्गदर्शन मिळाले?" value={d.startMethod} />
