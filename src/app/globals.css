@@ -47,13 +47,13 @@
 @media print {
   @page {
     size: A4;
-    margin: 6mm;
+    margin: 4mm;
   }
 
   body {
     background: white !important;
     color: black !important;
-    font-size: 9pt !important;
+    font-size: 8.5pt !important;
   }
 
   body * {
@@ -91,15 +91,16 @@
     border-collapse: collapse !important;
     border: 1px solid #000 !important;
     table-layout: fixed !important;
+    margin-bottom: 2px !important;
   }
 
   th, td {
     border: 1px solid #000 !important;
-    padding: 2px 4px !important;
+    padding: 1.5px 3px !important;
     color: #000 !important;
-    font-size: 8.5pt !important;
+    font-size: 8pt !important;
     vertical-align: middle !important;
-    line-height: 1.1 !important;
+    line-height: 1.0 !important;
     font-weight: 700 !important;
   }
 
@@ -112,17 +113,17 @@
   h2, h4 {
     color: #000 !important;
     font-weight: 900 !important;
-    border-bottom: 1.5px solid #000 !important;
-    margin-bottom: 2px !important;
-    padding-bottom: 1px !important;
+    border-bottom: 1px solid #000 !important;
+    margin-bottom: 1px !important;
+    padding-bottom: 0.5px !important;
     text-transform: uppercase !important;
-    font-size: 9pt !important;
+    font-size: 8.5pt !important;
   }
 
   .break-inside-avoid {
     break-inside: avoid !important;
     page-break-inside: avoid !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 2px !important;
   }
 
   p, span, div {
